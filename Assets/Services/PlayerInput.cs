@@ -10,10 +10,18 @@ namespace Services.PlayerInput
         public event Action<Vector2> mouseRightClicked;
         public event Action<Vector2> movementInput;
         public event Action<KeyCode[]>keysCombinationHold;
+        public event Action<KeyCode[]>keyCombinationDown;
         public event Action<KeyCode>keyHold;
         public event Action<KeyCode>keyDown;
 
         private readonly KeyCode[] WATCHED_KEYS = {KeyCode.LeftControl,KeyCode.Z, KeyCode.X};
+
+        List<KeyCode>_currentCombination;
+
+        public PlayerInput()
+        {
+            _currentCombination = new List<KeyCode>();
+        }
 
 
         public void Update()
@@ -28,19 +36,32 @@ namespace Services.PlayerInput
             if (Input.GetMouseButtonDown(1))
                 mouseRightClicked?.Invoke(Camera.main.ScreenToWorldPoint(Input.mousePosition));
 
-            List<KeyCode>currentCombination = new List<KeyCode>();
-
             foreach (KeyCode key in WATCHED_KEYS)
             {
-                if (Input.GetKey(key))
+                if (Input.GetKeyDown(key))
                 {
+                    keyDown?.Invoke(key);
+
+                    if (!_currentCombination.Contains(key))
+                    {
+                        _currentCombination.Add(key);
+                    }
+
+                    if (_currentCombination.Count>0)
+                        keyCombinationDown?.Invoke(_currentCombination.ToArray());
+                }
+
+                if (Input.GetKeyUp(key))
+                {
+                    if (_currentCombination.Contains(key))
+                        _currentCombination.Remove(key);
+
                     keyHold?.Invoke(key);
-                    currentCombination.Add(key);
                 }
             }
 
-            if (currentCombination.Count>0)
-                keysCombinationHold?.Invoke(currentCombination.ToArray());
+            if (_currentCombination.Count>0)
+                keysCombinationHold?.Invoke(_currentCombination.ToArray());
         }
     }
 }

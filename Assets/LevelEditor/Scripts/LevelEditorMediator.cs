@@ -29,7 +29,7 @@ namespace LevelEditor
             _level.Grid.cellChanged+=OnCellChanged;
             _level.Grid.cellRemoved+=OnCellRemoved;
             _playerInput.mouseLeftClicked+=OnPlayerClickedLeftAt;
-            _playerInput.keysCombinationHold+=OnPlayerInputKeysCombination;
+            _playerInput.keyCombinationDown+=OnPlayerInputKeysCombination;
         }
 
         private void OnPlayerClickedLeftAt(Vector2 position)
@@ -69,7 +69,7 @@ namespace LevelEditor
         {
             _playerInput.mouseLeftClicked-=OnPlayerClickedLeftAt;
             _level.Grid.cellChanged-=OnCellChanged;
-            _playerInput.keysCombinationHold-=OnPlayerInputKeysCombination;
+            _playerInput.keyCombinationDown-=OnPlayerInputKeysCombination;
             _level.Grid.cellRemoved-=OnCellRemoved;
         }
     }
