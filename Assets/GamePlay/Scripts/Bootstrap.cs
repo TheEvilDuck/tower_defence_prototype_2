@@ -13,7 +13,7 @@ namespace GamePlay
     {
         [SerializeField]private float _cameraSpeed = 4f;
         [SerializeField]private LevelData _testLevelData;
-        [SerializeField]private TileControllerData _testTileControllerData;
+        [SerializeField]private TileConfig _tileConfig;
         [SerializeField]Tilemap _groundTileMap;
         private PlayerInput _playerInput;
         private CameraManipulation _cameraManipulation;
@@ -29,7 +29,7 @@ namespace GamePlay
 
             _level = new Level(_testLevelData);
 
-            _tileController = new TileController(_testTileControllerData,_groundTileMap);
+            _tileController = new TileController(_tileConfig,_groundTileMap);
 
             _levelAndTilesMediator = new LevelAndTilesMediator(_tileController,_level);
         }

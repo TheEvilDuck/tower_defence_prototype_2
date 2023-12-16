@@ -273,8 +273,7 @@ MonoBehaviour:
   _cameraSpeed: 0.03
   _testLevelData:
     gridSize: 10
-  _testTileControllerData:
-    groundTileRule: {fileID: 11400000, guid: 91706be1b901b9a4d8166f5dfe2cd251, type: 2}
+  _tileConfig: {fileID: 11400000, guid: 200680631d53efd43b652ee1178f56f8, type: 2}
   _groundTileMap: {fileID: 1049085490}
 --- !u!4 &780897588
 Transform:

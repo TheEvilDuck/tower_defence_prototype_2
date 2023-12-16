@@ -1,0 +1,49 @@
+using GamePlay;
+using Levels.Logic;
+using Levels.TileControl;
+using Services.CameraManipulation;
+using Services.PlayerInput;
+using UnityEngine;
+using UnityEngine.Tilemaps;
+
+namespace LevelEditor
+{
+    public class Bootstrap : MonoBehaviour
+    {
+        [SerializeField]private TileConfig _tileConfig;
+        [SerializeField]private LevelEditorConfig _levelEditorConfig;
+        [SerializeField]private Tilemap _groundTileMap;
+        [SerializeField]private LevelData _testLevelData;
+        [SerializeField]private Transform _backGround;
+
+        private Level _level;
+        private LevelEditor _levelEditor;
+        private PlayerInput _playerInput;
+        private LevelEditorMediator _levelEditorMediator;
+        private TileController _tileController;
+        private CameraManipulation _cameraManipulation;
+        private CameraMediator _cameraMediator;
+
+        private void Awake() 
+        {
+            _level = new Level(_testLevelData);
+            _playerInput = new PlayerInput();
+            _levelEditor = new LevelEditor(_level);
+            _tileController = new TileController(_tileConfig,_groundTileMap);
+            _levelEditorMediator = new LevelEditorMediator(_levelEditor,_playerInput, _level, _tileController,_levelEditorConfig);
+            _cameraManipulation = new CameraManipulation(0.1f, Camera.main);
+            _cameraMediator = new CameraMediator(_playerInput,_cameraManipulation);
+        }
+
+        private void Start() 
+        {
+            _backGround.position = new Vector3(_testLevelData.gridSize/2f,_testLevelData.gridSize/2f);
+            _backGround.localScale = new Vector3(_testLevelData.gridSize,_testLevelData.gridSize);
+        }
+
+        private void Update() 
+        {
+            _playerInput.Update();
+        }
+    }
+}

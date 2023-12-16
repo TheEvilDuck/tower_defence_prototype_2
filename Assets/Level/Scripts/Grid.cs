@@ -10,6 +10,7 @@ namespace Levels.Logic
         private float _cellSize;
 
         public event Action<Vector2Int> cellChanged;
+        public event Action<Vector2Int> cellRemoved;
 
         public Grid(int gridSize, float cellSize)
         {
@@ -17,7 +18,7 @@ namespace Levels.Logic
             _cellSize = cellSize;
         }
 
-        public Vector2Int WorldPositionToGridPosition(Vector3 worldPosition)
+        public Vector2Int WorldPositionToGridPosition(Vector2 worldPosition)
         {
             int x = Mathf.FloorToInt(worldPosition.x/_cellSize);
             int y = Mathf.FloorToInt(worldPosition.y/_cellSize);
@@ -30,11 +31,34 @@ namespace Levels.Logic
             return new Vector2(x,y);
         }
 
-        public void CreateCellAt(Vector2Int position)
+        public bool CreateCellAt(Vector2Int position)
         {
+            if (position.x<0||position.y<0||position.x>=_cells.GetLength(0)||position.y>=_cells.GetLength(1))
+                return false;
+
+            if (_cells[position.x,position.y]!=null)
+                return false;
+
             _cells[position.x,position.y] = new Cell();
 
             cellChanged?.Invoke(position);
+
+            return true;
+        }
+
+        public bool RemoveCellAt(Vector2Int position)
+        {
+            if (position.x<0||position.y<0||position.x>=_cells.GetLength(0)||position.y>=_cells.GetLength(1))
+                return false;
+
+            if (_cells[position.x,position.y]==null)
+                return false;
+
+            _cells[position.x,position.y] = null;
+
+            cellRemoved?.Invoke(position);
+
+            return true;
         }
     }
 }
