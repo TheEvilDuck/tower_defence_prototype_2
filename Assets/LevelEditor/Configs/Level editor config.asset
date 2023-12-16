@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a64c7553923b31148a60c6e3b593f580, type: 3}
   m_Name: Level editor config
   m_EditorClassIdentifier: 
-  <UndoKeyCodes>k__BackingField: 
+  <UndoKeyCodes>k__BackingField: 780000007a000000

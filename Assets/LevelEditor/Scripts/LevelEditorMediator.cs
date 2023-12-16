@@ -16,61 +16,76 @@ namespace LevelEditor
         private PlayerInput _playerInput;
         private Level _level;
         private TileController _tileController;
-        private LevelEditorConfig _levelEditorConfig;
+        private KeyCombinationHandler _undoKeyCombination;
+        private KeyHandler _fillKey;
+        private KeyHandler _drawKey;
+        private CommandFactory _currentCommandFactory;
 
-        public LevelEditorMediator(LevelEditor levelEditor, PlayerInput playerInput, Level level, TileController tileController, LevelEditorConfig levelEditorConfig)
+        public LevelEditorMediator
+        (
+            LevelEditor levelEditor, 
+            PlayerInput playerInput, 
+            Level level, 
+            TileController tileController,
+            KeyCombinationHandler undoKeyCombination, 
+            KeyHandler fillKey,
+            KeyHandler drawKey
+        )
         {
             _levelEditor = levelEditor;
             _playerInput = playerInput;
             _level = level;
             _tileController = tileController;
-            _levelEditorConfig = levelEditorConfig;
+            _undoKeyCombination = undoKeyCombination;
+            _fillKey = fillKey;
+            _drawKey = drawKey;
+
+            _currentCommandFactory = new DrawCommandsFactory(_level.Grid);
         
             _level.Grid.cellChanged+=OnCellChanged;
             _level.Grid.cellRemoved+=OnCellRemoved;
-            _playerInput.mouseLeftClicked+=OnPlayerClickedLeftAt;
-            _playerInput.keyCombinationDown+=OnPlayerInputKeysCombination;
-        }
-
-        private void OnPlayerClickedLeftAt(Vector2 position)
-        {
-            Vector2Int cellId = _level.Grid.WorldPositionToGridPosition(position);
-            ICommand groundCommand = new AddGroundAtCommand(_level.Grid,cellId);
-            _levelEditor.ChangeCurrentCommand(groundCommand);
-            _levelEditor.ExecuteCurrentCommand();
-        }
-
-        private void OnCellChanged(Vector2Int cellId)
-        {
-           _tileController.DrawAt(cellId);
-        }
-
-        private void OnCellRemoved(Vector2Int cellId)
-        {
-            _tileController.RempoveAt(cellId);
-        }
-
-        private void OnPlayerInputKeysCombination(KeyCode[] keys)
-        {
-
-
-            foreach (KeyCode key in _levelEditorConfig.UndoKeyCodes)
-            {
-                if (!keys.Contains(key))
-                    return;
-            }
-
-            
-
-            _levelEditor.UndoLastCommand();
+            _playerInput.mouseLeftHold+=OnPlayerLeftMouseHoldAt;
+            _playerInput.mouseRightHold+=OnPlayerRightMouseHoldAt;
+            _undoKeyCombination.Down+=OnUndoKeyCombinationDown;
+            _fillKey.Down+=OnFillKeyDown;
+            _drawKey.Down+=OnDrawKeyDown;
         }
 
         public void Dispose()
         {
-            _playerInput.mouseLeftClicked-=OnPlayerClickedLeftAt;
+            _playerInput.mouseLeftHold-=OnPlayerLeftMouseHoldAt;
+            _playerInput.mouseRightHold-=OnPlayerRightMouseHoldAt;
             _level.Grid.cellChanged-=OnCellChanged;
-            _playerInput.keyCombinationDown-=OnPlayerInputKeysCombination;
+            _undoKeyCombination.Down-=OnUndoKeyCombinationDown;
             _level.Grid.cellRemoved-=OnCellRemoved;
+            _fillKey.Down-=OnFillKeyDown;
+            _drawKey.Down-=OnDrawKeyDown;
         }
+
+        private void OnPlayerLeftMouseHoldAt(Vector2 position)
+        {
+            Vector2Int cellId = _level.Grid.WorldPositionToGridPosition(position);
+            ICommand groundCommand = _currentCommandFactory.CreateCommandAtCellId(cellId);
+            _levelEditor.ChangeCurrentCommand(groundCommand);
+            _levelEditor.ExecuteCurrentCommand();
+        }
+
+        private void OnPlayerRightMouseHoldAt(Vector2 position)
+        {
+            Vector2Int cellId = _level.Grid.WorldPositionToGridPosition(position);
+            ICommand groundCommand = new DeleteGroundCommand(_level.Grid,cellId);
+            _levelEditor.ChangeCurrentCommand(groundCommand);
+            _levelEditor.ExecuteCurrentCommand();
+        }
+
+        private void OnFillKeyDown() => _currentCommandFactory = new FillCommandsFactory(_level.Grid);
+
+        private void OnDrawKeyDown() =>  _currentCommandFactory = new DrawCommandsFactory(_level.Grid);
+
+        private void OnCellChanged(Vector2Int cellId) => _tileController.DrawAt(cellId);
+
+        private void OnCellRemoved(Vector2Int cellId) => _tileController.RempoveAt(cellId);
+
+        private void OnUndoKeyCombinationDown() => _levelEditor.UndoLastCommand();
     }
 }

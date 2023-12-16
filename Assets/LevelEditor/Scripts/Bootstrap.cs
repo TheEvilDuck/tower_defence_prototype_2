@@ -23,6 +23,9 @@ namespace LevelEditor
         private TileController _tileController;
         private CameraManipulation _cameraManipulation;
         private CameraMediator _cameraMediator;
+        private KeyCombinationHandler _undoKeyCombination;
+        private KeyHandler _fillKey;
+        private KeyHandler _drawKey;
 
         private void Awake() 
         {
@@ -30,7 +33,10 @@ namespace LevelEditor
             _playerInput = new PlayerInput();
             _levelEditor = new LevelEditor(_level);
             _tileController = new TileController(_tileConfig,_groundTileMap);
-            _levelEditorMediator = new LevelEditorMediator(_levelEditor,_playerInput, _level, _tileController,_levelEditorConfig);
+            _undoKeyCombination = new KeyCombinationHandler(_playerInput,_levelEditorConfig.UndoKeyCodes);
+            _fillKey = new KeyHandler(_playerInput,_levelEditorConfig.FillKeyCode);
+            _drawKey = new KeyHandler(_playerInput,_levelEditorConfig.DrawKeyCode);
+            _levelEditorMediator = new LevelEditorMediator(_levelEditor,_playerInput, _level, _tileController,_undoKeyCombination, _fillKey,_drawKey);
             _cameraManipulation = new CameraManipulation(0.1f, Camera.main);
             _cameraMediator = new CameraMediator(_playerInput,_cameraManipulation);
         }
@@ -39,6 +45,15 @@ namespace LevelEditor
         {
             _backGround.position = new Vector3(_testLevelData.gridSize/2f,_testLevelData.gridSize/2f);
             _backGround.localScale = new Vector3(_testLevelData.gridSize,_testLevelData.gridSize);
+        }
+
+        private void OnDestroy() 
+        {
+            _undoKeyCombination.Dispose();
+            _fillKey.Dispose();
+            _drawKey.Dispose();
+            _cameraMediator.Dispose();
+            _levelEditorMediator.Dispose();
         }
 
         private void Update() 
