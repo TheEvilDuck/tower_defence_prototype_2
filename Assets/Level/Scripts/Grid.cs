@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Levels.Logic
@@ -17,6 +18,47 @@ namespace Levels.Logic
         {
             _cells = new Cell[gridSize,gridSize];
             _cellSize = cellSize;
+        }
+
+        public Grid(GridData gridData, float cellSize)
+        {
+            _cells = new Cell[gridData.gridSize,gridData.gridSize];
+            _cellSize = cellSize;
+
+            foreach (int index in gridData.cellsIndexes)
+                CreateCellAt(ConvertIntToVector2Int(index,gridData.gridSize));
+
+            foreach(int roadIndex in gridData.roadIndexes)
+                BuildRoadAt(ConvertIntToVector2Int(roadIndex,gridData.gridSize));
+        }
+
+        public GridData ConvertToGridData()
+        {
+            GridData gridData = new GridData();
+            gridData.gridSize = _cells.GetLength(0);
+            
+            List<int>cellIndexes = new List<int>();
+            List<int>roadIndexes = new List<int>();
+
+            for (int x = 0;x<gridData.gridSize;x++)
+            {
+                for (int y = 0; y< gridData.gridSize; y++)
+                {
+                    if (_cells[x,y]!=null)
+                    {
+                        int index = (x*gridData.gridSize)+y;
+                        cellIndexes.Add(index);
+
+                        if (_cells[x,y].HasRoad)
+                            roadIndexes.Add(index);
+                    }
+                }
+            }
+
+            gridData.cellsIndexes = cellIndexes.ToArray();
+            gridData.roadIndexes = roadIndexes.ToArray();
+
+            return gridData;
         }
 
         public Vector2Int WorldPositionToGridPosition(Vector2 worldPosition)
@@ -89,6 +131,14 @@ namespace Levels.Logic
             cellRemoved?.Invoke(position);
 
             return true;
+        }
+
+        private Vector2Int ConvertIntToVector2Int(int index, int gridSize)
+        {
+            int x = (index/gridSize);
+            int y = (index%gridSize);
+
+            return new Vector2Int(x,y);
         }
     }
 }

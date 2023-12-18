@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using GamePlay;
+using LevelEditor.UI;
 using Levels.Logic;
 using Levels.TileControl;
 using Services.PlayerInput;
@@ -16,10 +17,13 @@ namespace LevelEditor
         private PlayerInput _playerInput;
         private Level _level;
         private TileController _tileController;
+        private LevelIconMaker _levelIconMaker;
         private KeyCombinationHandler _undoKeyCombination;
+        private KeyCombinationHandler _saveKeyCombination;
         private KeyHandler _fillKey;
         private KeyHandler _drawKey;
         private CommandFactory _currentCommandFactory;
+        private LevelSavingUI _levelSavingUI;
 
         public LevelEditorMediator
         (
@@ -28,8 +32,10 @@ namespace LevelEditor
             Level level, 
             TileController tileController,
             KeyCombinationHandler undoKeyCombination, 
+            KeyCombinationHandler saveKeyCombination,
             KeyHandler fillKey,
-            KeyHandler drawKey
+            KeyHandler drawKey,
+            LevelSavingUI levelSavingUI
         )
         {
             _levelEditor = levelEditor;
@@ -37,17 +43,21 @@ namespace LevelEditor
             _level = level;
             _tileController = tileController;
             _undoKeyCombination = undoKeyCombination;
+            _saveKeyCombination = saveKeyCombination;
             _fillKey = fillKey;
             _drawKey = drawKey;
+            _levelSavingUI = levelSavingUI;
 
             _currentCommandFactory = new DrawCommandsFactory(_level.Grid);
         
             _level.Grid.cellChanged+=OnCellChanged;
             _level.Grid.cellRemoved+=OnCellRemoved;
             _level.Grid.cellAdded+=OnCellAdded;
+            _levelEditor.LevelSaved+=OnLevelSaved;
             _playerInput.mouseLeftHold+=OnPlayerLeftMouseHoldAt;
             _playerInput.mouseRightHold+=OnPlayerRightMouseHoldAt;
             _undoKeyCombination.Down+=OnUndoKeyCombinationDown;
+            _saveKeyCombination.Down+=OnSaveKeyCombinationDown;
             _fillKey.Down+=OnFillKeyDown;
             _drawKey.Down+=OnDrawKeyDown;
         }
@@ -58,10 +68,12 @@ namespace LevelEditor
             _playerInput.mouseRightHold-=OnPlayerRightMouseHoldAt;
             _level.Grid.cellChanged-=OnCellChanged;
             _undoKeyCombination.Down-=OnUndoKeyCombinationDown;
+            _saveKeyCombination.Down-=OnSaveKeyCombinationDown;
             _level.Grid.cellRemoved-=OnCellRemoved;
             _fillKey.Down-=OnFillKeyDown;
             _drawKey.Down-=OnDrawKeyDown;
             _level.Grid.cellAdded-=OnCellAdded;
+            _levelEditor.LevelSaved-=OnLevelSaved;
         }
 
         private void OnPlayerLeftMouseHoldAt(Vector2 position)
@@ -103,6 +115,16 @@ namespace LevelEditor
             _tileController.RemoveRoadAt(cellId);
         }
 
+        private void OnLevelSaved()
+        {
+            _levelSavingUI.OnSaveComplete();
+        }
+
         private void OnUndoKeyCombinationDown() => _levelEditor.UndoLastCommand();
+        private void OnSaveKeyCombinationDown()
+        {
+            _levelEditor.SaveLevel();
+            _levelSavingUI.Show();
+        }
     }
 }

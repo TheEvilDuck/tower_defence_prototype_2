@@ -9,14 +9,16 @@ namespace Levels.Logic
 
         public Level(LevelData levelData)
         {
-            Grid = new Grid(levelData.gridSize, 1f);
+            Grid = new Grid(levelData.gridData, 1f);
         }
 
-        public void Test()
+        public LevelData ConvertToLevelData()
         {
-            Grid.CreateCellAt(new Vector2Int(0,0));
-            Grid.CreateCellAt(new Vector2Int(1,0));
-            Grid.CreateCellAt(new Vector2Int(2,0));
+            LevelData levelData = new LevelData();
+            levelData.startMoney = 100;
+            levelData.gridData = Grid.ConvertToGridData();
+
+            return levelData;
         }
     }
 }

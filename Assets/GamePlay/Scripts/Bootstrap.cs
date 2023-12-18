@@ -37,7 +37,7 @@ namespace GamePlay
 
         private void Start() 
         {
-            _level.Test();
+            //_level.Test();
         }
 
         private void OnDestroy() 

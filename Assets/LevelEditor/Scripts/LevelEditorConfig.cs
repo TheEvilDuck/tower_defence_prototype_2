@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace LevelEditor
@@ -10,5 +8,6 @@ namespace LevelEditor
         [field: SerializeField]public KeyCode[] UndoKeyCodes {get; private set;}
         [field: SerializeField]public KeyCode FillKeyCode {get; private set;}
         [field: SerializeField]public KeyCode DrawKeyCode {get; private set;}
+        [field: SerializeField]public KeyCode[] SaveKeyCodes {get; private set;}
     }
 }
