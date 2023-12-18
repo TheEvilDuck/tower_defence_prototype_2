@@ -44,6 +44,7 @@ namespace LevelEditor
         
             _level.Grid.cellChanged+=OnCellChanged;
             _level.Grid.cellRemoved+=OnCellRemoved;
+            _level.Grid.cellAdded+=OnCellAdded;
             _playerInput.mouseLeftHold+=OnPlayerLeftMouseHoldAt;
             _playerInput.mouseRightHold+=OnPlayerRightMouseHoldAt;
             _undoKeyCombination.Down+=OnUndoKeyCombinationDown;
@@ -60,6 +61,7 @@ namespace LevelEditor
             _level.Grid.cellRemoved-=OnCellRemoved;
             _fillKey.Down-=OnFillKeyDown;
             _drawKey.Down-=OnDrawKeyDown;
+            _level.Grid.cellAdded-=OnCellAdded;
         }
 
         private void OnPlayerLeftMouseHoldAt(Vector2 position)
@@ -82,9 +84,24 @@ namespace LevelEditor
 
         private void OnDrawKeyDown() =>  _currentCommandFactory = new DrawCommandsFactory(_level.Grid);
 
-        private void OnCellChanged(Vector2Int cellId) => _tileController.DrawAt(cellId);
+        private void OnCellChanged(Vector2Int cellId, Cell cell)
+        {
+            if (cell.HasRoad)
+                _tileController.DrawRoadAt(cellId);
+            else
+                _tileController.RemoveRoadAt(cellId);
+        }
 
-        private void OnCellRemoved(Vector2Int cellId) => _tileController.RempoveAt(cellId);
+        private void OnCellAdded(Vector2Int cellId)
+        {
+            _tileController.DrawAt(cellId);
+        }
+
+        private void OnCellRemoved(Vector2Int cellId)
+        {
+            _tileController.RempoveAt(cellId);
+            _tileController.RemoveRoadAt(cellId);
+        }
 
         private void OnUndoKeyCombinationDown() => _levelEditor.UndoLastCommand();
     }

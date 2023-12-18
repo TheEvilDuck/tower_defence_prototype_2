@@ -13,3 +13,4 @@ MonoBehaviour:
   m_Name: TileConfig
   m_EditorClassIdentifier: 
   <GroundTile>k__BackingField: {fileID: 11400000, guid: 91706be1b901b9a4d8166f5dfe2cd251, type: 2}
+  <RoadTile>k__BackingField: {fileID: 11400000, guid: c3f9ff6388d79c34ab6f61f4c5f75f97, type: 2}

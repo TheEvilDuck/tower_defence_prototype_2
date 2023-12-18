@@ -5,4 +5,5 @@ using UnityEngine.Tilemaps;
 public class TileConfig : ScriptableObject
 {
     [field: SerializeField]public TileBase GroundTile {get; private set;} 
+    [field: SerializeField]public TileBase RoadTile {get; private set;} 
 }

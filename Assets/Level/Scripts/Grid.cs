@@ -9,7 +9,8 @@ namespace Levels.Logic
 
         private float _cellSize;
 
-        public event Action<Vector2Int> cellChanged;
+        public event Action<Vector2Int,Cell> cellChanged;
+        public event Action<Vector2Int>cellAdded;
         public event Action<Vector2Int> cellRemoved;
 
         public Grid(int gridSize, float cellSize)
@@ -39,11 +40,40 @@ namespace Levels.Logic
             if (_cells[position.x,position.y]!=null)
                 return false;
 
-            _cells[position.x,position.y] = new Cell();
+            Cell cell= new Cell();
 
-            cellChanged?.Invoke(position);
+            cellAdded?.Invoke(position);
+
+            cell.cellChanged+= () =>
+            {
+                cellChanged?.Invoke(position,cell);
+            };
+
+            _cells[position.x,position.y] = cell;
 
             return true;
+        }
+
+        public void BuildRoadAt(Vector2Int position)
+        {
+            if (position.x<0||position.y<0||position.x>=_cells.GetLength(0)||position.y>=_cells.GetLength(1))
+                return;
+
+            if (_cells[position.x,position.y]!=null)
+                return;
+
+            _cells[position.x,position.y].BuildRoad();
+        }
+
+        public void RemoveRoadAt(Vector2Int position)
+        {
+            if (position.x<0||position.y<0||position.x>=_cells.GetLength(0)||position.y>=_cells.GetLength(1))
+                return;
+
+            if (_cells[position.x,position.y]!=null)
+                return;
+
+            _cells[position.x,position.y].RemoveRoad();
         }
 
         public bool RemoveCellAt(Vector2Int position)

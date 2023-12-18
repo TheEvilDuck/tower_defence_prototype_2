@@ -13,3 +13,5 @@ MonoBehaviour:
   m_Name: Level editor config
   m_EditorClassIdentifier: 
   <UndoKeyCodes>k__BackingField: 780000007a000000
+  <FillKeyCode>k__BackingField: 50
+  <DrawKeyCode>k__BackingField: 49

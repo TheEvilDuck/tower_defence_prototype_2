@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using Levels.Logic;
 using Levels.TileControl;
 using UnityEngine;
@@ -24,7 +22,7 @@ namespace GamePlay
             _level.Grid.cellChanged-=OnLevelCellChanged;
         }
 
-        private void OnLevelCellChanged(Vector2Int cellPosition)
+        private void OnLevelCellChanged(Vector2Int cellPosition, Cell cell)
         {
             _tileController.DrawAt(cellPosition);
         }

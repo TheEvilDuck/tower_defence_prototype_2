@@ -13,6 +13,7 @@ namespace LevelEditor
         [SerializeField]private TileConfig _tileConfig;
         [SerializeField]private LevelEditorConfig _levelEditorConfig;
         [SerializeField]private Tilemap _groundTileMap;
+        [SerializeField]private Tilemap _roadTileMap;
         [SerializeField]private LevelData _testLevelData;
         [SerializeField]private Transform _backGround;
 
@@ -32,7 +33,7 @@ namespace LevelEditor
             _level = new Level(_testLevelData);
             _playerInput = new PlayerInput();
             _levelEditor = new LevelEditor(_level);
-            _tileController = new TileController(_tileConfig,_groundTileMap);
+            _tileController = new TileController(_tileConfig,_groundTileMap,_roadTileMap);
             _undoKeyCombination = new KeyCombinationHandler(_playerInput,_levelEditorConfig.UndoKeyCodes);
             _fillKey = new KeyHandler(_playerInput,_levelEditorConfig.FillKeyCode);
             _drawKey = new KeyHandler(_playerInput,_levelEditorConfig.DrawKeyCode);

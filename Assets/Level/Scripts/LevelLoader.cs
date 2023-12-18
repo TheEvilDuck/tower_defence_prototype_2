@@ -24,7 +24,7 @@ namespace Levels.Logic
             return true;
         }
 
-        public async void SaveLevel(string levelName, LevelData levelData, Action onLevelSave, Action onLevelSaveFailed)
+        public async void SaveLevel(string levelName, LevelData levelData, Action onLevelSave, Action OnLevelSaveFailed)
         {
             try
             {
@@ -33,7 +33,7 @@ namespace Levels.Logic
             }
             catch(IOException exception)
             {
-                onLevelSaveFailed?.Invoke();
+                OnLevelSaveFailed?.Invoke();
                 throw exception;
             }
             
@@ -41,6 +41,9 @@ namespace Levels.Logic
 
         public bool LevelExists(string levelName)
         {
+            if (levelName==string.Empty)
+                return false;
+
             return File.Exists(GetFullLevelPath(levelName));
         }
 

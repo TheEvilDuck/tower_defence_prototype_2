@@ -185,6 +185,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ed1cda036407bb4418daa69171964c96, type: 3}
+--- !u!1839735485 &1179838658 stripped
+Tilemap:
+  m_CorrespondingSourceObject: {fileID: 8336961952318887374, guid: ed1cda036407bb4418daa69171964c96, type: 3}
+  m_PrefabInstance: {fileID: 698402036}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1395947058
 GameObject:
   m_ObjectHideFlags: 0
@@ -333,7 +338,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _tileConfig: {fileID: 11400000, guid: 200680631d53efd43b652ee1178f56f8, type: 2}
+  _levelEditorConfig: {fileID: 11400000, guid: 6a5e036ad6e9e3e4e8b5c86970852485, type: 2}
   _groundTileMap: {fileID: 547901610}
+  _roadTileMap: {fileID: 1179838658}
   _testLevelData:
     gridSize: 10
   _backGround: {fileID: 1957862816}

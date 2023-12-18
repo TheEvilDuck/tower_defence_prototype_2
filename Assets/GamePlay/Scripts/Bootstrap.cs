@@ -15,6 +15,7 @@ namespace GamePlay
         [SerializeField]private LevelData _testLevelData;
         [SerializeField]private TileConfig _tileConfig;
         [SerializeField]Tilemap _groundTileMap;
+        [SerializeField]Tilemap _roadTileMap;
         private PlayerInput _playerInput;
         private CameraManipulation _cameraManipulation;
         private CameraMediator _cameraMediator;
@@ -29,7 +30,7 @@ namespace GamePlay
 
             _level = new Level(_testLevelData);
 
-            _tileController = new TileController(_tileConfig,_groundTileMap);
+            _tileController = new TileController(_tileConfig,_groundTileMap,_roadTileMap);
 
             _levelAndTilesMediator = new LevelAndTilesMediator(_tileController,_level);
         }
