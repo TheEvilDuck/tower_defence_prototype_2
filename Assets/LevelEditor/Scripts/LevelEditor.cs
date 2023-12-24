@@ -54,13 +54,18 @@ namespace LevelEditor
             _currentCommand = newCommand;
         }
 
+        public void AddExecutedCommand(ICommand command)
+        {
+            _performedCommands.Push(command);
+        }
+
         public async void SaveLevel()
         {
             Debug.Log("Level is saving...");
-            await _levelLoader.SaveLevel("test",_level.ConvertToLevelData(),OnLevelSave,OnLevelSaveFailed);
+            await _levelLoader.SaveLevel("test",_level.ConvertToLevelData(),OnLevelSaved,OnLevelSaveFailed);
         }
 
-        private async void OnLevelSave()
+        private async void OnLevelSaved()
         {
             Debug.Log("Level saved");
             await _levelLoader.CreateLevelIcon("test",_levelIconMaker.MakeLevelIcon(),OnLevelIconCreated);

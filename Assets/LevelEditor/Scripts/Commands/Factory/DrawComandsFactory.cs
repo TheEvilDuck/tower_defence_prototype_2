@@ -5,15 +5,13 @@ namespace LevelEditor
 {
     public class DrawCommandsFactory : CommandFactory
     {
-        private Grid _grid;
-
-        public DrawCommandsFactory(Grid grid)
+        public DrawCommandsFactory(Grid grid) : base(grid)
         {
-            _grid = grid;
         }
-        public override ICommand CreateCommandAtCellId(Vector2Int position)
+
+        public override ICommand CreateCommandAtCell(Vector2Int position)
         {
-            return new AddGroundAtCommand(_grid,position);
+            return new AddGroundAtCommand(_grid, position);
         }
     }
 }

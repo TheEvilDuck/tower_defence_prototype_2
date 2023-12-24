@@ -16,3 +16,5 @@ MonoBehaviour:
   <FillKeyCode>k__BackingField: 50
   <DrawKeyCode>k__BackingField: 49
   <SaveKeyCodes>k__BackingField: 7300000078000000
+  <AddGroundKeyCode>k__BackingField: 51
+  <DeleteGroundKeyCode>k__BackingField: 52

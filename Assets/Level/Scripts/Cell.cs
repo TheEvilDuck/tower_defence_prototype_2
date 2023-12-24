@@ -2,7 +2,7 @@ using System;
 
 namespace Levels.Logic
 {
-    public class Cell
+    public class Cell: IDisposable
     {
         public event Action cellChanged;
 
@@ -24,6 +24,11 @@ namespace Levels.Logic
 
             HasRoad = false;
             cellChanged?.Invoke();
+        }
+
+        public void Dispose()
+        {
+            cellChanged = null;
         }
     }
 }

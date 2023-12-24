@@ -20,11 +20,8 @@ namespace Levels.Logic
             _cellSize = cellSize;
         }
 
-        public Grid(GridData gridData, float cellSize)
+        public void FillFromGridData(GridData gridData)
         {
-            _cells = new Cell[gridData.gridSize,gridData.gridSize];
-            _cellSize = cellSize;
-
             foreach (int index in gridData.cellsIndexes)
                 CreateCellAt(ConvertIntToVector2Int(index,gridData.gridSize));
 
@@ -74,12 +71,25 @@ namespace Levels.Logic
             return new Vector2(x,y);
         }
 
-        public bool CreateCellAt(Vector2Int position)
+        public bool IsPositionValid(Vector2Int position)
         {
-            if (position.x<0||position.y<0||position.x>=_cells.GetLength(0)||position.y>=_cells.GetLength(1))
+            return position.x>=0&&position.y>=0&&position.x<_cells.GetLength(0)&&position.y<_cells.GetLength(1);
+        }
+
+        public bool IsCellAt(Vector2Int position)
+        {
+            if (!IsPositionValid(position))
                 return false;
 
-            if (_cells[position.x,position.y]!=null)
+            return !(_cells[position.x,position.y]==null);
+        }
+
+        public bool CreateCellAt(Vector2Int position)
+        {
+            if (!IsPositionValid(position))
+                return false;
+
+            if (IsCellAt(position))
                 return false;
 
             Cell cell= new Cell();
@@ -92,16 +102,17 @@ namespace Levels.Logic
             };
 
             _cells[position.x,position.y] = cell;
+            Debug.Log("AAA");
 
             return true;
         }
 
         public void BuildRoadAt(Vector2Int position)
         {
-            if (position.x<0||position.y<0||position.x>=_cells.GetLength(0)||position.y>=_cells.GetLength(1))
+            if (!IsPositionValid(position))
                 return;
 
-            if (_cells[position.x,position.y]!=null)
+            if (!IsCellAt(position))
                 return;
 
             _cells[position.x,position.y].BuildRoad();
@@ -109,10 +120,10 @@ namespace Levels.Logic
 
         public void RemoveRoadAt(Vector2Int position)
         {
-            if (position.x<0||position.y<0||position.x>=_cells.GetLength(0)||position.y>=_cells.GetLength(1))
+            if (!IsPositionValid(position))
                 return;
 
-            if (_cells[position.x,position.y]!=null)
+            if (!IsCellAt(position))
                 return;
 
             _cells[position.x,position.y].RemoveRoad();
@@ -120,13 +131,17 @@ namespace Levels.Logic
 
         public bool RemoveCellAt(Vector2Int position)
         {
-            if (position.x<0||position.y<0||position.x>=_cells.GetLength(0)||position.y>=_cells.GetLength(1))
+            if (!IsPositionValid(position))
                 return false;
 
             if (_cells[position.x,position.y]==null)
                 return false;
 
+            Debug.Log(_cells[position.x,position.y]);
+
+            _cells[position.x,position.y].Dispose();
             _cells[position.x,position.y] = null;
+            Debug.Log(_cells[position.x,position.y]);
 
             cellRemoved?.Invoke(position);
 

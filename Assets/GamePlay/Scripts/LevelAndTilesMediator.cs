@@ -15,14 +15,14 @@ namespace GamePlay
             _tileController = tileController;
             _level = level;
 
-            _level.Grid.cellChanged+=OnLevelCellChanged;
+            _level.Grid.cellAdded+=OnLevelCellAdded;
         }
         public void Dispose()
         {
-            _level.Grid.cellChanged-=OnLevelCellChanged;
+            _level.Grid.cellAdded-=OnLevelCellAdded;
         }
 
-        private void OnLevelCellChanged(Vector2Int cellPosition, Cell cell)
+        private void OnLevelCellAdded(Vector2Int cellPosition)
         {
             _tileController.DrawAt(cellPosition);
         }

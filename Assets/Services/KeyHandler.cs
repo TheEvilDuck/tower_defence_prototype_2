@@ -3,13 +3,13 @@ using UnityEngine;
 
 namespace Services.PlayerInput
 {
-    public class KeyHandler: IDisposable
+    public class KeyHandler: IDisposable,IPlayerInputWatcher
     {
         public event Action Down;
         public event Action Hold;
 
-        private KeyCode _key;
-        private PlayerInput _playerInput;
+        private readonly KeyCode _key;
+        private readonly PlayerInput _playerInput;
 
         public KeyHandler(PlayerInput playerInput, KeyCode key)
         {

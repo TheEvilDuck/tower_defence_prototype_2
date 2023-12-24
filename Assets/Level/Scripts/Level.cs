@@ -9,7 +9,7 @@ namespace Levels.Logic
 
         public Level(LevelData levelData)
         {
-            Grid = new Grid(levelData.gridData, 1f);
+            Grid = new Grid(levelData.gridData.gridSize, 1f);
         }
 
         public LevelData ConvertToLevelData()

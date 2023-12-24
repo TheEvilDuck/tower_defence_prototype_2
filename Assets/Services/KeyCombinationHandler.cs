@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Services.PlayerInput
 {
-    public class KeyCombinationHandler: IDisposable
+    public class KeyCombinationHandler: IDisposable,IPlayerInputWatcher
     {
         public event Action Down;
         public event Action Hold;

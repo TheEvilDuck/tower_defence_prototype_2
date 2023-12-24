@@ -9,5 +9,7 @@ namespace LevelEditor
         [field: SerializeField]public KeyCode FillKeyCode {get; private set;}
         [field: SerializeField]public KeyCode DrawKeyCode {get; private set;}
         [field: SerializeField]public KeyCode[] SaveKeyCodes {get; private set;}
+        [field: SerializeField]public KeyCode AddGroundKeyCode {get; private set;}
+        [field: SerializeField]public KeyCode DeleteGroundKeyCode {get; private set;}
     }
 }

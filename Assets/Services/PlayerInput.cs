@@ -9,8 +9,11 @@ namespace Services.PlayerInput
         public event Action<Vector2> mouseLeftClicked;
         public event Action<Vector2> mouseRightClicked;
         public event Action<Vector2> mouseLeftHold;
-        public event Action<Vector2>mouseRightHold;
+        public event Action<Vector2> mouseRightHold;
+        public event Action<Vector2> mouseLeftUp;
+        public event Action<Vector2> mouseRightUp;
         public event Action<Vector2> movementInput;
+        public event Action<Vector2> mousePositionChanged;
         public event Action<KeyCode[]>keysCombinationHold;
         public event Action<KeyCode[]>keyCombinationDown;
         public event Action<KeyCode>keyHold;
@@ -43,6 +46,8 @@ namespace Services.PlayerInput
 
             Vector2 mouseScreenPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
+            mousePositionChanged?.Invoke(mouseScreenPosition);
+
             if (Input.GetMouseButtonDown(0))
                 mouseLeftClicked?.Invoke(mouseScreenPosition);
 
@@ -54,6 +59,13 @@ namespace Services.PlayerInput
 
             if (Input.GetMouseButton(1))
                 mouseRightHold?.Invoke(mouseScreenPosition);
+
+            if (Input.GetMouseButtonUp(0))
+                mouseLeftUp?.Invoke(mouseScreenPosition);
+
+            if (Input.GetMouseButtonUp(1))
+                mouseRightUp?.Invoke(mouseScreenPosition);
+
 
             foreach (KeyCode key in WATCHED_KEYS)
             {
@@ -75,8 +87,10 @@ namespace Services.PlayerInput
                     if (_currentCombination.Contains(key))
                         _currentCombination.Remove(key);
 
-                    keyHold?.Invoke(key);
                 }
+
+                if (Input.GetKey(key))
+                    keyHold?.Invoke(key);
             }
 
             if (_currentCombination.Count>0)

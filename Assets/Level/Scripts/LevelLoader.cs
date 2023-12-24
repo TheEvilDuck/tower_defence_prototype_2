@@ -25,7 +25,8 @@ namespace Levels.Logic
 
             try
             {
-                levelData = JsonUtility.FromJson<LevelData>(GetFullLevelPath(levelName));
+                string json = File.ReadAllText(GetFullLevelPath(levelName));
+                levelData = JsonUtility.FromJson<LevelData>(json);
                 return true;
             }
             catch(IOException exception)

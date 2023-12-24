@@ -1,8 +1,5 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using GamePlay;
+using LevelEditor.Selectors;
 using LevelEditor.UI;
 using Levels.Logic;
 using Levels.TileControl;
@@ -22,8 +19,15 @@ namespace LevelEditor
         private KeyCombinationHandler _saveKeyCombination;
         private KeyHandler _fillKey;
         private KeyHandler _drawKey;
-        private CommandFactory _currentCommandFactory;
+        private KeyHandler _drawToolKey;
+        private KeyHandler _eraseToolKey;
         private LevelSavingUI _levelSavingUI;
+        private Tool _drawTool;
+        private Tool _eraseTool;
+        private Tool _currentTool;
+        private FillSelector _fillSelector;
+        private BrushSelector _brushSelector;
+        private ISelector _currentSelector;
 
         public LevelEditorMediator
         (
@@ -35,7 +39,13 @@ namespace LevelEditor
             KeyCombinationHandler saveKeyCombination,
             KeyHandler fillKey,
             KeyHandler drawKey,
-            LevelSavingUI levelSavingUI
+            KeyHandler drawToolKey,
+            KeyHandler eraseToolKey,
+            LevelSavingUI levelSavingUI,
+            Tool drawTool,
+            Tool eraseTool,
+            FillSelector fillSelector,
+            BrushSelector brushSelector
         )
         {
             _levelEditor = levelEditor;
@@ -46,55 +56,85 @@ namespace LevelEditor
             _saveKeyCombination = saveKeyCombination;
             _fillKey = fillKey;
             _drawKey = drawKey;
+            _drawToolKey = drawToolKey;
+            _eraseToolKey = eraseToolKey;
             _levelSavingUI = levelSavingUI;
+            _drawTool = drawTool;
+            _eraseTool = eraseTool;
+            _fillSelector = fillSelector;
+            _brushSelector = brushSelector;
 
-            _currentCommandFactory = new DrawCommandsFactory(_level.Grid);
+            _currentTool = _drawTool;
+            _currentTool.usingCompleted+=OnToolUsingCompleted;
+            _currentSelector = _brushSelector;
+            _currentSelector.Enable();
+            _currentTool.ChangeSelector(_currentSelector);
         
             _level.Grid.cellChanged+=OnCellChanged;
             _level.Grid.cellRemoved+=OnCellRemoved;
             _level.Grid.cellAdded+=OnCellAdded;
             _levelEditor.LevelSaved+=OnLevelSaved;
-            _playerInput.mouseLeftHold+=OnPlayerLeftMouseHoldAt;
-            _playerInput.mouseRightHold+=OnPlayerRightMouseHoldAt;
             _undoKeyCombination.Down+=OnUndoKeyCombinationDown;
             _saveKeyCombination.Down+=OnSaveKeyCombinationDown;
-            _fillKey.Down+=OnFillKeyDown;
             _drawKey.Down+=OnDrawKeyDown;
+            _fillKey.Down+=OnFillKeyDown;
+            _drawToolKey.Down+=OnDrawToolKeyDown;
+            _eraseToolKey.Down+=OnEraseToolKeyDown;
         }
 
         public void Dispose()
         {
-            _playerInput.mouseLeftHold-=OnPlayerLeftMouseHoldAt;
-            _playerInput.mouseRightHold-=OnPlayerRightMouseHoldAt;
             _level.Grid.cellChanged-=OnCellChanged;
             _undoKeyCombination.Down-=OnUndoKeyCombinationDown;
             _saveKeyCombination.Down-=OnSaveKeyCombinationDown;
             _level.Grid.cellRemoved-=OnCellRemoved;
-            _fillKey.Down-=OnFillKeyDown;
-            _drawKey.Down-=OnDrawKeyDown;
             _level.Grid.cellAdded-=OnCellAdded;
             _levelEditor.LevelSaved-=OnLevelSaved;
+            _drawKey.Down-=OnDrawKeyDown;
+            _fillKey.Down-=OnFillKeyDown;
+            _drawToolKey.Down-=OnDrawToolKeyDown;
+            _eraseToolKey.Down-=OnEraseToolKeyDown;
+            _currentTool.usingCompleted-=OnToolUsingCompleted;
         }
 
-        private void OnPlayerLeftMouseHoldAt(Vector2 position)
+        private void OnFillKeyDown()
         {
-            Vector2Int cellId = _level.Grid.WorldPositionToGridPosition(position);
-            ICommand groundCommand = _currentCommandFactory.CreateCommandAtCellId(cellId);
-            _levelEditor.ChangeCurrentCommand(groundCommand);
-            _levelEditor.ExecuteCurrentCommand();
+            _currentSelector.Disable();
+            _currentSelector = _fillSelector;
+            _currentSelector.Enable();
+            _currentTool.ChangeSelector(_currentSelector);
         }
 
-        private void OnPlayerRightMouseHoldAt(Vector2 position)
+        private void OnDrawKeyDown()
         {
-            Vector2Int cellId = _level.Grid.WorldPositionToGridPosition(position);
-            ICommand groundCommand = new DeleteGroundCommand(_level.Grid,cellId);
-            _levelEditor.ChangeCurrentCommand(groundCommand);
-            _levelEditor.ExecuteCurrentCommand();
+            _currentSelector.Disable();
+            _currentSelector = _brushSelector;
+            _currentSelector.Enable();
+            _currentTool.ChangeSelector(_currentSelector);
+        } 
+
+        private void OnDrawToolKeyDown()
+        {
+            _currentTool.usingCompleted-=OnToolUsingCompleted;
+            _currentTool.ChangeSelector(null);
+            _currentTool = _drawTool;
+            _currentTool.usingCompleted+=OnToolUsingCompleted;
+            _currentTool.ChangeSelector(_currentSelector);
         }
 
-        private void OnFillKeyDown() => _currentCommandFactory = new FillCommandsFactory(_level.Grid);
+        private void OnEraseToolKeyDown()
+        {
+            _currentTool.usingCompleted-=OnToolUsingCompleted;
+            _currentTool.ChangeSelector(null);
+            _currentTool = _eraseTool;
+            _currentTool.usingCompleted+=OnToolUsingCompleted;
+            _currentTool.ChangeSelector(_currentSelector);
+        }
 
-        private void OnDrawKeyDown() =>  _currentCommandFactory = new DrawCommandsFactory(_level.Grid);
+        private void OnToolUsingCompleted(ICommand resultCommand)
+        {
+            _levelEditor.AddExecutedCommand(resultCommand);
+        }
 
         private void OnCellChanged(Vector2Int cellId, Cell cell)
         {
