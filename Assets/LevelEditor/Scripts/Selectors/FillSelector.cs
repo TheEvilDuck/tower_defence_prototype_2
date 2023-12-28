@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using Services.PlayerInput;
 using UnityEngine;
@@ -9,7 +8,7 @@ namespace LevelEditor.Selectors
 {
     public class FillSelector : IDisposable, ISelector
     {
-        public event Action<Vector2Int> selectedCellsChanged;
+        public event Action<Vector2Int, bool> selectedCellsChanged;
         public event Action cellsSelected;
         public event Action<Vector2Int> selectionStarted;
 
@@ -46,27 +45,29 @@ namespace LevelEditor.Selectors
             _selectedCells.Clear();
             Vector2Int cellPosition = _grid.WorldPositionToGridPosition(mousePosition);
 
-            if (!_grid.IsPositionValid(cellPosition)||_grid.IsCellAt(cellPosition))
+            if (!_grid.IsPositionValid(cellPosition))
                 return;
+
+            bool referenceCellType = _grid.IsCellAt(cellPosition);
 
             selectionStarted?.Invoke(cellPosition);
 
             _selectedCells.Add(cellPosition);
 
-            SelectCellsAround(cellPosition);
+            SelectCellsAround(cellPosition,referenceCellType);
             cellsSelected?.Invoke();
 
         }
 
-        private void SelectCellsAround(Vector2Int center)
+        private void SelectCellsAround(Vector2Int center, bool referenceCellType)
         {
             foreach (Vector2Int direction in _directions)
             {
-                if (!_selectedCells.Contains(center+direction)&&_grid.IsPositionValid(center+direction)&&!_grid.IsCellAt(center+direction))
+                if (!_selectedCells.Contains(center+direction)&&_grid.IsPositionValid(center+direction)&&_grid.IsCellAt(center+direction)==referenceCellType)
                 {
                     _selectedCells.Add(center+direction);
-                    selectedCellsChanged?.Invoke(center+direction);
-                    SelectCellsAround(center+direction);
+                    selectedCellsChanged?.Invoke(center+direction, true);
+                    SelectCellsAround(center+direction,referenceCellType);
                 }
             }
         }

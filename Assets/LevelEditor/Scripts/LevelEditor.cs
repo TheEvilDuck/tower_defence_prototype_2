@@ -2,21 +2,23 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using LevelEditor.Selectors;
 using Levels.Logic;
 using UnityEngine;
 
 namespace LevelEditor
 {
-    public class LevelEditor
+    public class LevelEditor: IDisposable
     {
         public event Action LevelSaved;
 
         private const int MAX_COMMANDS_BUFFER = 50;
         private Level _level;
         private Stack<ICommand>_performedCommands;
-        private ICommand _currentCommand;
         private LevelLoader _levelLoader;
         private LevelIconMaker _levelIconMaker;
+        private ISelector _currentSelector;
+        private Tool _currentTool;
 
         public LevelEditor(Level level, LevelIconMaker levelIconMaker)
         {
@@ -27,15 +29,27 @@ namespace LevelEditor
             _performedCommands = new Stack<ICommand>(MAX_COMMANDS_BUFFER);
         }
 
-        public void ExecuteCurrentCommand()
+        public void ChangeSelector(ISelector newSelector)
         {
-            if (_currentCommand!=null)
-            {
-                if (_currentCommand.Execute())
-                {
-                    _performedCommands.Push(_currentCommand);
-                }
-            }
+            _currentSelector?.Disable();
+            _currentSelector = newSelector;
+            _currentSelector?.Enable();
+            _currentTool?.ChangeSelector(_currentSelector);
+        }
+
+        public void ChangeTool(Tool newTool)
+        {
+            if (_currentTool!=null)
+                _currentTool.usingCompleted-=OnToolUsingCompleted;
+            
+            _currentTool?.ChangeSelector(null);
+            _currentTool = newTool;
+           
+           if (_currentTool!=null)
+           {
+                _currentTool.usingCompleted+=OnToolUsingCompleted;
+                _currentTool.ChangeSelector(_currentSelector);
+           }
         }
 
         public void UndoLastCommand()
@@ -47,16 +61,6 @@ namespace LevelEditor
 
             if (command!=null)
                 command.Undo();
-        }
-
-        public void ChangeCurrentCommand(ICommand newCommand)
-        {
-            _currentCommand = newCommand;
-        }
-
-        public void AddExecutedCommand(ICommand command)
-        {
-            _performedCommands.Push(command);
         }
 
         public async void SaveLevel()
@@ -80,6 +84,17 @@ namespace LevelEditor
         {
             Debug.Log("Icon created");
             LevelSaved?.Invoke();
+        }
+
+        private void OnToolUsingCompleted(ICommand resultCommand)
+        {
+            _performedCommands.Push(resultCommand);
+        }
+
+        public void Dispose()
+        {
+            if (_currentTool!=null)
+                _currentTool.usingCompleted-=OnToolUsingCompleted;
         }
     }
 }

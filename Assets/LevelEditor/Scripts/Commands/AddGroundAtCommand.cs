@@ -18,7 +18,6 @@ namespace LevelEditor
 
         public bool Execute()
         {
-            Debug.Log("G");
             return _grid.CreateCellAt(_cellPosition);
         }
 

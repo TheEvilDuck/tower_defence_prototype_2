@@ -34,10 +34,12 @@ namespace LevelEditor
         private KeyCombinationHandler _saveKeyCombination;
         private KeyHandler _fillKey;
         private KeyHandler _drawKey;
+        private KeyHandler _lineKey;
         private KeyHandler _drawToolKey;
         private KeyHandler _eraseToolKey;
         private BrushSelector _brushSelector;
         private FillSelector _fillSelector;
+        private LineSelector _lineSelector;
         private Tool _drawTool;
         private Tool _eraseTool;
 
@@ -53,11 +55,13 @@ namespace LevelEditor
             _saveKeyCombination = new KeyCombinationHandler(_playerInput,_levelEditorConfig.SaveKeyCodes);
             _fillKey = new KeyHandler(_playerInput,_levelEditorConfig.FillKeyCode);
             _drawKey = new KeyHandler(_playerInput,_levelEditorConfig.DrawKeyCode);
+            _lineKey = new KeyHandler(_playerInput,_levelEditorConfig.LineKeyCode);
             _drawToolKey = new KeyHandler(_playerInput,_levelEditorConfig.AddGroundKeyCode);
             _eraseToolKey = new KeyHandler(_playerInput,_levelEditorConfig.DeleteGroundKeyCode);
 
             _brushSelector = new BrushSelector(_playerInput, _level.Grid);
             _fillSelector = new FillSelector(_playerInput, _level.Grid);
+            _lineSelector = new LineSelector(_playerInput,_level.Grid);
             _drawTool = new Tool(new DrawCommandsFactory(_level.Grid));
             _eraseTool = new Tool(new EraseCommandFactory(_level.Grid));
 
@@ -71,13 +75,15 @@ namespace LevelEditor
                 _saveKeyCombination,
                 _fillKey,
                 _drawKey,
+                _lineKey,
                 _drawToolKey,
                 _eraseToolKey,
                 _levelSavingUI,
                 _drawTool,
                 _eraseTool,
                 _fillSelector,
-                _brushSelector
+                _brushSelector,
+                _lineSelector
             );
             _cameraManipulation = new CameraManipulation(0.1f, Camera.main);
             _cameraMediator = new CameraMediator(_playerInput,_cameraManipulation);
@@ -98,12 +104,14 @@ namespace LevelEditor
             _saveKeyCombination.Dispose();
             _fillKey.Dispose();
             _drawKey.Dispose();
+            _lineKey.Dispose();
             _drawToolKey.Dispose();
             _eraseToolKey.Dispose();
             _cameraMediator.Dispose();
             _levelEditorMediator.Dispose();
             _brushSelector.Dispose();
             _fillSelector.Dispose();
+            _lineSelector.Disable();
         }
 
         private void Update() 

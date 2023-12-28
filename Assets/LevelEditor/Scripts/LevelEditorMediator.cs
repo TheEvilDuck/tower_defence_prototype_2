@@ -19,15 +19,15 @@ namespace LevelEditor
         private KeyCombinationHandler _saveKeyCombination;
         private KeyHandler _fillKey;
         private KeyHandler _drawKey;
+        private KeyHandler _lineKey;
         private KeyHandler _drawToolKey;
         private KeyHandler _eraseToolKey;
         private LevelSavingUI _levelSavingUI;
         private Tool _drawTool;
         private Tool _eraseTool;
-        private Tool _currentTool;
         private FillSelector _fillSelector;
         private BrushSelector _brushSelector;
-        private ISelector _currentSelector;
+        private LineSelector _lineSelector;
 
         public LevelEditorMediator
         (
@@ -39,13 +39,15 @@ namespace LevelEditor
             KeyCombinationHandler saveKeyCombination,
             KeyHandler fillKey,
             KeyHandler drawKey,
+            KeyHandler lineKey,
             KeyHandler drawToolKey,
             KeyHandler eraseToolKey,
             LevelSavingUI levelSavingUI,
             Tool drawTool,
             Tool eraseTool,
             FillSelector fillSelector,
-            BrushSelector brushSelector
+            BrushSelector brushSelector,
+            LineSelector lineSelector
         )
         {
             _levelEditor = levelEditor;
@@ -56,6 +58,7 @@ namespace LevelEditor
             _saveKeyCombination = saveKeyCombination;
             _fillKey = fillKey;
             _drawKey = drawKey;
+            _lineKey = lineKey;
             _drawToolKey = drawToolKey;
             _eraseToolKey = eraseToolKey;
             _levelSavingUI = levelSavingUI;
@@ -63,12 +66,10 @@ namespace LevelEditor
             _eraseTool = eraseTool;
             _fillSelector = fillSelector;
             _brushSelector = brushSelector;
+            _lineSelector = lineSelector;
 
-            _currentTool = _drawTool;
-            _currentTool.usingCompleted+=OnToolUsingCompleted;
-            _currentSelector = _brushSelector;
-            _currentSelector.Enable();
-            _currentTool.ChangeSelector(_currentSelector);
+            _levelEditor.ChangeSelector(_brushSelector);
+            _levelEditor.ChangeTool(_drawTool);
         
             _level.Grid.cellChanged+=OnCellChanged;
             _level.Grid.cellRemoved+=OnCellRemoved;
@@ -78,6 +79,7 @@ namespace LevelEditor
             _saveKeyCombination.Down+=OnSaveKeyCombinationDown;
             _drawKey.Down+=OnDrawKeyDown;
             _fillKey.Down+=OnFillKeyDown;
+            _lineKey.Down+=OnLineKeyDown;
             _drawToolKey.Down+=OnDrawToolKeyDown;
             _eraseToolKey.Down+=OnEraseToolKeyDown;
         }
@@ -92,49 +94,18 @@ namespace LevelEditor
             _levelEditor.LevelSaved-=OnLevelSaved;
             _drawKey.Down-=OnDrawKeyDown;
             _fillKey.Down-=OnFillKeyDown;
+            _lineKey.Down-=OnLineKeyDown;
             _drawToolKey.Down-=OnDrawToolKeyDown;
             _eraseToolKey.Down-=OnEraseToolKeyDown;
-            _currentTool.usingCompleted-=OnToolUsingCompleted;
         }
 
-        private void OnFillKeyDown()
-        {
-            _currentSelector.Disable();
-            _currentSelector = _fillSelector;
-            _currentSelector.Enable();
-            _currentTool.ChangeSelector(_currentSelector);
-        }
+        private void OnFillKeyDown() => _levelEditor.ChangeSelector(_fillSelector);
+        private void OnDrawKeyDown() => _levelEditor.ChangeSelector(_brushSelector);
+        private void OnLineKeyDown() => _levelEditor.ChangeSelector(_lineSelector);
 
-        private void OnDrawKeyDown()
-        {
-            _currentSelector.Disable();
-            _currentSelector = _brushSelector;
-            _currentSelector.Enable();
-            _currentTool.ChangeSelector(_currentSelector);
-        } 
+        private void OnDrawToolKeyDown() => _levelEditor.ChangeTool(_drawTool);
 
-        private void OnDrawToolKeyDown()
-        {
-            _currentTool.usingCompleted-=OnToolUsingCompleted;
-            _currentTool.ChangeSelector(null);
-            _currentTool = _drawTool;
-            _currentTool.usingCompleted+=OnToolUsingCompleted;
-            _currentTool.ChangeSelector(_currentSelector);
-        }
-
-        private void OnEraseToolKeyDown()
-        {
-            _currentTool.usingCompleted-=OnToolUsingCompleted;
-            _currentTool.ChangeSelector(null);
-            _currentTool = _eraseTool;
-            _currentTool.usingCompleted+=OnToolUsingCompleted;
-            _currentTool.ChangeSelector(_currentSelector);
-        }
-
-        private void OnToolUsingCompleted(ICommand resultCommand)
-        {
-            _levelEditor.AddExecutedCommand(resultCommand);
-        }
+        private void OnEraseToolKeyDown() => _levelEditor.ChangeTool(_eraseTool);
 
         private void OnCellChanged(Vector2Int cellId, Cell cell)
         {

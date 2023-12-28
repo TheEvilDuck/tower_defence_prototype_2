@@ -8,7 +8,7 @@ namespace LevelEditor.Selectors
 {
     public class BrushSelector: IDisposable, ISelector 
     {
-        public event Action<Vector2Int> selectedCellsChanged;
+        public event Action<Vector2Int, bool> selectedCellsChanged;
         public event Action cellsSelected;
         public event Action<Vector2Int> selectionStarted;
         private readonly PlayerInput _playerInput;
@@ -37,7 +37,7 @@ namespace LevelEditor.Selectors
                 if (!_selectedCells.Contains(_lastCellPosition))
                 {
                     _selectedCells.Add(_lastCellPosition);
-                    selectedCellsChanged?.Invoke(_lastCellPosition);
+                    selectedCellsChanged?.Invoke(_lastCellPosition, true);
                 }
             }
         }

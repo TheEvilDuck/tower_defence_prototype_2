@@ -5,7 +5,7 @@ namespace LevelEditor.Selectors
 {
     public interface ISelector
     {
-        public event Action<Vector2Int> selectedCellsChanged;
+        public event Action<Vector2Int, bool> selectedCellsChanged;
         public event Action cellsSelected;
         public event Action<Vector2Int> selectionStarted;
 

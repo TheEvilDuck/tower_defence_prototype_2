@@ -16,9 +16,7 @@ namespace LevelEditor
 
         public bool Execute()
         {
-            bool t = _grid.RemoveCellAt(_cellPosition);
-            Debug.Log(t);
-            return t;
+            return  _grid.RemoveCellAt(_cellPosition);
         }
 
         public void Undo()

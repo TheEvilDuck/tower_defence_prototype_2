@@ -1,8 +1,6 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using LevelEditor.Selectors;
-using Services.PlayerInput;
 using UnityEngine;
 
 namespace LevelEditor
@@ -14,10 +12,12 @@ namespace LevelEditor
         private ISelector _currentSelector;
         private CommandSequence _currentCommandSequence;
         private CommandFactory _commandFactory;
+        private Dictionary<Vector2Int,ICommand> _affectedCells;
 
         public Tool(CommandFactory commandFactory)
         {
             _commandFactory = commandFactory;
+            _affectedCells = new Dictionary<Vector2Int, ICommand>();
         }
 
         public void ChangeSelector(ISelector newSelector)
@@ -37,10 +37,12 @@ namespace LevelEditor
             _currentSelector.cellsSelected+=OnSelectionDone;
             _currentSelector.selectedCellsChanged+=OnSelectionChanged;
             _currentSelector.selectionStarted+=OnSelectionStartedAt;
+            _affectedCells.Clear();
         }
 
         private void OnSelectionStartedAt(Vector2Int cellPosition)
         {
+            _affectedCells.Clear();
             _currentCommandSequence = new CommandSequence();
             CreateCommandAndExecute(cellPosition);
         }
@@ -56,9 +58,12 @@ namespace LevelEditor
             usingCompleted?.Invoke(_currentCommandSequence);
         }
 
-        private void OnSelectionChanged(Vector2Int cellPosition)
+        private void OnSelectionChanged(Vector2Int cellPosition, bool isAdded)
         {
-            CreateCommandAndExecute(cellPosition);
+            if (isAdded)
+                CreateCommandAndExecute(cellPosition);
+            else
+                UndoCommandAt(cellPosition);
         }
 
         private void CreateCommandAndExecute(Vector2Int cellPosition)
@@ -68,11 +73,25 @@ namespace LevelEditor
             if (command.Execute())
             {
                 _currentCommandSequence.AddCommand(command);
+                _affectedCells.TryAdd(cellPosition,command);
+            }
+        }
+
+        private void UndoCommandAt(Vector2Int cellPosition)
+        {
+            if (_affectedCells.TryGetValue(cellPosition, out ICommand command))
+            {
+                _currentCommandSequence.RemoveCommand(command);
+                command.Undo();
+                _affectedCells.Remove(cellPosition);
             }
         }
 
         public void Dispose()
         {
+            if (_currentSelector==null)
+                return;
+
             _currentSelector.cellsSelected-=OnSelectionDone;
             _currentSelector.selectedCellsChanged-=OnSelectionChanged;
             _currentSelector.selectionStarted-=OnSelectionStartedAt;

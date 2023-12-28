@@ -102,7 +102,6 @@ namespace Levels.Logic
             };
 
             _cells[position.x,position.y] = cell;
-            Debug.Log("AAA");
 
             return true;
         }
@@ -137,11 +136,8 @@ namespace Levels.Logic
             if (_cells[position.x,position.y]==null)
                 return false;
 
-            Debug.Log(_cells[position.x,position.y]);
-
             _cells[position.x,position.y].Dispose();
             _cells[position.x,position.y] = null;
-            Debug.Log(_cells[position.x,position.y]);
 
             cellRemoved?.Invoke(position);
 

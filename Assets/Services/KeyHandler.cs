@@ -29,7 +29,10 @@ namespace Services.PlayerInput
         private void OnKeyDown(KeyCode key)
         {
             if (_key == key)
+            {
+                Debug.Log("DOWN");
                 Down?.Invoke();
+            }
         }
 
         private void OnKeyHold(KeyCode key)
