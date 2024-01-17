@@ -9,11 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe467788b66fadd4cb68aacdd1d4b3e7, type: 3}
-  m_Name: Enemies database
+  m_Script: {fileID: 11500000, guid: 66469c95f6fd11843a6b1e37040378ff, type: 3}
+  m_Name: Enemy config
   m_EditorClassIdentifier: 
-  _enemies:
-  - Id: 0
-    Prefab: {fileID: 0}
-  - Id: 1
-    Prefab: {fileID: 0}
+  <MaxHealth>k__BackingField: 100
+  <WalkSpeed>k__BackingField: 1

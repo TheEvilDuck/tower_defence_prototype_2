@@ -4,11 +4,11 @@ using UnityEngine;
 
 namespace Enemies
 {
-    public abstract class EnemyStatsProvider
+    public abstract class EnemyStatsProvider: IEnemyStatsProvider
     {
-        private EnemyStatsProvider _wrappedEnemyStatsProvider;
+        protected IEnemyStatsProvider _wrappedEnemyStatsProvider;
 
-        public void Wrap(EnemyStatsProvider enemyStatsProvider)
+        public void Wrap(IEnemyStatsProvider enemyStatsProvider)
         {
             _wrappedEnemyStatsProvider = enemyStatsProvider;
         }

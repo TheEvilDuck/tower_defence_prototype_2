@@ -6,6 +6,8 @@ using Services.CameraManipulation;
 using Levels.TileControl;
 using UnityEngine.Tilemaps;
 using Levels.Logic;
+using Enemies;
+using Waves;
 
 namespace GamePlay
 {
@@ -13,8 +15,10 @@ namespace GamePlay
     {
         [SerializeField]private float _cameraSpeed = 4f;
         [SerializeField]private TileConfig _tileConfig;
+        [SerializeField]private EnemyConfig _enemyConfig;
         [SerializeField]Tilemap _groundTileMap;
         [SerializeField]Tilemap _roadTileMap;
+        [SerializeField]Enemy _testEnemyPrefab;
         private PlayerInput _playerInput;
         private CameraManipulation _cameraManipulation;
         private CameraMediator _cameraMediator;
@@ -22,6 +26,8 @@ namespace GamePlay
         private TileController _tileController;
         private LevelAndTilesMediator _levelAndTilesMediator;
         private LevelLoader _levelLoader;
+        private EnemySpawner _enemySpawner;
+        private EnemyFactory _enemyFactory;
         private void Awake() 
         {
             _playerInput = new PlayerInput();
@@ -39,11 +45,14 @@ namespace GamePlay
             _levelAndTilesMediator = new LevelAndTilesMediator(_tileController,_level);
 
             _level.Grid.FillFromGridData(levelData.gridData);
+
+            _enemyFactory = new EnemyFactory(_testEnemyPrefab,_enemyConfig);
         }
 
         private void Start() 
         {
-            //_level.Test();
+            
+            
         }
 
         private void OnDestroy() 
@@ -55,6 +64,7 @@ namespace GamePlay
         void Update()
         {
             _playerInput.Update();
+            _enemySpawner.Update();
         }
     }
 }

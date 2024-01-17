@@ -277,8 +277,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _cameraSpeed: 0.03
   _tileConfig: {fileID: 11400000, guid: 200680631d53efd43b652ee1178f56f8, type: 2}
+  _enemyConfig: {fileID: 11400000, guid: 694282aab1ae3884fa2102eccb36b187, type: 2}
   _groundTileMap: {fileID: 1049085490}
   _roadTileMap: {fileID: 323958081}
+  _testEnemyPrefab: {fileID: 4926772124056718837, guid: 9c2e052aa18f76c4fa86483078f51958, type: 3}
 --- !u!4 &780897588
 Transform:
   m_ObjectHideFlags: 0
