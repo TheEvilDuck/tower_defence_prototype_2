@@ -1,10 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
+using Common.Interfaces;
 using UnityEngine;
 
 namespace Enemies
 {
-    public class Enemy : MonoBehaviour
+    public class Enemy : MonoBehaviour, IDamagable
     {
         private EnemyStats _baseStats;
         private LinkedList<EnemyStatsProvider> _statsModifiers;
@@ -61,5 +62,7 @@ namespace Enemies
 
             _statsModifiers.Remove(enemyStatsProvider);
         }
+
+        public void TakeDamage(int damage) => Stats.ModifyHealth(-damage);
     }
 }

@@ -8,6 +8,8 @@ using UnityEngine.Tilemaps;
 using Levels.Logic;
 using Enemies;
 using Waves;
+using Builder;
+using Towers;
 
 namespace GamePlay
 {
@@ -15,10 +17,10 @@ namespace GamePlay
     {
         [SerializeField]private float _cameraSpeed = 4f;
         [SerializeField]private TileConfig _tileConfig;
-        [SerializeField]private EnemyConfig _enemyConfig;
-        [SerializeField]Tilemap _groundTileMap;
-        [SerializeField]Tilemap _roadTileMap;
-        [SerializeField]Enemy _testEnemyPrefab;
+        [SerializeField]private EnemiesDatabase _enemiesDatabase;
+        [SerializeField]private Tilemap _groundTileMap;
+        [SerializeField]private Tilemap _roadTileMap;
+        [SerializeField]private TowersDatabase _towersDatabase;
         private PlayerInput _playerInput;
         private CameraManipulation _cameraManipulation;
         private CameraMediator _cameraMediator;
@@ -28,6 +30,8 @@ namespace GamePlay
         private LevelLoader _levelLoader;
         private EnemySpawner _enemySpawner;
         private EnemyFactory _enemyFactory;
+        private PlacableBuilder _builder;
+        private BuilderMediator _builderMediator;
         private void Awake() 
         {
             _playerInput = new PlayerInput();
@@ -46,7 +50,31 @@ namespace GamePlay
 
             _level.Grid.FillFromGridData(levelData.gridData);
 
-            _enemyFactory = new EnemyFactory(_testEnemyPrefab,_enemyConfig);
+            _enemyFactory = new EnemyFactory(_enemiesDatabase);
+            //TO DO load wavedata from leveldata
+            Wave[] waves = new Wave[1];
+            EnemyData testEnemyData = new EnemyData();
+            testEnemyData.id = EnemyEnum.Gray;
+            WaveEnemyData testWaveEnemyData = new WaveEnemyData();
+            testWaveEnemyData.count = 1;
+            testWaveEnemyData.enemyData = testEnemyData;
+            WaveEnemyData[] waveEnemyDatas = new WaveEnemyData[1];
+            waveEnemyDatas[0] = testWaveEnemyData;
+            waves[0] = new Wave(1,waveEnemyDatas);
+            //TO DO remove magic values
+            _enemySpawner = new EnemySpawner(waves, levelData.firstWaveDelay,1f,_enemyFactory);
+
+            //TODO this must be loaded from level
+            AvailablePlacables availablePlacables = new AvailablePlacables()
+            {
+                placableIds = new PlacableEnum[]{PlacableEnum.MainBuilding}
+            };
+
+            _builder = new PlacableBuilder(_towersDatabase,availablePlacables);
+
+            _builderMediator = new BuilderMediator(_playerInput,_builder, _level.Grid);
+
+            
         }
 
         private void Start() 
@@ -59,6 +87,7 @@ namespace GamePlay
         {
             _cameraMediator.Dispose();
             _levelAndTilesMediator.Dispose();
+            _builderMediator.Dispose();
         }
 
         void Update()

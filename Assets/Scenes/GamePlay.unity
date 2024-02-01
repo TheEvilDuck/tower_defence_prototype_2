@@ -280,7 +280,7 @@ MonoBehaviour:
   _enemyConfig: {fileID: 11400000, guid: 694282aab1ae3884fa2102eccb36b187, type: 2}
   _groundTileMap: {fileID: 1049085490}
   _roadTileMap: {fileID: 323958081}
-  _testEnemyPrefab: {fileID: 4926772124056718837, guid: 9c2e052aa18f76c4fa86483078f51958, type: 3}
+  _towersDatabase: {fileID: 11400000, guid: 2d557ace844a87041b02858e9806db33, type: 2}
 --- !u!4 &780897588
 Transform:
   m_ObjectHideFlags: 0

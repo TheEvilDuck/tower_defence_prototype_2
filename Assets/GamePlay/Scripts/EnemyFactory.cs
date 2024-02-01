@@ -1,3 +1,4 @@
+using System;
 using Enemies;
 using UnityEngine;
 
@@ -5,17 +6,18 @@ namespace GamePlay
 {
     public class EnemyFactory
     {
-        private Enemy _enemyPrefab;
-        private EnemyConfig _config;
-        public EnemyFactory(Enemy enemyPrefab, EnemyConfig config)
+        private EnemiesDatabase _enemies;
+        public EnemyFactory(EnemiesDatabase enemies)
         {
-            _enemyPrefab = enemyPrefab;
-            _config = config;
+            _enemies = enemies;
         }
-        public Enemy Get()
+        public Enemy Get(EnemyEnum enemyid)
         {
-            Enemy enemy = Object.Instantiate(_enemyPrefab);
-            enemy.Init(_config.MaxHealth,_config.WalkSpeed);
+            if (!_enemies.TryGetValue(enemyid, out EnemyConfig config))
+                throw new ArgumentException($"There is no config for {enemyid} in enemies database");
+
+            Enemy enemy = UnityEngine.Object.Instantiate(config.Prefab);
+            enemy.Init(config.MaxHealth,config.WalkSpeed);
             return enemy;
         }
     }

@@ -2,10 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Enemies
+namespace Towers
 {
-    public class EnemyData
+    public class MainBuilding : Placable
     {
-        public EnemyEnum id;
+        
     }
 }

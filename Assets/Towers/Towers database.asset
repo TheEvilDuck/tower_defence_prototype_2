@@ -9,9 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 66469c95f6fd11843a6b1e37040378ff, type: 3}
-  m_Name: Enemy config
+  m_Script: {fileID: 11500000, guid: 261b5d5102c50d44c873a851c6bbaafd, type: 3}
+  m_Name: Towers database
   m_EditorClassIdentifier: 
-  <MaxHealth>k__BackingField: 100
-  <WalkSpeed>k__BackingField: 1
-  <Prefab>k__BackingField: {fileID: 4926772124056718837, guid: 9c2e052aa18f76c4fa86483078f51958, type: 3}
+  _towers:
+  - {fileID: 11400000, guid: 8636db9face1c6e4eaf5a40cc98542ef, type: 2}

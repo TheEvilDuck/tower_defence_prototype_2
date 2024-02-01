@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Services.PlayerInput
@@ -38,7 +39,7 @@ namespace Services.PlayerInput
         }
 
 
-        public void Update()
+        public async void Update()
         {
             Vector2 moveVector = new Vector2(Input.GetAxis("Horizontal"),Input.GetAxis("Vertical"));
 
@@ -95,6 +96,8 @@ namespace Services.PlayerInput
 
             if (_currentCombination.Count>0)
                 keysCombinationHold?.Invoke(_currentCombination.ToArray());
+
+            await Task.Yield();
         }
     }
 }

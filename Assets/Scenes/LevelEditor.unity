@@ -1251,6 +1251,7 @@ MonoBehaviour:
   _roadTileMap: {fileID: 1179838658}
   _testLevelData:
     startMoney: 100
+    firstWaveDelay: 0
     gridData:
       gridSize: 10
       cellsIndexes: 

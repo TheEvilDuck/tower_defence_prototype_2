@@ -1,4 +1,5 @@
 using System;
+using Towers;
 
 namespace Levels.Logic
 {
@@ -6,7 +7,10 @@ namespace Levels.Logic
     {
         public event Action cellChanged;
 
+        private Placable _placable;
+
         public bool HasRoad {get; private set;}
+        public Placable Placable => _placable;
 
         public void BuildRoad()
         {
@@ -24,6 +28,29 @@ namespace Levels.Logic
 
             HasRoad = false;
             cellChanged?.Invoke();
+        }
+
+        public bool TryPlace(Placable placable)
+        {
+            if (_placable!=null)
+                return false;
+
+            _placable = placable;
+            return true;
+        }
+
+        public bool TryDestroyPlacable()
+        {
+            if (_placable==null)
+                return false;
+
+            if (!_placable.CanBeDestroyed)
+                return false;
+
+            UnityEngine.Object.Destroy(_placable);
+            _placable = null;
+
+            return true;
         }
 
         public void Dispose()

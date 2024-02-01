@@ -45,8 +45,7 @@ namespace GamePlay
                 }
                 else
                 {
-                    Enemy enemy = _enemyFactory.Get();
-                    Debug.Log(enemyData.name);
+                    Enemy enemy = _enemyFactory.Get(enemyData.id);
                     if (enemy!=null)
                         _enemies.Add(enemy);
                 }

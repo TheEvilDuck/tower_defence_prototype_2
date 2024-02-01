@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using Waves;
 
 namespace Levels.Logic
 {
@@ -8,6 +9,8 @@ namespace Levels.Logic
     {
         
         [SerializeField] public int startMoney;
+        [SerializeField] public int firstWaveDelay;
         [SerializeField] public GridData gridData;
+        [SerializeField] public Wave[] waves;
     }
 }

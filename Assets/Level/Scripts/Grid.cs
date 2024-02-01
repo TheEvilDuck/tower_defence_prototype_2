@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
+using Towers;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Levels.Logic
 {
-    public class Grid
+    public class Grid: IDisposable
     {
         private Cell[,] _cells;
 
@@ -86,9 +88,6 @@ namespace Levels.Logic
 
         public bool CreateCellAt(Vector2Int position)
         {
-            if (!IsPositionValid(position))
-                return false;
-
             if (IsCellAt(position))
                 return false;
 
@@ -108,9 +107,6 @@ namespace Levels.Logic
 
         public void BuildRoadAt(Vector2Int position)
         {
-            if (!IsPositionValid(position))
-                return;
-
             if (!IsCellAt(position))
                 return;
 
@@ -119,9 +115,6 @@ namespace Levels.Logic
 
         public void RemoveRoadAt(Vector2Int position)
         {
-            if (!IsPositionValid(position))
-                return;
-
             if (!IsCellAt(position))
                 return;
 
@@ -142,6 +135,32 @@ namespace Levels.Logic
             cellRemoved?.Invoke(position);
 
             return true;
+        }
+
+        public void Dispose()
+        {
+            foreach (Cell cell in _cells)
+                if (cell!=null)
+                    cell.Dispose();
+        }
+
+        public bool CanBuildAt(Vector2Int position)
+        {
+            if (!IsCellAt(position))
+                return false;
+
+            if (_cells[position.x,position.y].Placable != null)
+                return false;
+
+            return true;
+        }
+
+        public bool TryBuildAt(Vector2Int position, Placable placable)
+        {
+            if (!CanBuildAt(position))
+                return false;
+
+            return _cells[position.x,position.y].TryPlace(placable);
         }
 
         private Vector2Int ConvertIntToVector2Int(int index, int gridSize)
