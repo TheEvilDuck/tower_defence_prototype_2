@@ -9,7 +9,7 @@ namespace Levels.Logic
     {
         
         [SerializeField] public int startMoney;
-        [SerializeField] public int firstWaveDelay;
+        [SerializeField] public float firstWaveDelay;
         [SerializeField] public GridData gridData;
         [SerializeField] public Wave[] waves;
     }

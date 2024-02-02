@@ -47,7 +47,7 @@ namespace Levels.Logic
             if (!_placable.CanBeDestroyed)
                 return false;
 
-            UnityEngine.Object.Destroy(_placable);
+            _placable.DestroyPlacable();
             _placable = null;
 
             return true;
@@ -55,6 +55,8 @@ namespace Levels.Logic
 
         public void Dispose()
         {
+            TryDestroyPlacable();
+
             cellChanged = null;
         }
     }

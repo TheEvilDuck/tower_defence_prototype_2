@@ -28,6 +28,12 @@ namespace LevelEditor
         private FillSelector _fillSelector;
         private BrushSelector _brushSelector;
         private LineSelector _lineSelector;
+        private ButtonsBar _buttonsBar;
+        private SceneLoader _sceneLoader;
+        private MenuParentsManager _menuParentsManager;
+        private SettingsMenu _settingsMenu;
+        private WavesEditor _waveEditor;
+        private LoadMenu _loadMenu;
 
         public LevelEditorMediator
         (
@@ -47,7 +53,13 @@ namespace LevelEditor
             Tool eraseTool,
             FillSelector fillSelector,
             BrushSelector brushSelector,
-            LineSelector lineSelector
+            LineSelector lineSelector,
+            ButtonsBar buttonsBar,
+            SceneLoader sceneLoader,
+            MenuParentsManager menuParentsManager,
+            SettingsMenu settingsMenu,
+            WavesEditor wavesEditor,
+            LoadMenu loadMenu
         )
         {
             _levelEditor = levelEditor;
@@ -67,6 +79,12 @@ namespace LevelEditor
             _fillSelector = fillSelector;
             _brushSelector = brushSelector;
             _lineSelector = lineSelector;
+            _buttonsBar = buttonsBar;
+            _sceneLoader = sceneLoader;
+            _menuParentsManager = menuParentsManager;
+            _settingsMenu = settingsMenu;
+            _waveEditor = wavesEditor;
+            _loadMenu = loadMenu;
 
             _levelEditor.ChangeSelector(_brushSelector);
             _levelEditor.ChangeTool(_drawTool);
@@ -82,6 +100,11 @@ namespace LevelEditor
             _lineKey.Down+=OnLineKeyDown;
             _drawToolKey.Down+=OnDrawToolKeyDown;
             _eraseToolKey.Down+=OnEraseToolKeyDown;
+            _buttonsBar.saveButtonPressed+=OnSaveKeyCombinationDown;
+            _buttonsBar.exitButtonPressed+=OnExitButtonPressed;
+            _buttonsBar.settingsButtonPressed+=OnSettingsButtonPressed;
+            _buttonsBar.wavesButtonPressed+=OnWavesButtonPressed;
+            _buttonsBar.loadButtonPressed+=OnLoadButtonPressed;
         }
 
         public void Dispose()
@@ -97,6 +120,11 @@ namespace LevelEditor
             _lineKey.Down-=OnLineKeyDown;
             _drawToolKey.Down-=OnDrawToolKeyDown;
             _eraseToolKey.Down-=OnEraseToolKeyDown;
+            _buttonsBar.saveButtonPressed-=OnSaveKeyCombinationDown;
+            _buttonsBar.exitButtonPressed-=OnExitButtonPressed;
+            _buttonsBar.settingsButtonPressed-=OnSettingsButtonPressed;
+            _buttonsBar.wavesButtonPressed-=OnWavesButtonPressed;
+            _buttonsBar.loadButtonPressed-=OnLoadButtonPressed;
         }
 
         private void OnFillKeyDown() => _levelEditor.ChangeSelector(_fillSelector);
@@ -137,5 +165,9 @@ namespace LevelEditor
             _levelEditor.SaveLevel();
             _levelSavingUI.Show();
         }
+        private void OnExitButtonPressed() => _sceneLoader.LoadMainMenu();
+        private void OnSettingsButtonPressed() => _menuParentsManager.Show(_settingsMenu);
+        private void OnWavesButtonPressed() => _menuParentsManager.Show(_waveEditor);
+        private void OnLoadButtonPressed() => _menuParentsManager.Show(_loadMenu);
     }
 }

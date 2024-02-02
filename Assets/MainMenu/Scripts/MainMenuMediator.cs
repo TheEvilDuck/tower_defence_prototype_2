@@ -14,15 +14,18 @@ namespace MainMenu
 
             _mainMenuView.exitButtonPressed+=OnExitButtonPressed;
             _mainMenuView.levelEditorButtonPressed+=OnLevelEditorButtonPressed;
+            _mainMenuView.playButtonPressed+=OnPlayButtonPressed;
         }
 
         public void Dispose()
         {
             _mainMenuView.exitButtonPressed-=OnExitButtonPressed;
             _mainMenuView.levelEditorButtonPressed-=OnLevelEditorButtonPressed;
+            _mainMenuView.playButtonPressed-=OnPlayButtonPressed;
         }
 
         private void OnExitButtonPressed() => Application.Quit();
         private void OnLevelEditorButtonPressed() => _sceneLoader.LoadLevelEditor();
+        private void OnPlayButtonPressed() => _sceneLoader.LoadGameplay();
     }
 }

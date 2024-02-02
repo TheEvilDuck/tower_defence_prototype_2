@@ -19,6 +19,9 @@ namespace Services.PlayerInput
 
             _playerInput.keyCombinationDown+=OnPlayerInputCombinationDown;
             _playerInput.keysCombinationHold+=OnPlayerInputCombinationHold;
+
+            foreach (KeyCode keyCode in _watchingCombination)
+                _playerInput.RegisterKeyCode(keyCode);
         }
 
         public void Dispose()

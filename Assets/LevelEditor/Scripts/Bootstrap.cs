@@ -21,6 +21,10 @@ namespace LevelEditor
         [SerializeField]private Camera _screenShotCamera;
         [SerializeField]private RenderTexture _screenShotRenderTexture;
         [SerializeField]private LevelSavingUI _levelSavingUI;
+        [SerializeField]private ButtonsBar _buttonsBar;
+        [SerializeField]private SettingsMenu _settingsMenu;
+        [SerializeField]private WavesEditor _wavesEditor;
+        [SerializeField]private LoadMenu _loadMenu;
 
         private Level _level;
         private LevelEditor _levelEditor;
@@ -30,6 +34,7 @@ namespace LevelEditor
         private CameraManipulation _cameraManipulation;
         private CameraMediator _cameraMediator;
         private LevelIconMaker _levelIconMaker;
+        private SceneLoader _sceneLoader;
         private KeyCombinationHandler _undoKeyCombination;
         private KeyCombinationHandler _saveKeyCombination;
         private KeyHandler _fillKey;
@@ -42,6 +47,7 @@ namespace LevelEditor
         private LineSelector _lineSelector;
         private Tool _drawTool;
         private Tool _eraseTool;
+        private MenuParentsManager _menuParentsManager;
 
         private void Awake() 
         {
@@ -50,6 +56,12 @@ namespace LevelEditor
             _levelIconMaker = new LevelIconMaker(_screenShotCamera, _screenShotRenderTexture);
             _levelEditor = new LevelEditor(_level,_levelIconMaker);
             _tileController = new TileController(_tileConfig,_groundTileMap,_roadTileMap);
+            _sceneLoader = new SceneLoader();
+            _menuParentsManager = new MenuParentsManager();
+
+            _menuParentsManager.Add(_settingsMenu);
+            _menuParentsManager.Add(_wavesEditor);
+            _menuParentsManager.Add(_loadMenu);
 
             _undoKeyCombination = new KeyCombinationHandler(_playerInput,_levelEditorConfig.UndoKeyCodes);
             _saveKeyCombination = new KeyCombinationHandler(_playerInput,_levelEditorConfig.SaveKeyCodes);
@@ -83,7 +95,14 @@ namespace LevelEditor
                 _eraseTool,
                 _fillSelector,
                 _brushSelector,
-                _lineSelector
+                _lineSelector,
+                _buttonsBar,
+                _sceneLoader,
+                _menuParentsManager,
+                _settingsMenu,
+                _wavesEditor,
+                _loadMenu
+                
             );
             _cameraManipulation = new CameraManipulation(0.1f, Camera.main);
             _cameraMediator = new CameraMediator(_playerInput,_cameraManipulation);

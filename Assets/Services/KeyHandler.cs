@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Services.PlayerInput
@@ -18,6 +19,8 @@ namespace Services.PlayerInput
 
             _playerInput.keyDown+=OnKeyDown;
             _playerInput.keyHold+=OnKeyHold;
+
+            _playerInput.RegisterKeyCode(_key);
         }
 
         public void Dispose()

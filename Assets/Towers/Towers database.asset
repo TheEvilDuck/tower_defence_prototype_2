@@ -12,5 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 261b5d5102c50d44c873a851c6bbaafd, type: 3}
   m_Name: Towers database
   m_EditorClassIdentifier: 
-  _towers:
-  - {fileID: 11400000, guid: 8636db9face1c6e4eaf5a40cc98542ef, type: 2}
+  _content:
+  - Key: 0
+    Value: {fileID: 11400000, guid: 8636db9face1c6e4eaf5a40cc98542ef, type: 2}
+  - Key: 1
+    Value: {fileID: 11400000, guid: 9b5b4a0aeee3e42478776fec4aabe214, type: 2}
+  - Key: 2
+    Value: {fileID: 11400000, guid: 6729007174b623c45bb0faf3d2d6a952, type: 2}

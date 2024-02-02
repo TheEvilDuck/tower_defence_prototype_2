@@ -21,32 +21,33 @@ namespace Services.PlayerInput
         public event Action<KeyCode>keyDown;
 
         //можно будет в меню клавиши назначать, сохранять в конфиг, а потом на сцене и в редакторе подгружать с конфига
-        private readonly KeyCode[] WATCHED_KEYS = 
-        {
-            KeyCode.LeftControl,
-            KeyCode.Z, 
-            KeyCode.X,
-            KeyCode.S,
-            KeyCode.Alpha0, KeyCode.Alpha1, KeyCode.Alpha2, KeyCode.Alpha3, KeyCode.Alpha4, KeyCode.Alpha5,
-            KeyCode.Alpha6, KeyCode.Alpha7, KeyCode.Alpha8, KeyCode.Alpha9
-        };
+        private List<KeyCode> _watchingKeys;
 
-        List<KeyCode>_currentCombination;
+        private List<KeyCode>_currentCombination;
 
         public PlayerInput()
         {
             _currentCombination = new List<KeyCode>();
+            _watchingKeys = new List<KeyCode>();
         }
 
 
-        public async void Update()
+        public void Update()
         {
-            Vector2 moveVector = new Vector2(Input.GetAxis("Horizontal"),Input.GetAxis("Vertical"));
+            HandleMovementKeys();
+            HandleMouse();
+            HandleAnyKeys();
+        }
 
-            movementInput?.Invoke(moveVector);
+        public void RegisterKeyCode(KeyCode keyCode)
+        {
+            if (!_watchingKeys.Contains(keyCode))
+                _watchingKeys.Add(keyCode);
+        }
 
+        private void HandleMouse()
+        {
             Vector2 mouseScreenPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-
             mousePositionChanged?.Invoke(mouseScreenPosition);
 
             if (Input.GetMouseButtonDown(0))
@@ -66,18 +67,24 @@ namespace Services.PlayerInput
 
             if (Input.GetMouseButtonUp(1))
                 mouseRightUp?.Invoke(mouseScreenPosition);
+        }
 
+        private void HandleMovementKeys()
+        {
+            Vector2 moveVector = new Vector2(Input.GetAxisRaw("Horizontal"),Input.GetAxisRaw("Vertical"));
+            movementInput?.Invoke(moveVector);
+        }
 
-            foreach (KeyCode key in WATCHED_KEYS)
+        private void HandleAnyKeys()
+        {
+            foreach (KeyCode key in _watchingKeys)
             {
                 if (Input.GetKeyDown(key))
                 {
                     keyDown?.Invoke(key);
 
                     if (!_currentCombination.Contains(key))
-                    {
                         _currentCombination.Add(key);
-                    }
 
                     if (_currentCombination.Count>0)
                         keyCombinationDown?.Invoke(_currentCombination.ToArray());
@@ -96,8 +103,7 @@ namespace Services.PlayerInput
 
             if (_currentCombination.Count>0)
                 keysCombinationHold?.Invoke(_currentCombination.ToArray());
-
-            await Task.Yield();
         }
+        
     }
 }

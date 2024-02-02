@@ -14,5 +14,10 @@ namespace MainMenu
             _sceneLoader = new SceneLoader();
             _mainMenuMediator = new MainMenuMediator(_mainMenuView,_sceneLoader);
         }
+
+        private void OnDestroy() 
+        {
+            _mainMenuMediator.Dispose();
+        }
     }
 }

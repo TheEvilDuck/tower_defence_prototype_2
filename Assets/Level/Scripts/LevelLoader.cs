@@ -45,7 +45,6 @@ namespace Levels.Logic
             {
                 await File.WriteAllTextAsync(fullPath,JsonUtility.ToJson(levelData));
                 await WaitForFile(fullPath);
-                await Task.Delay(5000);
 
             }
             catch(IOException exception)
@@ -74,6 +73,22 @@ namespace Levels.Logic
                 return false;
 
             return File.Exists(GetFullLevelPath(levelName));
+        }
+
+        public string[] GetAllMapsNames()
+        {
+            DirectoryInfo directoryInfo = new DirectoryInfo(LEVELS_FOLDER);
+            FileInfo[] fileInfos = directoryInfo.GetFiles($"*{LEVEL_FORMAT}");
+            List<string>result = new List<string>();
+
+            foreach (FileInfo fileInfo in fileInfos)
+            {
+                string name = fileInfo.Name;
+                int jsonIndex = name.IndexOf(LEVEL_FORMAT);
+                string resultName = name.Remove(jsonIndex,name.Length-jsonIndex);
+                result.Add(resultName);
+            }
+            return result.ToArray();
         }
 
         private async Task WaitForFile(string fullPath)

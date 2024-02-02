@@ -12,4 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 991866dc4f1c9f14ab7e778cd861f80b, type: 3}
   m_Name: Enemies database
   m_EditorClassIdentifier: 
-  _content: []
+  _content:
+  - Key: 0
+    Value: {fileID: 11400000, guid: 694282aab1ae3884fa2102eccb36b187, type: 2}

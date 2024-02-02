@@ -26,13 +26,14 @@ namespace Builder
 
             foreach (PlacableEnum placableId in availablePlacables.placableIds)
             {
-                foreach (var item in towersDatabase.Items)
+                if (!towersDatabase.TryGetValue(placableId, out PlacableConfig config))
+                    throw new ArgumentException($"There is not config for tower presenting {placableId}");
+
+                if (_towers.ContainsKey(placableId))
+                    Debug.LogError($"You're trying to add dublicate to builder? {placableId}");
+                else
                 {
-                    if (item.Key==placableId&&!_towers.ContainsKey(item.Key))
-                    {
-                        _towers.Add(item.Key,item.Value);
-                        break;
-                    }
+                    _towers.Add(placableId,config);
                 }
             }
         }
@@ -65,6 +66,7 @@ namespace Builder
             if (_waitForBuilding)
             {
                 Placable inConstruction = UnityEngine.Object.Instantiate(_inConstructionPrefab, grid.GridPositionToWorldPosition(cellPosition), Quaternion.identity);
+                inConstruction.Init(true);
                 
                 if (!grid.TryBuildAt(cellPosition, inConstruction))
                 {
@@ -112,6 +114,7 @@ namespace Builder
                 throw new Exception("Didn't you forget to delete inConstrucion placable?");
 
             Placable tower = UnityEngine.Object.Instantiate(_towers[_currentId].Prefab, grid.GridPositionToWorldPosition(cellPosition), Quaternion.identity);
+            tower.Init(_towers[_currentId].CanBeDestroyed);
 
             if (!grid.TryBuildAt(cellPosition, tower))
             {

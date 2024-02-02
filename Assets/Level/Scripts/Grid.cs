@@ -88,6 +88,9 @@ namespace Levels.Logic
 
         public bool CreateCellAt(Vector2Int position)
         {
+            if (!IsPositionValid(position))
+                return false;
+
             if (IsCellAt(position))
                 return false;
 
@@ -161,6 +164,17 @@ namespace Levels.Logic
                 return false;
 
             return _cells[position.x,position.y].TryPlace(placable);
+        }
+
+        public void DestroyAt(Vector2Int position)
+        {
+             if (!IsCellAt(position))
+                return;
+
+            if (_cells[position.x,position.y].Placable == null)
+                return;
+
+            _cells[position.x,position.y].TryDestroyPlacable();
         }
 
         private Vector2Int ConvertIntToVector2Int(int index, int gridSize)

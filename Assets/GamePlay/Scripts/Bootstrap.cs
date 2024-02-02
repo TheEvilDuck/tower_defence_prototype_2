@@ -21,6 +21,7 @@ namespace GamePlay
         [SerializeField]private Tilemap _groundTileMap;
         [SerializeField]private Tilemap _roadTileMap;
         [SerializeField]private TowersDatabase _towersDatabase;
+        [SerializeField]private TowersPanel _towersPanel;
         private PlayerInput _playerInput;
         private CameraManipulation _cameraManipulation;
         private CameraMediator _cameraMediator;
@@ -67,20 +68,14 @@ namespace GamePlay
             //TODO this must be loaded from level
             AvailablePlacables availablePlacables = new AvailablePlacables()
             {
-                placableIds = new PlacableEnum[]{PlacableEnum.MainBuilding}
+                placableIds = new PlacableEnum[]{PlacableEnum.MainBuilding, PlacableEnum.Test, PlacableEnum.Test2}
             };
 
             _builder = new PlacableBuilder(_towersDatabase,availablePlacables);
 
-            _builderMediator = new BuilderMediator(_playerInput,_builder, _level.Grid);
+            _towersPanel.Init(_towersDatabase);
 
-            
-        }
-
-        private void Start() 
-        {
-            
-            
+            _builderMediator = new BuilderMediator(_playerInput,_builder, _level.Grid,_towersPanel);
         }
 
         private void OnDestroy() 
