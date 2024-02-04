@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Components
@@ -9,6 +10,8 @@ namespace Components
         [SerializeField] private bool _loop = false;
         [SerializeField] private bool _playOnAwake = false;
         [SerializeField, Range(0.01f, 10f)] private float _secondsPerFrame = 1;
+
+        public event Action animationEnd;
 
         private SpriteRenderer _spriteRenderer;
         private float _timer = 0;
@@ -61,6 +64,7 @@ namespace Components
             _currentFrameId = 0;
             _timer = 0;
             _playing = false;
+            animationEnd?.Invoke();
         }
 
         public void PauseAnimation() => _playing = false;
