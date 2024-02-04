@@ -24,6 +24,8 @@ namespace Enemies
             }
         }
 
+        public Vector3 Position => transform.position;
+
         public void Init(int maxHealth, float walkSpeed)
         {
             _baseStats = new EnemyStats(maxHealth, walkSpeed);
@@ -63,6 +65,11 @@ namespace Enemies
             _statsModifiers.Remove(enemyStatsProvider);
         }
 
-        public void TakeDamage(int damage) => Stats.ModifyHealth(-damage);
+        public void TakeDamage(int damage)
+        {
+            Stats.ModifyHealth(-damage);
+
+            Debug.Log(Stats.Health);
+        }
     }
 }

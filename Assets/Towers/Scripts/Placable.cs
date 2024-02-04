@@ -9,7 +9,7 @@ namespace Towers
     {
         public event Action destroyed;
         public bool CanBeDestroyed {get; private set;}
-        public void Init(bool canBeDestroyed)
+        public virtual void Init(bool canBeDestroyed)
         {
             CanBeDestroyed = canBeDestroyed;
         }

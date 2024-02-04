@@ -10,6 +10,8 @@ using Enemies;
 using Waves;
 using Builder;
 using Towers;
+using System;
+using Unity.VisualScripting;
 
 namespace GamePlay
 {
@@ -33,6 +35,7 @@ namespace GamePlay
         private EnemyFactory _enemyFactory;
         private PlacableBuilder _builder;
         private BuilderMediator _builderMediator;
+        private PlacableFactory _placableFactory;
         private void Awake() 
         {
             _playerInput = new PlayerInput();
@@ -64,14 +67,15 @@ namespace GamePlay
             waves[0] = new Wave(1,waveEnemyDatas);
             //TO DO remove magic values
             _enemySpawner = new EnemySpawner(waves, levelData.firstWaveDelay,1f,_enemyFactory);
+            _placableFactory = new PlacableFactory(_towersDatabase,_enemySpawner);
 
             //TODO this must be loaded from level
             AvailablePlacables availablePlacables = new AvailablePlacables()
             {
-                placableIds = new PlacableEnum[]{PlacableEnum.MainBuilding, PlacableEnum.Test, PlacableEnum.Test2}
+                placableIds = Enum.GetValues(typeof(PlacableEnum)).ConvertTo<PlacableEnum[]>()
             };
 
-            _builder = new PlacableBuilder(_towersDatabase,availablePlacables);
+            _builder = new PlacableBuilder(availablePlacables, _placableFactory);
 
             _towersPanel.Init(_towersDatabase);
 

@@ -10,111 +10,47 @@ namespace Builder
 {
     public class PlacableBuilder
     {
-        private Dictionary<PlacableEnum,PlacableConfig> _towers;
+        private List<PlacableEnum> _availableTowers;
         private Placable _inConstructionPrefab;
         private PlacableEnum _currentId;
         private bool _waitForBuilding = false;
-        public PlacableBuilder(TowersDatabase towersDatabase, AvailablePlacables availablePlacables, Placable inConstructionPrefab): this(towersDatabase,availablePlacables)
+        private PlacableFactory _placableFactory;
+        public PlacableBuilder(AvailablePlacables availablePlacables, PlacableFactory placableFactory, Placable inConstructionPrefab): this(availablePlacables,placableFactory)
         {
             _inConstructionPrefab = inConstructionPrefab;
             _waitForBuilding = true;
         }
 
-        public PlacableBuilder(TowersDatabase towersDatabase, AvailablePlacables availablePlacables)
+        public PlacableBuilder(AvailablePlacables availablePlacables, PlacableFactory placableFactory)
         {
-            _towers = new Dictionary<PlacableEnum, PlacableConfig>();
-
-            foreach (PlacableEnum placableId in availablePlacables.placableIds)
-            {
-                if (!towersDatabase.TryGetValue(placableId, out PlacableConfig config))
-                    throw new ArgumentException($"There is not config for tower presenting {placableId}");
-
-                if (_towers.ContainsKey(placableId))
-                    Debug.LogError($"You're trying to add dublicate to builder? {placableId}");
-                else
-                {
-                    _towers.Add(placableId,config);
-                }
-            }
+            _availableTowers = new List<PlacableEnum>(availablePlacables.placableIds);
+            _placableFactory = placableFactory;
         }
 
         public void SwitchCurrentId(PlacableEnum id)
         {
-            if (!_towers.ContainsKey(id))
-                throw new ArgumentException($"Invalid id: {id}");
-
-            if (_towers[id]==null)
-                throw new NullReferenceException($"No tower in database at id: {id}");
+            if (!_availableTowers.Contains(id))
+                throw new ArgumentException($"This tower is not available: {id}");
 
             _currentId = id;
         }
 
-        public async void Build(Vector2 position, Grid grid)
+        public void Build(Vector2 position, Grid grid)
         {
-            if (_towers.Count==0)
+            if (_availableTowers.Count==0)
                 throw new Exception("There are no available towers???");
-
-            if (_towers[_currentId]==null)
-                throw new NullReferenceException($"No tower in database at id: {_currentId}");
-
 
             Vector2Int cellPosition = grid.WorldPositionToGridPosition(position);
 
             if (!grid.CanBuildAt(cellPosition))
                 return;
 
-            if (_waitForBuilding)
-            {
-                Placable inConstruction = UnityEngine.Object.Instantiate(_inConstructionPrefab, grid.GridPositionToWorldPosition(cellPosition), Quaternion.identity);
-                inConstruction.Init(true);
-                
-                if (!grid.TryBuildAt(cellPosition, inConstruction))
-                {
-                    inConstruction.DestroyPlacable();
-                    throw new Exception("You shouldn't be allowed to build on occupied cells, add more awailable cells checking");
-                }
-
-                Action onDestroyed = null;
-                bool canceled = false;
-
-                onDestroyed = () =>
-                {
-                    if (inConstruction!=null)
-                    {
-                        inConstruction.destroyed -= onDestroyed;
-                    }
-                    canceled = true;
-                };
-
-                inConstruction.destroyed+=onDestroyed;
-
-                float timer = _towers[_currentId].BuildTime;
-
-                while (timer>0)
-                {
-                    if (canceled)
-                    {
-                        inConstruction.DestroyPlacable();
-                        inConstruction.destroyed -= onDestroyed;
-                        return;
-                    }
-
-                    timer-=Time.deltaTime;
-
-                    await Task.Delay((int)Time.deltaTime*1000);
-                }
-
-
-                inConstruction.DestroyPlacable();
-                inConstruction.destroyed -= onDestroyed;
-
-            }
-
             if (!grid.CanBuildAt(cellPosition))
                 throw new Exception("Didn't you forget to delete inConstrucion placable?");
 
-            Placable tower = UnityEngine.Object.Instantiate(_towers[_currentId].Prefab, grid.GridPositionToWorldPosition(cellPosition), Quaternion.identity);
-            tower.Init(_towers[_currentId].CanBeDestroyed);
+            Placable tower = _placableFactory.Get(_currentId);
+            Vector2 worldPosition = grid.GridPositionToWorldPosition(cellPosition);
+            tower.transform.position = worldPosition;
 
             if (!grid.TryBuildAt(cellPosition, tower))
             {

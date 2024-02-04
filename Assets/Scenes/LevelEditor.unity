@@ -631,6 +631,38 @@ PrefabInstance:
       propertyPath: m_Name
       value: Settings
       objectReference: {fileID: 0}
+    - target: {fileID: 4192623226034528103, guid: 27b43018af724d242a99d2af3ba7a63c, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4192623226034528103, guid: 27b43018af724d242a99d2af3ba7a63c, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4192623226034528103, guid: 27b43018af724d242a99d2af3ba7a63c, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 630253380}
+    - target: {fileID: 4192623226034528103, guid: 27b43018af724d242a99d2af3ba7a63c, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4192623226034528103, guid: 27b43018af724d242a99d2af3ba7a63c, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: CancelInvoke
+      objectReference: {fileID: 0}
+    - target: {fileID: 4192623226034528103, guid: 27b43018af724d242a99d2af3ba7a63c, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: UnityEngine.MonoBehaviour, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 4192623226034528103, guid: 27b43018af724d242a99d2af3ba7a63c, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_StringArgument
+      value: htryhtrj
+      objectReference: {fileID: 0}
+    - target: {fileID: 4192623226034528103, guid: 27b43018af724d242a99d2af3ba7a63c, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
     - target: {fileID: 8972724695520245391, guid: 27b43018af724d242a99d2af3ba7a63c, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5

@@ -1,6 +1,6 @@
 namespace Enemies
 {
-    public struct EnemyStats: IEnemyStatsProvider
+    public class EnemyStats: IEnemyStatsProvider
     {
         private int _health;
         private int _maxHealth;
