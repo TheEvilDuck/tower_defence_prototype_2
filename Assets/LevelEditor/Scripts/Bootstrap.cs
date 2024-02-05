@@ -1,3 +1,5 @@
+using Common;
+using Common.UI;
 using GamePlay;
 using LevelEditor.Selectors;
 using LevelEditor.UI;
@@ -25,6 +27,8 @@ namespace LevelEditor
         [SerializeField]private SettingsMenu _settingsMenu;
         [SerializeField]private WavesEditor _wavesEditor;
         [SerializeField]private LoadMenu _loadMenu;
+        [SerializeField]private UIInputBlocker _uIInputBlocker;
+        [SerializeField]private LevelIconButton _levelIconButtonPrefab;
 
         private Level _level;
         private LevelEditor _levelEditor;
@@ -48,13 +52,18 @@ namespace LevelEditor
         private Tool _drawTool;
         private Tool _eraseTool;
         private MenuParentsManager _menuParentsManager;
+        private LevelEditorInputBlockerMediator _levelEditorInputBlockerMediator;
+        private LevelIconsLoader _levelIconsLoader;
+        private LevelLoader _levelLoader;
+        private LevelIconsAndLevelLoaderMediator _levelIconsAndLevelLoaderMediator;
 
         private void Awake() 
         {
             _level = new Level(_testLevelData);
+            _levelLoader = new LevelLoader();
             _playerInput = new PlayerInput();
             _levelIconMaker = new LevelIconMaker(_screenShotCamera, _screenShotRenderTexture);
-            _levelEditor = new LevelEditor(_level,_levelIconMaker);
+            _levelEditor = new LevelEditor(_level,_levelIconMaker,_levelLoader);
             _tileController = new TileController(_tileConfig,_groundTileMap,_roadTileMap);
             _sceneLoader = new SceneLoader();
             _menuParentsManager = new MenuParentsManager();
@@ -106,6 +115,14 @@ namespace LevelEditor
             );
             _cameraManipulation = new CameraManipulation(0.1f, Camera.main);
             _cameraMediator = new CameraMediator(_playerInput,_cameraManipulation);
+
+            _levelEditorInputBlockerMediator = new LevelEditorInputBlockerMediator(_uIInputBlocker, _playerInput);
+
+            _levelIconsLoader = new LevelIconsLoader(_levelLoader,_loadMenu.ParentToIcons,_levelIconButtonPrefab);
+
+            _levelIconsAndLevelLoaderMediator = new LevelIconsAndLevelLoaderMediator(_levelLoader,_levelIconsLoader, _levelEditor);
+
+            
         }
 
         private void Start() 
@@ -131,6 +148,8 @@ namespace LevelEditor
             _brushSelector.Dispose();
             _fillSelector.Dispose();
             _lineSelector.Disable();
+            _levelEditorInputBlockerMediator.Dispose();
+            _levelIconsAndLevelLoaderMediator.Dispose();
         }
 
         private void Update() 

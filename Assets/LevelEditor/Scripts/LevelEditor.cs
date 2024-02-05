@@ -20,10 +20,10 @@ namespace LevelEditor
         private ISelector _currentSelector;
         private Tool _currentTool;
 
-        public LevelEditor(Level level, LevelIconMaker levelIconMaker)
+        public LevelEditor(Level level, LevelIconMaker levelIconMaker, LevelLoader levelLoader)
         {
             _level = level;
-            _levelLoader = new LevelLoader();
+            _levelLoader = levelLoader;
             _levelIconMaker = levelIconMaker;
 
             _performedCommands = new Stack<ICommand>(MAX_COMMANDS_BUFFER);

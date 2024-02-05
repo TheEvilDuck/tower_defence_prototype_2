@@ -1,24 +1,24 @@
 using System.Collections;
 using System.Collections.Generic;
+using Common.Interfaces;
+using Common.UI;
 using Levels.Logic;
 using UnityEngine;
 
-public class LoadMenu : MonoBehaviour,IMenuParent
+namespace LevelEditor.UI
 {
-    
-    public bool Active => gameObject.activeInHierarchy;
-
-    public void Hide() => gameObject.SetActive(false);
-
-    public void Show() => gameObject.SetActive(true);
-
-    public void CreateIconButtons(LevelLoader levelLoader)
+    public class LoadMenu : MonoBehaviour,IMenuParent
     {
-        string[] levelNames = levelLoader.GetAllMapsNames();
+        [field: SerializeField]public Transform ParentToIcons {get; private set;}
+        public bool Active => gameObject.activeInHierarchy;
 
-        foreach (string levelName in levelNames)
+        public void Hide() => gameObject.SetActive(false);
+
+        public void Show() => gameObject.SetActive(true);
+
+        public void CreateIconButtons(LevelLoader levelLoader)
         {
-
+            
         }
     }
 }

@@ -24,6 +24,9 @@ namespace Services.PlayerInput
         private List<KeyCode> _watchingKeys;
 
         private List<KeyCode>_currentCombination;
+        public bool Blocked {get; set;} = false;
+        public bool MouseBlocked {get; set;} = false;
+        
 
         public PlayerInput()
         {
@@ -34,6 +37,9 @@ namespace Services.PlayerInput
 
         public void Update()
         {
+            if (Blocked)
+                return;
+
             HandleMovementKeys();
             HandleMouse();
             HandleAnyKeys();
@@ -47,6 +53,9 @@ namespace Services.PlayerInput
 
         private void HandleMouse()
         {
+            if (MouseBlocked)
+                return;
+
             Vector2 mouseScreenPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             mousePositionChanged?.Invoke(mouseScreenPosition);
 
