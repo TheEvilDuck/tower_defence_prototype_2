@@ -12,12 +12,14 @@ namespace LevelEditor
         private LevelLoader _levelLoader;
         private LevelIconsLoader _levelIconsLoader;
         private LevelEditor _levelEditor;
+        private Level _level;
 
-        public LevelIconsAndLevelLoaderMediator(LevelLoader levelLoader, LevelIconsLoader levelIconsLoader, LevelEditor levelEditor)
+        public LevelIconsAndLevelLoaderMediator(LevelLoader levelLoader, LevelIconsLoader levelIconsLoader, LevelEditor levelEditor, Level level)
         {
             _levelLoader = levelLoader;
             _levelIconsLoader = levelIconsLoader;
             _levelEditor = levelEditor;
+            _level = level;
 
             _levelIconsLoader.mapIconPressed+=OnIconPressed;
         }
@@ -31,8 +33,9 @@ namespace LevelEditor
         {
             if (_levelLoader.TryLoadLevel(mapName, out LevelData levelData))
             {
-                // load logic
-                Debug.Log(mapName);
+                _levelEditor.CleaerCommandsBuffer();
+                _level.UpdateGridData(levelData.gridData);
+
             }
         }
     }

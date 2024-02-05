@@ -63,6 +63,7 @@ namespace Levels.Logic
             try
             {
                 await File.WriteAllTextAsync(fullPath,JsonUtility.ToJson(levelData));
+                await WaitForFile(fullPath);
             }
             catch(IOException exception)
             {

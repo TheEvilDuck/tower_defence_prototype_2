@@ -1,16 +1,25 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Common.Interfaces;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class SliderWithText : MonoBehaviour
+public class SliderWithText : MonoBehaviour,IObservableValue<int>
 {
     [SerializeField] private Slider _slider;
     [SerializeField] private TMP_InputField _inputField;
+    public event Action<int> changed;
+    private int _defaultValue;
 
     public int Value => (int)_slider.value;
+
+    private void Awake() 
+    {
+        _defaultValue = Value;
+        OnSliderValueChanged(_defaultValue);
+    }
 
     private void OnEnable() 
     {
@@ -25,12 +34,23 @@ public class SliderWithText : MonoBehaviour
         _inputField.onEndEdit.RemoveListener(OnInputValueChanged);
     }
 
-    private void OnSliderValueChanged(float value) => _inputField.text = value.ToString();
+    public void RestoreDefaultValue()
+    {
+        _slider.value = _defaultValue;
+        OnSliderValueChanged(_defaultValue);
+    }
+
+    private void OnSliderValueChanged(float value)
+    {
+        _inputField.text = value.ToString();
+        changed?.Invoke(Value);
+    }
     private void OnInputValueChanged(string value)
     {
         int numberValue = Convert.ToInt32(value);
         numberValue = Mathf.Clamp(numberValue,(int)_slider.minValue,(int)_slider.maxValue);
         _inputField.text = numberValue.ToString();
         _slider.value = Convert.ToInt32(numberValue);
+        changed?.Invoke(Value);
     }
 }

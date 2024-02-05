@@ -56,6 +56,7 @@ namespace LevelEditor
         private LevelIconsLoader _levelIconsLoader;
         private LevelLoader _levelLoader;
         private LevelIconsAndLevelLoaderMediator _levelIconsAndLevelLoaderMediator;
+        private LevelSettingsMediator _levelSettingsMediator;
 
         private void Awake() 
         {
@@ -120,7 +121,9 @@ namespace LevelEditor
 
             _levelIconsLoader = new LevelIconsLoader(_levelLoader,_loadMenu.ParentToIcons,_levelIconButtonPrefab);
 
-            _levelIconsAndLevelLoaderMediator = new LevelIconsAndLevelLoaderMediator(_levelLoader,_levelIconsLoader, _levelEditor);
+            _levelIconsAndLevelLoaderMediator = new LevelIconsAndLevelLoaderMediator(_levelLoader,_levelIconsLoader, _levelEditor,_level);
+
+            _levelSettingsMediator = new LevelSettingsMediator(_settingsMenu, _levelEditor);
 
             
         }

@@ -5,9 +5,8 @@ using Waves;
 namespace Levels.Logic
 {
     [Serializable]
-    public struct LevelData
+    public class LevelData
     {
-        
         [SerializeField] public int startMoney;
         [SerializeField] public float firstWaveDelay;
         [SerializeField] public GridData gridData;

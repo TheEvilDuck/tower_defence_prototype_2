@@ -1,4 +1,5 @@
 using System;
+using Common;
 using LevelEditor.Selectors;
 using LevelEditor.UI;
 using Levels.Logic;
@@ -105,6 +106,7 @@ namespace LevelEditor
             _buttonsBar.settingsButtonPressed+=OnSettingsButtonPressed;
             _buttonsBar.wavesButtonPressed+=OnWavesButtonPressed;
             _buttonsBar.loadButtonPressed+=OnLoadButtonPressed;
+            _buttonsBar.deleteButtonPressed+=OnDeleteButtonPressed;
         }
 
         public void Dispose()
@@ -125,6 +127,7 @@ namespace LevelEditor
             _buttonsBar.settingsButtonPressed-=OnSettingsButtonPressed;
             _buttonsBar.wavesButtonPressed-=OnWavesButtonPressed;
             _buttonsBar.loadButtonPressed-=OnLoadButtonPressed;
+            _buttonsBar.deleteButtonPressed-=OnDeleteButtonPressed;
         }
 
         private void OnFillKeyDown() => _levelEditor.ChangeSelector(_fillSelector);
@@ -169,5 +172,11 @@ namespace LevelEditor
         private void OnSettingsButtonPressed() => _menuParentsManager.Show(_settingsMenu);
         private void OnWavesButtonPressed() => _menuParentsManager.Show(_waveEditor);
         private void OnLoadButtonPressed() => _menuParentsManager.Show(_loadMenu);
+        private void OnDeleteButtonPressed()
+        {
+            _settingsMenu.RestoreDefaultValues();
+            _levelEditor.CleaerCommandsBuffer();
+            _level.Grid.Clear();
+        }
     }
 }

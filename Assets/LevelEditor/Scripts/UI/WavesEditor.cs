@@ -1,12 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
+using Common.Interfaces;
 using UnityEngine;
 
-public class WavesEditor : MonoBehaviour, IMenuParent
+namespace LevelEditor.UI
 {
-    public bool Active => gameObject.activeInHierarchy;
+    public class WavesEditor : MonoBehaviour, IMenuParent
+    {
+        public bool Active => gameObject.activeInHierarchy;
 
-    public void Hide() => gameObject.SetActive(false);
+        public void Hide() => gameObject.SetActive(false);
 
-    public void Show() => gameObject.SetActive(true);
+        public void Show() => gameObject.SetActive(true);
+    }
 }

@@ -24,11 +24,29 @@ namespace Levels.Logic
 
         public void FillFromGridData(GridData gridData)
         {
+            Clear();
+
+            _cells = new Cell[gridData.gridSize,gridData.gridSize];
+
             foreach (int index in gridData.cellsIndexes)
                 CreateCellAt(ConvertIntToVector2Int(index,gridData.gridSize));
 
             foreach(int roadIndex in gridData.roadIndexes)
                 BuildRoadAt(ConvertIntToVector2Int(roadIndex,gridData.gridSize));
+        }
+
+        public void Clear()
+        {
+            for (int x = 0;x<_cells.GetLength(0);x++)
+            {
+                for (int y = 0; y< _cells.GetLength(1); y++)
+                {
+                    if (_cells[x,y]!=null)
+                    {
+                        RemoveCellAt(new Vector2Int(x,y));
+                    }
+                }
+            }
         }
 
         public GridData ConvertToGridData()
@@ -131,6 +149,11 @@ namespace Levels.Logic
 
             if (_cells[position.x,position.y]==null)
                 return false;
+
+            if (_cells[position.x,position.y].HasRoad)
+                RemoveRoadAt(position);
+
+            DestroyAt(position);
 
             _cells[position.x,position.y].Dispose();
             _cells[position.x,position.y] = null;
