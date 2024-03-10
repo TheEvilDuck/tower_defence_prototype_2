@@ -64,7 +64,10 @@ namespace GamePlay
             testWaveEnemyData.enemyData = testEnemyData;
             WaveEnemyData[] waveEnemyDatas = new WaveEnemyData[1];
             waveEnemyDatas[0] = testWaveEnemyData;
-            waves[0] = new Wave(1,waveEnemyDatas);
+            WaveData waveData = new WaveData();
+            waveData.timeToTheNextWave = 10;
+            waveData.waveEnemyData = waveEnemyDatas;
+            waves[0] = new Wave(waveData);
             //TO DO remove magic values
             _enemySpawner = new EnemySpawner(waves, levelData.firstWaveDelay,1f,_enemyFactory);
             _placableFactory = new PlacableFactory(_towersDatabase,_enemySpawner);

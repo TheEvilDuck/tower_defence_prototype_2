@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Common.Interfaces;
@@ -7,6 +8,7 @@ namespace Enemies
 {
     public class Enemy : MonoBehaviour, IDamagable
     {
+        public event Action tookDamage;
         private EnemyStats _baseStats;
         private LinkedList<EnemyStatsProvider> _statsModifiers;
 
@@ -69,7 +71,7 @@ namespace Enemies
         {
             Stats.ModifyHealth(-damage);
 
-            Debug.Log(Stats.Health);
+            tookDamage?.Invoke();
         }
     }
 }

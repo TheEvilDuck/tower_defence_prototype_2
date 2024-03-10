@@ -55,6 +55,8 @@ namespace Towers
                 if (enemy == null)
                     continue;
 
+                Debug.Log(enemy.name);
+
                 if (_target!=null)
                     if (Vector3.Distance(_target.Position, Position)>_range)
                         _target = null;

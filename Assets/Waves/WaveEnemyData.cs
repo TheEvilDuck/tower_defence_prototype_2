@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Enemies;
@@ -5,9 +6,10 @@ using UnityEngine;
 
 namespace Waves
 {
+    [Serializable]
     public class WaveEnemyData
     {
-        public int count;
-        public EnemyData enemyData;
+        [SerializeField] public int count;
+        [SerializeField] public EnemyData enemyData;
     }
 }

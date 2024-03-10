@@ -12,10 +12,10 @@ namespace Waves
 
         public float TimeToTheNextWave => _timeToTheNextWave;
         
-        public Wave(float timeToTheNextWave, WaveEnemyData[] enemies)
+        public Wave(WaveData waveData)
         {
-            _timeToTheNextWave = timeToTheNextWave;
-            _enemiesLeftToSpawn = new List<WaveEnemyData>(enemies);
+            _timeToTheNextWave = waveData.timeToTheNextWave;
+            _enemiesLeftToSpawn = new List<WaveEnemyData>(waveData.waveEnemyData);
         }
 
         public EnemyData GetNextEnemyData()

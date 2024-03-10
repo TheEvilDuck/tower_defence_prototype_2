@@ -10,11 +10,14 @@ namespace Builder
 {
     public class PlacableBuilder
     {
+        public event Action mainBuildingBuilt;
         private List<PlacableEnum> _availableTowers;
         private Placable _inConstructionPrefab;
         private PlacableEnum _currentId;
         private bool _waitForBuilding = false;
         private PlacableFactory _placableFactory;
+        private bool _mainBuildingBuilt = false;
+        
         public PlacableBuilder(AvailablePlacables availablePlacables, PlacableFactory placableFactory, Placable inConstructionPrefab): this(availablePlacables,placableFactory)
         {
             _inConstructionPrefab = inConstructionPrefab;
@@ -43,10 +46,10 @@ namespace Builder
             Vector2Int cellPosition = grid.WorldPositionToGridPosition(position);
 
             if (!grid.CanBuildAt(cellPosition))
-                return;
-
-            if (!grid.CanBuildAt(cellPosition))
                 throw new Exception("Didn't you forget to delete inConstrucion placable?");
+
+            if (_currentId==PlacableEnum.MainBuilding&&_mainBuildingBuilt)
+                return;
 
             Placable tower = _placableFactory.Get(_currentId);
             Vector2 worldPosition = grid.GridPositionToWorldPosition(cellPosition);
@@ -59,6 +62,12 @@ namespace Builder
             }
 
             tower?.OnBuild();
+
+            if (_currentId==PlacableEnum.MainBuilding)
+            {
+                _mainBuildingBuilt = true;
+                mainBuildingBuilt?.Invoke();
+            }
         }
     }
 }
