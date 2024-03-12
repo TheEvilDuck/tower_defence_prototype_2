@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using LevelEditor.Selectors;
 using Levels.Logic;
 using UnityEngine;
+using Waves;
 
 namespace LevelEditor
 {
@@ -72,12 +73,14 @@ namespace LevelEditor
         public void UpdateLevelStartMoney(int startMoney) => _currentLevelData.startMoney = startMoney;
         public void UpdateLevelFirstWaveDelay(float delay) => _currentLevelData.firstWaveDelay = delay;
 
-        public async void SaveLevel()
+        public async void SaveLevel(WaveData[] waveDatas)
         {
+            _currentLevelData.waves = waveDatas;
+
             Debug.Log("Level is saving...");
             await _levelLoader.SaveLevel(
                 _currentLevelName,
-                _level.ConvertToLevelData(_currentLevelData.startMoney, _currentLevelData.firstWaveDelay),
+                _level.ConvertToLevelData(_currentLevelData.startMoney, _currentLevelData.firstWaveDelay, _currentLevelData.waves),
                 OnLevelSaved,
                 OnLevelSaveFailed);
         }

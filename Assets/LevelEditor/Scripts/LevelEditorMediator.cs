@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Common;
 using LevelEditor.Selectors;
 using LevelEditor.UI;
@@ -165,7 +166,8 @@ namespace LevelEditor
         private void OnUndoKeyCombinationDown() => _levelEditor.UndoLastCommand();
         private void OnSaveKeyCombinationDown()
         {
-            _levelEditor.SaveLevel();
+            _waveEditor.FillWaveDatasWithEnemyDatas();
+            _levelEditor.SaveLevel(_waveEditor.WaveDatas.ToArray());
             _levelSavingUI.Show();
         }
         private void OnExitButtonPressed() => _sceneLoader.LoadMainMenu();

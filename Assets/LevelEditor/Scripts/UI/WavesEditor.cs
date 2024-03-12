@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Common.Interfaces;
+using Enemies;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -22,6 +23,7 @@ namespace LevelEditor.UI
         [SerializeField]private TextMeshProUGUI _counter;
         [SerializeField]private EnemySettings _enemySettingsPrefab;
         [SerializeField]private Transform _enemySettingsParent;
+        [SerializeField]private EnemiesDatabase _enemiesDatabase;
         private List<WaveData> _waveDatas;
         private Dictionary<WaveData, List<EnemySettings>>_enemySettingsView;
         private int _currentWaveId = 0;
@@ -56,6 +58,34 @@ namespace LevelEditor.UI
             _deleteCurrentWave.onClick.RemoveListener(OnDeleteButtonPressed);
             _addNewWave.onClick.RemoveListener(OnAddButtonPressed);
             _addEnemiesButton.onClick.RemoveListener(OnAddEnemiesButtonPressed);
+        }
+
+        public void FillWaveDatasWithEnemyDatas()
+        {
+            foreach (var waveDataAndSettingsList in _enemySettingsView)
+            {
+                if (waveDataAndSettingsList.Value==null)
+                    continue;
+
+                if (waveDataAndSettingsList.Value.Count==0)
+                    continue;
+
+                List<WaveEnemyData> waveEnemyDatas = new List<WaveEnemyData>();
+
+                foreach (EnemySettings enemySettings in waveDataAndSettingsList.Value)
+                {
+                    EnemyData enemyData = new EnemyData();
+                    enemyData.id = enemySettings.EnemyId;
+
+                    WaveEnemyData waveEnemyData = new WaveEnemyData();
+                    waveEnemyData.count = enemySettings.Count;
+                    waveEnemyData.enemyData = enemyData;
+
+                    waveEnemyDatas.Add(waveEnemyData);
+                }
+
+                waveDataAndSettingsList.Key.waveEnemyData = waveEnemyDatas.ToArray();
+            }
         }
 
         private void OnPreviosButtonPressed()
@@ -183,6 +213,8 @@ namespace LevelEditor.UI
             EnemySettings enemySettings = Instantiate(_enemySettingsPrefab, _enemySettingsParent);
             enemySettingsOfWave.Add(enemySettings);
             enemySettings.deleteButtonPressed+=OnEnemySettingsDeleted;
+
+            enemySettings.Init(_enemiesDatabase, MAX_ENEMY_COUNT_IN_ENEMY_SETTINGS);
 
             
         }

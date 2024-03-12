@@ -15,6 +15,22 @@ public class SliderWithText : MonoBehaviour,IObservableValue<int>
 
     public int Value => (int)_slider.value;
 
+    public void RestoreDefaultValue()
+    {
+        _slider.value = _defaultValue;
+        OnSliderValueChanged(_defaultValue);
+    }
+
+    public void ChangeBorders(int minValue, int maxValue)
+    {
+        _slider.minValue = minValue;
+        _slider.maxValue = maxValue;
+
+        _defaultValue = Mathf.Max(_defaultValue, minValue);
+        _defaultValue = Mathf.Min(_defaultValue,maxValue);
+        OnSliderValueChanged(_defaultValue);
+    }
+
     private void Awake() 
     {
         _defaultValue = Value;
@@ -33,13 +49,6 @@ public class SliderWithText : MonoBehaviour,IObservableValue<int>
         _slider.onValueChanged.RemoveListener(OnSliderValueChanged);
         _inputField.onEndEdit.RemoveListener(OnInputValueChanged);
     }
-
-    public void RestoreDefaultValue()
-    {
-        _slider.value = _defaultValue;
-        OnSliderValueChanged(_defaultValue);
-    }
-
     private void OnSliderValueChanged(float value)
     {
         _inputField.text = value.ToString();

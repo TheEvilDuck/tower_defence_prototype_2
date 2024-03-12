@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using Waves;
 
 namespace Levels.Logic
 {
@@ -17,12 +18,13 @@ namespace Levels.Logic
             Grid.FillFromGridData(newGridData);
         }
 
-        public LevelData ConvertToLevelData(int startMoney, float timeToTheFirstWave)
+        public LevelData ConvertToLevelData(int startMoney, float timeToTheFirstWave, WaveData[] waveDatas)
         {
             LevelData levelData = new LevelData();
             levelData.startMoney = startMoney;
             levelData.firstWaveDelay = timeToTheFirstWave;
             levelData.gridData = Grid.ConvertToGridData();
+            levelData.waves = waveDatas;
 
             return levelData;
         }

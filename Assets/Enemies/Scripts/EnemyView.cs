@@ -23,7 +23,7 @@ namespace Enemies
             _colorAnimation = new ColorAnimation(_colorUpdater,new Color(1,0.2f,0.2f),_spriteRenderer);
 
             WiggleAnimationValueUpdater _positionUpdater = new WiggleAnimationValueUpdater(0,1f,100);
-            _positionAnimation = new RandomizedPositionAnimation(_positionUpdater,transform,new Vector2(0.2f,0.2f));
+            _positionAnimation = new RandomizedPositionAnimation(_positionUpdater,transform,new Vector2(0.1f,0.1f));
 
             _enemy.tookDamage+=OnEnemyTookDamage;
         }

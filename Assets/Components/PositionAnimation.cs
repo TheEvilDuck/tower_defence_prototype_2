@@ -4,12 +4,19 @@ using UnityEngine;
 public class PositionAnimation : Animation
 {
     protected readonly Transform _targetTrasform;
-    protected readonly Vector2 _offset;
+    protected Vector2 _offset;
     protected Vector2 _startPosition;
     public PositionAnimation(AnimationValueUpdater updater, Transform targetTransform, Vector2 offset) : base(updater)
     {
         _targetTrasform = targetTransform;
         _offset = offset;
+        _startPosition = _targetTrasform.position;
+    }
+
+    public void ChangeOffset(Vector2 offset)
+    {
+        _offset = offset;
+        _startPosition = _targetTrasform.position;
     }
 
     protected override void OnStop()

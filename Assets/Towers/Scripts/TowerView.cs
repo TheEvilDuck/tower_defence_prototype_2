@@ -10,25 +10,23 @@ namespace Towers.View
     {
         [SerializeField]private Tower _tower;
         [SerializeField]private SimpleSpriteAnimationComponent _particles;
+        [SerializeField]private ComponentsAnimator _animator;
         [SerializeField]private Transform _particlesPlace;
         [SerializeField]private Transform _particlesTransform;
         [SerializeField]private float _attackRecoil = 10f;
 
         private Transform _targetTransform;
-        private float _currentOffsetRecoil = 0;
-        private Vector3 _positionBeforeRecoil;
         private Vector3 _directionToLastTarget;
+        private PositionAnimation _recoilAnimation;
 
         private void Awake() 
         {
             _tower.targetChanged+=OnTowerTargetChanged;
             _tower.attacked+=OnTowerAttacked;
             _particles.animationEnd+=OnParticlesAnimationEnd;
-        }
 
-        private void Start() 
-        {
-            _positionBeforeRecoil = transform.position;   
+            WiggleAnimationValueUpdater updater = new WiggleAnimationValueUpdater(0,1f,90);
+            _recoilAnimation = new PositionAnimation(updater,transform, Vector2.zero);
         }
 
         private void OnDestroy() 
@@ -40,13 +38,6 @@ namespace Towers.View
 
         private void Update() 
         {
-
-            if (_currentOffsetRecoil>0)
-            {
-                transform.position=_positionBeforeRecoil-_directionToLastTarget.normalized*_currentOffsetRecoil;
-                _currentOffsetRecoil-=Time.deltaTime;
-            }
-
             if (_targetTransform==null)
                 return;
 
@@ -70,7 +61,9 @@ namespace Towers.View
             _particlesTransform.position = _particlesPlace.position;
             _particles.StartAnimation();
 
-            _currentOffsetRecoil = _attackRecoil;
+            _recoilAnimation.ChangeOffset(-_directionToLastTarget.normalized*_attackRecoil);
+            _animator.AddAnimation(_recoilAnimation);
+
         }
         private void OnParticlesAnimationEnd() => _particles.gameObject.SetActive(false);
     }

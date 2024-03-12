@@ -7,7 +7,6 @@ namespace LevelEditor.UI
     public class LevelSavingUI: MonoBehaviour
     {
         private const string COMPLETE_MESSAGE = "Level succesfully saved";
-
         [SerializeField]Transform _rotatableCircle;
         [SerializeField]float _rotationSpeed = 1f;
         [SerializeField]TMP_Text _text;

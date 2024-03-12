@@ -9,6 +9,7 @@ namespace Towers
         MainBuilding = 0,
         Test = 1,
         Test2 = 2,
-        DamageTower = 3
+        DamageTower = 3,
+        BigCanon = 4
     }
 }
