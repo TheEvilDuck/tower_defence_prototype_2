@@ -29,6 +29,7 @@ namespace LevelEditor
         [SerializeField]private LoadMenu _loadMenu;
         [SerializeField]private UIInputBlocker _uIInputBlocker;
         [SerializeField]private LevelIconButton _levelIconButtonPrefab;
+        [SerializeField]private LevelSavingResultDatabase _levelSavingResultDatabase;
 
         private Level _level;
         private LevelEditor _levelEditor;
@@ -57,14 +58,17 @@ namespace LevelEditor
         private LevelLoader _levelLoader;
         private LevelIconsAndLevelLoaderMediator _levelIconsAndLevelLoaderMediator;
         private LevelSettingsMediator _levelSettingsMediator;
+        private LevelSavingResultFabric _levelSavingResultFabric;
 
         private void Awake() 
         {
+            _levelSavingResultFabric = new LevelSavingResultFabric(_levelSavingResultDatabase);
+
             _level = new Level(_testLevelData);
             _levelLoader = new LevelLoader();
             _playerInput = new PlayerInput();
             _levelIconMaker = new LevelIconMaker(_screenShotCamera, _screenShotRenderTexture);
-            _levelEditor = new LevelEditor(_level,_levelIconMaker,_levelLoader);
+            _levelEditor = new LevelEditor(_level,_levelIconMaker,_levelLoader,_levelSavingResultFabric);
             _tileController = new TileController(_tileConfig,_groundTileMap,_roadTileMap);
             _sceneLoader = new SceneLoader();
             _menuParentsManager = new MenuParentsManager();
@@ -153,6 +157,7 @@ namespace LevelEditor
             _lineSelector.Disable();
             _levelEditorInputBlockerMediator.Dispose();
             _levelIconsAndLevelLoaderMediator.Dispose();
+            _levelSettingsMediator.Dispose();
         }
 
         private void Update() 

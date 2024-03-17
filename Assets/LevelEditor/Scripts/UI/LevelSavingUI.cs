@@ -6,7 +6,6 @@ namespace LevelEditor.UI
 {
     public class LevelSavingUI: MonoBehaviour
     {
-        private const string COMPLETE_MESSAGE = "Level succesfully saved";
         [SerializeField]Transform _rotatableCircle;
         [SerializeField]float _rotationSpeed = 1f;
         [SerializeField]TMP_Text _text;
@@ -38,17 +37,19 @@ namespace LevelEditor.UI
             _text.gameObject.SetActive(false);
         }
 
-        public void OnSaveComplete()
-        {
-            _text.text = COMPLETE_MESSAGE;
-            _text.gameObject.SetActive(true);
-            _rotatableCircle.gameObject.SetActive(false);
-            _okButton.gameObject.SetActive(true);
-        }
+        public void OnLevelSaveTried(string message) => ShowMessage(message);
 
         public void Hide()
         {
             gameObject.SetActive(false);
+        }
+
+        private void ShowMessage(string message)
+        {
+            _text.text = message;
+            _text.gameObject.SetActive(true);
+            _rotatableCircle.gameObject.SetActive(false);
+            _okButton.gameObject.SetActive(true);
         }
     }
 }

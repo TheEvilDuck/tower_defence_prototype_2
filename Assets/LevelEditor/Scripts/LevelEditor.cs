@@ -11,9 +11,10 @@ namespace LevelEditor
 {
     public class LevelEditor: IDisposable
     {
-        public event Action LevelSaved;
+        public event Action<LevelSavingResult> levelSaveTried;
 
         private const int MAX_COMMANDS_BUFFER = 50;
+        private const int MIN_LEVEL_NAME_LENGTH = 3;
         private Level _level;
         private Stack<ICommand>_performedCommands;
         private LevelLoader _levelLoader;
@@ -22,13 +23,15 @@ namespace LevelEditor
         private Tool _currentTool;
         private LevelData _currentLevelData;
         private string _currentLevelName;
+        private readonly LevelSavingResultFabric _levelSavingResultFabric;
 
-        public LevelEditor(Level level, LevelIconMaker levelIconMaker, LevelLoader levelLoader)
+        public LevelEditor(Level level, LevelIconMaker levelIconMaker, LevelLoader levelLoader, LevelSavingResultFabric levelSavingResultFabric)
         {
             _level = level;
             _levelLoader = levelLoader;
             _levelIconMaker = levelIconMaker;
             _currentLevelData = new LevelData();
+            _levelSavingResultFabric = levelSavingResultFabric;
 
             _performedCommands = new Stack<ICommand>(MAX_COMMANDS_BUFFER);
         }
@@ -77,7 +80,18 @@ namespace LevelEditor
         {
             _currentLevelData.waves = waveDatas;
 
-            Debug.Log("Level is saving...");
+            if (string.IsNullOrWhiteSpace(_currentLevelName))
+            {
+                levelSaveTried.Invoke(_levelSavingResultFabric.Get(ResultType.EmptyName));
+                return;
+            }
+
+            if (_currentLevelName.Length < MIN_LEVEL_NAME_LENGTH)
+            {
+                levelSaveTried.Invoke(_levelSavingResultFabric.Get(ResultType.ShortName));
+                return;
+            }
+
             await _levelLoader.SaveLevel(
                 _currentLevelName,
                 _level.ConvertToLevelData(_currentLevelData.startMoney, _currentLevelData.firstWaveDelay, _currentLevelData.waves),
@@ -87,19 +101,17 @@ namespace LevelEditor
 
         private async void OnLevelSaved()
         {
-            Debug.Log("Level saved");
             await _levelLoader.CreateLevelIcon(_currentLevelName,_levelIconMaker.MakeLevelIcon(),OnLevelIconCreated);
         }
 
         private void OnLevelSaveFailed()
         {
-            Debug.Log("Level save failed");
+            levelSaveTried.Invoke(_levelSavingResultFabric.Get(ResultType.Error));
         }
 
         private void OnLevelIconCreated()
         {
-            Debug.Log("Icon created");
-            LevelSaved?.Invoke();
+            levelSaveTried.Invoke(_levelSavingResultFabric.Get(ResultType.Success));
         }
 
         private void OnToolUsingCompleted(ICommand resultCommand)

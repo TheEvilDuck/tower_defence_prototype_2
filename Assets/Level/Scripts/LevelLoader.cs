@@ -5,6 +5,7 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using LevelEditor;
 using UnityEngine;
 
 namespace Levels.Logic
@@ -56,7 +57,7 @@ namespace Levels.Logic
                 throw exception;
             }
         }
-        public async Task SaveLevel(string levelName, LevelData levelData, Action onLevelSave, Action OnLevelSaveFailed)
+        public async Task SaveLevel(string levelName, LevelData levelData, Action OnLevelSave, Action OnLevelSaveFailed)
         {
             string fullPath = GetFullLevelPath(levelName);
 
@@ -70,7 +71,7 @@ namespace Levels.Logic
                 OnLevelSaveFailed?.Invoke();
                 throw exception;
             }
-            onLevelSave?.Invoke();
+            OnLevelSave?.Invoke();
             
         }
 

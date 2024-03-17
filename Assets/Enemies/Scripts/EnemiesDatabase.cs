@@ -8,7 +8,8 @@ namespace Enemies
     public enum EnemyEnum
     {
         Gray = 0,
-        Big = 1
+        Big = 1,
+        Pink = 2
     }
     [CreateAssetMenu(fileName = "Enemies database", menuName = "Configs/Database/New enemies database")]
     public class EnemiesDatabase : EnumDataBase<EnemyEnum,EnemyConfig>

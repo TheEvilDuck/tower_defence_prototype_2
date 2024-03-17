@@ -94,7 +94,7 @@ namespace LevelEditor
             _level.Grid.cellChanged+=OnCellChanged;
             _level.Grid.cellRemoved+=OnCellRemoved;
             _level.Grid.cellAdded+=OnCellAdded;
-            _levelEditor.LevelSaved+=OnLevelSaved;
+            _levelEditor.levelSaveTried+=OnLevelSaveTried;
             _undoKeyCombination.Down+=OnUndoKeyCombinationDown;
             _saveKeyCombination.Down+=OnSaveKeyCombinationDown;
             _drawKey.Down+=OnDrawKeyDown;
@@ -117,7 +117,7 @@ namespace LevelEditor
             _saveKeyCombination.Down-=OnSaveKeyCombinationDown;
             _level.Grid.cellRemoved-=OnCellRemoved;
             _level.Grid.cellAdded-=OnCellAdded;
-            _levelEditor.LevelSaved-=OnLevelSaved;
+            _levelEditor.levelSaveTried-=OnLevelSaveTried;
             _drawKey.Down-=OnDrawKeyDown;
             _fillKey.Down-=OnFillKeyDown;
             _lineKey.Down-=OnLineKeyDown;
@@ -158,17 +158,17 @@ namespace LevelEditor
             _tileController.RemoveRoadAt(cellId);
         }
 
-        private void OnLevelSaved()
+        private void OnLevelSaveTried(LevelSavingResult levelSavingResult)
         {
-            _levelSavingUI.OnSaveComplete();
+            _levelSavingUI.OnLevelSaveTried(levelSavingResult.message);
         }
 
         private void OnUndoKeyCombinationDown() => _levelEditor.UndoLastCommand();
         private void OnSaveKeyCombinationDown()
         {
             _waveEditor.FillWaveDatasWithEnemyDatas();
-            _levelEditor.SaveLevel(_waveEditor.WaveDatas.ToArray());
             _levelSavingUI.Show();
+            _levelEditor.SaveLevel(_waveEditor.WaveDatas.ToArray());
         }
         private void OnExitButtonPressed() => _sceneLoader.LoadMainMenu();
         private void OnSettingsButtonPressed() => _menuParentsManager.Show(_settingsMenu);
