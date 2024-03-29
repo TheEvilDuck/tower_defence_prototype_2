@@ -6,6 +6,7 @@ using Enemies;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Waves;
 using static TMPro.TMP_Dropdown;
 
 public class EnemySettings : MonoBehaviour
@@ -40,6 +41,12 @@ public class EnemySettings : MonoBehaviour
         _dropDown.AddOptions(_options);
 
         _slider.ChangeBorders(1, maxEnemiesCount);
+    }
+
+    public void FillFromWaveEnemyData(WaveEnemyData waveEnemyData)
+    {
+        _slider.SetValue(waveEnemyData.count);
+        _dropDown.value = (int)waveEnemyData.enemyData.id;
     }
 
     private void OnEnable() 

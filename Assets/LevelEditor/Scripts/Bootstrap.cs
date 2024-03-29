@@ -125,11 +125,11 @@ namespace LevelEditor
 
             _levelIconsLoader = new LevelIconsLoader(_levelLoader,_loadMenu.ParentToIcons,_levelIconButtonPrefab);
 
-            _levelIconsAndLevelLoaderMediator = new LevelIconsAndLevelLoaderMediator(_levelLoader,_levelIconsLoader, _levelEditor,_level);
+            _levelIconsAndLevelLoaderMediator = new LevelIconsAndLevelLoaderMediator(_levelLoader,_levelIconsLoader, _levelEditor,_level,_wavesEditor,_settingsMenu);
 
             _levelSettingsMediator = new LevelSettingsMediator(_settingsMenu, _levelEditor);
 
-            
+            _wavesEditor.Init();
         }
 
         private void Start() 

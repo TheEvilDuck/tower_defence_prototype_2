@@ -160,6 +160,13 @@ namespace LevelEditor
 
         private void OnLevelSaveTried(LevelSavingResult levelSavingResult)
         {
+            if (levelSavingResult.Type == ResultType.MapOverride)
+            {
+                _levelSavingUI.ShowCancelButton();
+                _levelSavingUI.OkButtonPressed.AddListener(OnOkSaveButtonClickedWhileOverriding);
+            }
+
+            _levelSavingUI.Show();
             _levelSavingUI.OnLevelSaveTried(levelSavingResult.message);
         }
 
@@ -168,7 +175,7 @@ namespace LevelEditor
         {
             _waveEditor.FillWaveDatasWithEnemyDatas();
             _levelSavingUI.Show();
-            _levelEditor.SaveLevel(_waveEditor.WaveDatas.ToArray());
+            _levelEditor.SaveLevel(_waveEditor.WaveDatas.ToArray(), false);
         }
         private void OnExitButtonPressed() => _sceneLoader.LoadMainMenu();
         private void OnSettingsButtonPressed() => _menuParentsManager.Show(_settingsMenu);
@@ -179,6 +186,14 @@ namespace LevelEditor
             _settingsMenu.RestoreDefaultValues();
             _levelEditor.CleaerCommandsBuffer();
             _level.Grid.Clear();
+            _waveEditor.DeleteCurrentData();
+        }
+
+        private void OnOkSaveButtonClickedWhileOverriding()
+        {
+            _levelSavingUI.OkButtonPressed.RemoveListener(OnOkSaveButtonClickedWhileOverriding);
+            
+            _levelEditor.SaveLevel(_waveEditor.WaveDatas.ToArray(),true);
         }
     }
 }

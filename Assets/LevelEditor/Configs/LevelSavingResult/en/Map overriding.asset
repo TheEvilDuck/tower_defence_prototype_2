@@ -10,7 +10,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7564b1e9dfb54f546a8f9e1f0f51a2af, type: 3}
-  m_Name: Invalid name
+  m_Name: Map overriding
   m_EditorClassIdentifier: 
-  <message>k__BackingField: "\u042D\u0442\u043E \u0438\u043C\u044F \u043D\u0435\u043B\u044C\u044F
-    \u0438\u0441\u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u044C"
+  <message>k__BackingField: Map with this name is already exist. Override?

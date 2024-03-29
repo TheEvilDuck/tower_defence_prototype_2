@@ -6,12 +6,12 @@ namespace LevelEditor
 {
     public class LevelSavingResult
     {
-        private readonly ResultType _type;
+        public readonly ResultType Type;
         public string message;
 
         public LevelSavingResult(ResultType resultType)
         {
-            _type = resultType;
+            Type = resultType;
         }
     }
 
@@ -21,7 +21,8 @@ namespace LevelEditor
         EmptyName,
         ShortName,
         InvalidName,
-        Error
+        Error,
+        MapOverride
     }
 
 }

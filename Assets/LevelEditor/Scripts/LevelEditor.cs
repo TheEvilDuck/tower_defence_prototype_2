@@ -76,7 +76,7 @@ namespace LevelEditor
         public void UpdateLevelStartMoney(int startMoney) => _currentLevelData.startMoney = startMoney;
         public void UpdateLevelFirstWaveDelay(float delay) => _currentLevelData.firstWaveDelay = delay;
 
-        public async void SaveLevel(WaveData[] waveDatas)
+        private async Task SaveLevel(WaveData[] waveDatas)
         {
             _currentLevelData.waves = waveDatas;
 
@@ -97,6 +97,20 @@ namespace LevelEditor
                 _level.ConvertToLevelData(_currentLevelData.startMoney, _currentLevelData.firstWaveDelay, _currentLevelData.waves),
                 OnLevelSaved,
                 OnLevelSaveFailed);
+        }
+
+        public async void SaveLevel(WaveData[] waveDatas, bool mapOverride)
+        {
+            if (_levelLoader.LevelExists(_currentLevelName))
+            {
+                if (!mapOverride)
+                {
+                    levelSaveTried.Invoke(_levelSavingResultFabric.Get(ResultType.MapOverride));
+                    return;
+                }
+            }
+
+            await SaveLevel(waveDatas);
         }
 
         private async void OnLevelSaved()

@@ -12,4 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7564b1e9dfb54f546a8f9e1f0f51a2af, type: 3}
   m_Name: Short name
   m_EditorClassIdentifier: 
-  <message>k__BackingField: Level name must not be too short
+  <message>k__BackingField: "\u0418\u043C\u044F \u0441\u043B\u0438\u0448\u043A\u043E\u043C
+    \u043A\u043E\u0440\u043E\u0442\u043A\u043E\u0435"

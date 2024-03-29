@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Common.Interfaces;
 using Enemies;
+using Levels.Logic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -27,8 +28,29 @@ namespace LevelEditor.UI
         private List<WaveData> _waveDatas;
         private Dictionary<WaveData, List<EnemySettings>>_enemySettingsView;
         private int _currentWaveId = 0;
+        private bool _inited = false;
         public bool Active => gameObject.activeInHierarchy;
         public IEnumerable<WaveData> WaveDatas => _waveDatas;
+        private int CurrentWaveId
+        {
+            get
+            {
+                if (_waveDatas.Count>0)
+                    _currentWaveId = Mathf.Clamp(_currentWaveId,0,_waveDatas.Count-1);
+                else
+                    _currentWaveId = 0;
+
+                return _currentWaveId;
+            }
+
+            set
+            {
+                if (_waveDatas.Count > 0)
+                    _currentWaveId = Mathf.Clamp(value,0,_waveDatas.Count-1);
+                else
+                    _currentWaveId = 0;
+            }
+        }
 
         public void Hide() => gameObject.SetActive(false);
 
@@ -36,10 +58,8 @@ namespace LevelEditor.UI
 
         private void Awake() 
         {
-            _waveDatas = new List<WaveData>();
-            _enemySettingsView = new Dictionary<WaveData, List<EnemySettings>>();
-            _addEnemiesButton.gameObject.SetActive(false);
-            UpdateCounter();
+            if (!_inited)
+                Init();
         }
 
         private void OnEnable() 
@@ -49,6 +69,7 @@ namespace LevelEditor.UI
             _deleteCurrentWave.onClick.AddListener(OnDeleteButtonPressed);
             _addNewWave.onClick.AddListener(OnAddButtonPressed);
             _addEnemiesButton.onClick.AddListener(OnAddEnemiesButtonPressed);
+            _timeToTheNextWaveSlider.changed+=OnTimeToTheNextWaveSliderChanged;
         }
 
         private void OnDisable() 
@@ -58,10 +79,90 @@ namespace LevelEditor.UI
             _deleteCurrentWave.onClick.RemoveListener(OnDeleteButtonPressed);
             _addNewWave.onClick.RemoveListener(OnAddButtonPressed);
             _addEnemiesButton.onClick.RemoveListener(OnAddEnemiesButtonPressed);
+            _timeToTheNextWaveSlider.changed-=OnTimeToTheNextWaveSliderChanged;
+        }
+
+        public void Init()
+        {
+            _waveDatas = new List<WaveData>();
+            _enemySettingsView = new Dictionary<WaveData, List<EnemySettings>>();
+            _addEnemiesButton.gameObject.SetActive(false);
+            UpdateCounter();
+            _inited = true;
+        }
+
+        public void DeleteCurrentData()
+        {
+            if (_waveDatas.Count == 0)
+                return;
+
+            for (_currentWaveId = 0; _currentWaveId<_waveDatas.Count;_currentWaveId++)
+            {
+                if (_enemySettingsView.TryGetValue(_waveDatas[_currentWaveId], out List<EnemySettings> enemySettingsList))
+                {
+                    for (int i = enemySettingsList.Count-1;i>=0;i--)
+                    {
+                        enemySettingsList[i].Delete();
+                    }
+                }
+            }
+
+            _enemySettingsView.Clear();
+            _waveDatas.Clear();
+            _currentWaveId = 0;
+
+            UpdateCounter();
+            _addEnemiesButton.gameObject.SetActive(false);
+        }
+
+        public void LoadFromLevelData(LevelData levelData)
+        {
+            DeleteCurrentData();
+            CurrentWaveId = 0;
+
+            foreach (WaveData waveData in levelData.waves)
+            {
+                if (!TryAddNewWave(waveData))
+                    break;
+
+                if (!_enemySettingsView.TryGetValue(waveData, out List<EnemySettings> enemySettingsOfWave))
+                    continue;
+
+                foreach (WaveEnemyData waveEnemyData in waveData.waveEnemyData)
+                {
+                    EnemySettings enemySettings = Instantiate(_enemySettingsPrefab, _enemySettingsParent);
+                    enemySettingsOfWave.Add(enemySettings);
+                    enemySettings.deleteButtonPressed+=OnEnemySettingsDeleted;
+
+                    enemySettings.Init(_enemiesDatabase, MAX_ENEMY_COUNT_IN_ENEMY_SETTINGS);
+                    enemySettings.FillFromWaveEnemyData(waveEnemyData);
+
+                    enemySettings.Hide();
+                }
+
+                CurrentWaveId++;
+
+                _timeToTheNextWaveSlider.SetValue((int)waveData.timeToTheNextWave);
+            }
+
+            CurrentWaveId = 0;
+
+            if (levelData.waves.Length>0)
+            {
+                CurrentWaveId = levelData.waves.Length - 1;
+                _addEnemiesButton.gameObject.SetActive(true);
+
+                ShowCurrentEnemySettings();
+            }
+            
+            UpdateCounter();
         }
 
         public void FillWaveDatasWithEnemyDatas()
         {
+            if (_waveDatas.Count == 0)
+                return;
+
             foreach (var waveDataAndSettingsList in _enemySettingsView)
             {
                 if (waveDataAndSettingsList.Value==null)
@@ -88,53 +189,49 @@ namespace LevelEditor.UI
             }
         }
 
-        private void OnPreviosButtonPressed()
+        private void OnPreviosButtonPressed() => OffsetWave(-1);
+        private void OnNextButtonPressed() => OffsetWave(1);
+
+        private void OffsetWave(int offset)
         {
-            if (_waveDatas.Count==0)
+             if (_waveDatas.Count==0)
                 return;
 
-            if (_enemySettingsView.TryGetValue(_waveDatas[_currentWaveId], out List<EnemySettings> enemySettingsOfPreviousWave))
-            {
-                foreach(EnemySettings enemySettings in enemySettingsOfPreviousWave)
-                    enemySettings.Hide();
-            }
+            if (CurrentWaveId+offset==CurrentWaveId)
+                return;
 
-            _currentWaveId--;
+            HideCurrentEnemySettings();
 
-            if (_currentWaveId<0)
-                _currentWaveId = 0;
+            CurrentWaveId+=offset;
 
-            if (_enemySettingsView.TryGetValue(_waveDatas[_currentWaveId], out List<EnemySettings> enemySettingsOfWave))
-            {
-                foreach(EnemySettings enemySettings in enemySettingsOfWave)
-                    enemySettings.Show();
-            }
+            ShowCurrentEnemySettings();
 
             UpdateCounter();
+            _timeToTheNextWaveSlider.SetValue((int)_waveDatas[CurrentWaveId].timeToTheNextWave);
         }
-        private void OnNextButtonPressed()
+
+        private void HideCurrentEnemySettings()
         {
             if (_waveDatas.Count==0)
                 return;
 
-            if (_enemySettingsView.TryGetValue(_waveDatas[_currentWaveId], out List<EnemySettings> enemySettingsOfPreviousWave))
+            if (_enemySettingsView.TryGetValue(_waveDatas[CurrentWaveId], out List<EnemySettings> enemySettingsOfPreviousWave))
             {
                 foreach(EnemySettings enemySettings in enemySettingsOfPreviousWave)
                     enemySettings.Hide();
             }
+        }
 
-            _currentWaveId++;
+        private void ShowCurrentEnemySettings()
+        {
+            if (_waveDatas.Count==0)
+                return;
 
-            if (_currentWaveId>=_waveDatas.Count)
-                _currentWaveId = _waveDatas.Count-1;
-
-            if (_enemySettingsView.TryGetValue(_waveDatas[_currentWaveId], out List<EnemySettings> enemySettingsOfWave))
+            if (_enemySettingsView.TryGetValue(_waveDatas[CurrentWaveId], out List<EnemySettings> enemySettingsOfPreviousWave))
             {
-                foreach(EnemySettings enemySettings in enemySettingsOfWave)
+                foreach(EnemySettings enemySettings in enemySettingsOfPreviousWave)
                     enemySettings.Show();
             }
-
-            UpdateCounter();
         }
 
         private void OnDeleteButtonPressed()
@@ -142,52 +239,52 @@ namespace LevelEditor.UI
             if (_waveDatas.Count == 0)
                 return;
 
-            if (_enemySettingsView.TryGetValue(_waveDatas[_currentWaveId], out List<EnemySettings> enemySettingsOfDeletedWave))
+            if (_enemySettingsView.TryGetValue(_waveDatas[CurrentWaveId], out List<EnemySettings> enemySettingsOfDeletedWave))
             {   
                 for (int i = enemySettingsOfDeletedWave.Count-1; i>=0;i--)
                     enemySettingsOfDeletedWave[i].Delete();
 
-                _enemySettingsView.Remove(_waveDatas[_currentWaveId]);
+                _enemySettingsView.Remove(_waveDatas[CurrentWaveId]);
             }
 
-            _waveDatas.RemoveAt(_currentWaveId);
+            _waveDatas.RemoveAt(CurrentWaveId);
 
-            if (_currentWaveId>=_waveDatas.Count&&_waveDatas.Count!=0&&_currentWaveId>0)
-            {   
-                _currentWaveId--;
-            }
+            CurrentWaveId--;
 
             if (_waveDatas.Count==0)
                 _addEnemiesButton.gameObject.SetActive(false);
             else
             {
-                if (_enemySettingsView.TryGetValue(_waveDatas[_currentWaveId], out List<EnemySettings> enemySettingsOfWave))
-                {
-                    foreach(EnemySettings enemySettings in enemySettingsOfWave)
-                        enemySettings.Show();
-                }
+                ShowCurrentEnemySettings();
             }
             
 
             UpdateCounter();
         }
-        private void OnAddButtonPressed()
+
+        private bool TryAddNewWave(WaveData waveData)
         {
             if (_waveDatas.Count>=MAX_WAVES_COUNT)
-                return;
+                return false;
             
-            _waveDatas.Add(new WaveData());
-            _enemySettingsView.Add(_waveDatas[_waveDatas.Count-1], new List<EnemySettings>());
+            _waveDatas.Add(waveData);
+            _enemySettingsView.Add(waveData, new List<EnemySettings>());
             _addEnemiesButton.gameObject.SetActive(true);
             UpdateCounter();
+
+            return true;
         }
+        private void OnAddButtonPressed() => TryAddNewWave(new WaveData());
 
         private void UpdateCounter()
         {
-            int currentIdView = _currentWaveId;
+            int currentIdView = CurrentWaveId;
 
             if (_waveDatas.Count>0)
-                currentIdView = _currentWaveId+1;
+            {
+                currentIdView = CurrentWaveId+1;
+                _timeToTheNextWaveSlider.SetValue((int)_waveDatas[CurrentWaveId].timeToTheNextWave);
+            }
 
             _counter.text = $"Wave: {currentIdView}/{_waveDatas.Count}";
         }
@@ -227,6 +324,14 @@ namespace LevelEditor.UI
                 throw new System.Exception($"You're trying to access wrong wavedata at {_currentWaveId}");
 
             enemySettingsOfWave.Remove(enemySettings);
+        }
+
+        private void OnTimeToTheNextWaveSliderChanged(int value)
+        {
+            if (_waveDatas.Count>0)
+            {
+                _waveDatas[_currentWaveId].timeToTheNextWave = value;
+            }
         }
     }
 }

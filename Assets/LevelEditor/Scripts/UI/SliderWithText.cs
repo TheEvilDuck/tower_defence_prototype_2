@@ -31,6 +31,14 @@ public class SliderWithText : MonoBehaviour,IObservableValue<int>
         OnSliderValueChanged(_defaultValue);
     }
 
+    public void SetValue(int newValue)
+    {
+        if (newValue<_slider.minValue||newValue>_slider.maxValue)
+            throw new ArgumentOutOfRangeException("Value is our of slider's range");
+
+        _slider.value = newValue;
+    }
+
     private void Awake() 
     {
         _defaultValue = Value;
