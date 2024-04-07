@@ -16,6 +16,10 @@ namespace Levels.Logic
         public event Action<Vector2Int>cellAdded;
         public event Action<Vector2Int> cellRemoved;
 
+        public float CellSize => _cellSize;
+
+        public int GridSize => _cells.GetLength(0);
+
         public Grid(int gridSize, float cellSize)
         {
             _cells = new Cell[gridSize,gridSize];

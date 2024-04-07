@@ -7,9 +7,11 @@ namespace GamePlay
     public class EnemyFactory
     {
         private EnemiesDatabase _enemies;
-        public EnemyFactory(EnemiesDatabase enemies)
+        private PathFinder _pathFinder;
+        public EnemyFactory(EnemiesDatabase enemies, PathFinder pathFinder)
         {
             _enemies = enemies;
+            _pathFinder = pathFinder;
         }
         public Enemy Get(EnemyEnum enemyid)
         {

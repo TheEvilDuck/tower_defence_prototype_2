@@ -19,6 +19,7 @@ namespace Services.PlayerInput
         public event Action<KeyCode[]>keyCombinationDown;
         public event Action<KeyCode>keyHold;
         public event Action<KeyCode>keyDown;
+        public event Action<float>mouseWheelScrolled;
 
         //можно будет в меню клавиши назначать, сохранять в конфиг, а потом на сцене и в редакторе подгружать с конфига
         private List<KeyCode> _watchingKeys;
@@ -76,6 +77,9 @@ namespace Services.PlayerInput
 
             if (Input.GetMouseButtonUp(1))
                 mouseRightUp?.Invoke(mouseScreenPosition);
+
+            mouseWheelScrolled?.Invoke(Input.mouseScrollDelta.y);
+
         }
 
         private void HandleMovementKeys()

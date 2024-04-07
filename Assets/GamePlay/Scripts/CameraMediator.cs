@@ -15,11 +15,22 @@ namespace GamePlay
             _cameraManipulation = cameraManipulation;
 
             _playerInput.movementInput+=_cameraManipulation.MoveInDirection;
+
+           _playerInput.mouseWheelScrolled+=OnMouseWheelScrolled;
+        }
+
+        private void OnMouseWheelScrolled(float direction)
+        {
+            if (direction==0)
+                return;
+
+            _cameraManipulation.Zoom(direction<0);
         }
 
         public void Dispose()
         {
             _playerInput.movementInput-=_cameraManipulation.MoveInDirection;
+            _playerInput.mouseWheelScrolled-=OnMouseWheelScrolled;
         }
     }
 }

@@ -24,6 +24,7 @@ namespace GamePlay
         [SerializeField]private Tilemap _roadTileMap;
         [SerializeField]private TowersDatabase _towersDatabase;
         [SerializeField]private TowersPanel _towersPanel;
+        [SerializeField]private string _testLevelName;
         private PlayerInput _playerInput;
         private CameraManipulation _cameraManipulation;
         private CameraMediator _cameraMediator;
@@ -36,6 +37,7 @@ namespace GamePlay
         private PlacableBuilder _builder;
         private BuilderMediator _builderMediator;
         private PlacableFactory _placableFactory;
+        private PathFinder _pathFinder;
         private void Awake() 
         {
             _playerInput = new PlayerInput();
@@ -43,7 +45,7 @@ namespace GamePlay
             _cameraMediator = new CameraMediator(_playerInput,_cameraManipulation);
             _levelLoader = new LevelLoader();
 
-            if (!_levelLoader.TryLoadLevel("test", out LevelData levelData))
+            if (!_levelLoader.TryLoadLevel(_testLevelName, out LevelData levelData))
                 throw new System.Exception("No level to load");
 
             _level = new Level(levelData);
@@ -54,7 +56,9 @@ namespace GamePlay
 
             _level.Grid.FillFromGridData(levelData.gridData);
 
-            _enemyFactory = new EnemyFactory(_enemiesDatabase);
+            _pathFinder = new PathFinder(_level.Grid);
+
+            _enemyFactory = new EnemyFactory(_enemiesDatabase,_pathFinder);
             //TO DO load wavedata from leveldata
             Wave[] waves = new Wave[1];
             EnemyData testEnemyData = new EnemyData();
@@ -83,6 +87,9 @@ namespace GamePlay
             _towersPanel.Init(_towersDatabase);
 
             _builderMediator = new BuilderMediator(_playerInput,_builder, _level.Grid,_towersPanel);
+
+            
+            _playerInput.mouseRightClicked+=OnPlayerInputRightClicked;
         }
 
         private void OnDestroy() 
@@ -90,12 +97,37 @@ namespace GamePlay
             _cameraMediator.Dispose();
             _levelAndTilesMediator.Dispose();
             _builderMediator.Dispose();
+            _playerInput.mouseRightClicked-=OnPlayerInputRightClicked;
         }
 
         void Update()
         {
             _playerInput.Update();
             _enemySpawner.Update();
+        }
+
+        private void OnPlayerInputRightClicked(Vector2 position)
+        {
+            Vector2Int gridPosition = _level.Grid.WorldPositionToGridPosition(position);
+        
+
+            foreach (Enemy enemy in _enemySpawner.Enemies)
+            {
+                Vector2Int enemyGridPosition = _level.Grid.WorldPositionToGridPosition(enemy.Position);
+
+                if (_pathFinder.TryFindPath(enemyGridPosition,gridPosition,out List<Vector2Int> result, true))
+                {
+                    List<Vector2> path = new List<Vector2>();
+
+                    foreach (Vector2Int gridPoint in result)
+                    {
+                        Vector2 worldPoint = _level.Grid.GridPositionToWorldPosition(gridPoint);
+                        path.Add(worldPoint);
+                    }
+
+                    enemy.UpdatePath(path);
+                }
+            }
         }
     }
 }

@@ -510,6 +510,7 @@ MonoBehaviour:
   _roadTileMap: {fileID: 323958081}
   _towersDatabase: {fileID: 11400000, guid: 2d557ace844a87041b02858e9806db33, type: 2}
   _towersPanel: {fileID: 1331212292}
+  _testLevelName: guga
 --- !u!4 &780897588
 Transform:
   m_ObjectHideFlags: 0

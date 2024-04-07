@@ -7,6 +7,7 @@ using Levels.Logic;
 using Levels.TileControl;
 using Services.PlayerInput;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace LevelEditor
 {
@@ -109,6 +110,7 @@ namespace LevelEditor
             _buttonsBar.loadButtonPressed+=OnLoadButtonPressed;
             _buttonsBar.deleteButtonPressed+=OnDeleteButtonPressed;
         }
+
 
         public void Dispose()
         {

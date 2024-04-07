@@ -8,9 +8,11 @@ namespace Enemies
 {
     public class Enemy : MonoBehaviour, IDamagable
     {
+        private const float POSITION_ACCURACY = 0.2f;
         public event Action tookDamage;
         private EnemyStats _baseStats;
         private LinkedList<EnemyStatsProvider> _statsModifiers;
+        private List<Vector2> _currentPath;
 
         public EnemyStats Stats
         {
@@ -26,7 +28,7 @@ namespace Enemies
             }
         }
 
-        public Vector3 Position => transform.position;
+        public Vector2 Position => transform.position;
 
         public void Init(int maxHealth, float walkSpeed)
         {
@@ -72,6 +74,30 @@ namespace Enemies
             Stats.ModifyHealth(-damage);
 
             tookDamage?.Invoke();
+        }
+
+        public void UpdatePath(List<Vector2> path)
+        {
+            _currentPath = path;
+        }
+
+        private void Update() 
+        {
+            if (_currentPath==null)
+                return;
+
+            if (_currentPath.Count==0)
+                return;
+
+            Vector2 directionVector = _currentPath[0]-Position;
+
+            if (directionVector.magnitude<=POSITION_ACCURACY)
+            {
+                _currentPath.RemoveAt(0);
+                return;
+            }
+
+            transform.Translate(directionVector.normalized*Stats.WalkSpeed*Time.deltaTime);
         }
     }
 }

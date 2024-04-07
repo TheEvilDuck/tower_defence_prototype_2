@@ -1,20 +1,27 @@
 using System;
+using Common.Interfaces;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace MainMenu
 {
-    public class MainMenuView : MonoBehaviour
+    public class MainMenuView : MonoBehaviour, IMenuParent
     {
         [SerializeField]private Button _playButton;
         [SerializeField]private Button _levelEditorButton;
         [SerializeField]private Button _settingsButton;
         [SerializeField]private Button _exitButton;
 
+
         public event Action playButtonPressed;
         public event Action levelEditorButtonPressed;
         public event Action settingsButtonPressed;
         public event Action exitButtonPressed;
+
+        public bool Active => gameObject.activeInHierarchy;
 
         private void OnEnable() 
         {
