@@ -53,6 +53,14 @@ namespace Levels.Logic
             }
         }
 
+        public bool HasRoadAt(Vector2Int position)
+        {
+            if (IsCellAt(position))
+                return _cells[position.x,position.y].HasRoad;
+
+            return false;
+        }
+
         public GridData ConvertToGridData()
         {
             GridData gridData = new GridData();

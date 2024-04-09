@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Drawing.Drawing2D;
 using Levels.Logic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Pool;
 using Grid = Levels.Logic.Grid;
@@ -11,6 +12,7 @@ public class PathFinder
 {
     private const int STRAIGHT_PATH_WEIGHT = 10;
     private const int DIAGONAL_PATH_WEIGHT = 14;
+    private const float ROAD_COST_MULTIPLIER = 0.1f;
     public static Vector2Int[] StraightDirections = 
     {
         new Vector2Int(0,1), new Vector2Int(1,0), new Vector2Int(0,-1), new Vector2Int(-1,0),
@@ -21,22 +23,28 @@ public class PathFinder
         new Vector2Int(-1,1), new Vector2Int(1,-1), new Vector2Int(-1,-1), new Vector2Int(1,1)
     };
     private Dictionary<Vector2Int,PathNode> _gridPathDatas;
-    private Queue<Vector2Int> _openList;
+    private List<Vector2Int> _openList;
     public PathFinder(Grid grid)
     {
         _gridPathDatas = new Dictionary<Vector2Int, PathNode>();
-        _openList = new Queue<Vector2Int>();
+        _openList = new List<Vector2Int>();
 
         for (int y = 0; y<grid.GridSize;y++)
         {
             for (int x = 0;x<grid.GridSize;x++)
             {
                 Vector2Int position = new Vector2Int(x,y);
-                PathNode pathNode = new PathNode(position);
+
+                float costMultiplier = 1f;
+
+                if (grid.HasRoadAt(position))
+                    costMultiplier = ROAD_COST_MULTIPLIER;
+
+                PathNode pathNode = new PathNode(position, costMultiplier);
 
                 _gridPathDatas.Add(position,pathNode);
 
-                pathNode.Valid  = grid.IsCellAt(position);
+                pathNode.Valid = grid.IsCellAt(position);
             }
         }
     }
@@ -44,14 +52,7 @@ public class PathFinder
     public bool TryFindPath(Vector2Int fromPosition, Vector2Int toPosition, out List<Vector2Int> result, bool useDiagonal = false)
     {
         _openList.Clear();
-
         result = new List<Vector2Int>();
-
-        if (!_gridPathDatas.ContainsKey(toPosition))
-            return false;
-
-        if (!_gridPathDatas[toPosition].Valid)
-            return false;
 
         if (!_gridPathDatas.ContainsKey(fromPosition))
             return false;
@@ -59,33 +60,38 @@ public class PathFinder
         if (!_gridPathDatas[fromPosition].Valid)
             return false;
 
-        _openList.Enqueue(fromPosition);
+        if (!_gridPathDatas.ContainsKey(toPosition))
+            return false;
 
-        foreach (KeyValuePair<Vector2Int,PathNode> keyValuePair in _gridPathDatas)
+        if (!_gridPathDatas[toPosition].Valid)
+            return false;
+
+        foreach (var keyValuePair in _gridPathDatas)
         {
-            keyValuePair.Value.IsClosed = false;
-            keyValuePair.Value.DistanceFromStart = 0;
-            keyValuePair.Value.DistanceToTarget = 0;
-            keyValuePair.Value.Weight = 0;
             keyValuePair.Value.PreviousNode = null;
+            keyValuePair.Value.DistanceFromStart = int.MaxValue;
+            keyValuePair.Value.DistanceToTarget = 0;
+            keyValuePair.Value.CalculateWeight();
+            keyValuePair.Value.IsClosed = false;
         }
 
-        while (_openList.Count>0)
+        _openList.Add(fromPosition);
+        _gridPathDatas[fromPosition].DistanceFromStart = 0;
+        _gridPathDatas[fromPosition].DistanceToTarget = GetManhatanDistanceBetween(fromPosition,toPosition);
+        _gridPathDatas[fromPosition].CalculateWeight();
+
+        while (_openList.Count > 0)
         {
-            Vector2Int currentPosition = _openList.Dequeue();
-            _gridPathDatas[currentPosition].IsClosed = true;
+            Vector2Int currentPosition = GetBestNextPositionFromOpenList();
 
-            if (currentPosition==toPosition)
+            if (currentPosition == toPosition)
             {
-                while (_gridPathDatas[currentPosition].PreviousNode!=null)
-                {
-                    result.Add(currentPosition);
-                    currentPosition = _gridPathDatas[currentPosition].PreviousNode.Position;
-                }
-
-                result.Reverse();
+                result = GenerateResultPath(currentPosition);
                 return true;
             }
+
+            _gridPathDatas[currentPosition].IsClosed = true;
+            _openList.Remove(currentPosition);
 
             CheckPositionsAround(currentPosition, useDiagonal, toPosition);
         }
@@ -95,50 +101,86 @@ public class PathFinder
 
     private void CheckPositionsAround(Vector2Int position, bool useDiagonal, Vector2Int targetPosition)
     {
-        HandleOffsets(StraightDirections, STRAIGHT_PATH_WEIGHT, position, targetPosition);
+        HandleOffsets(StraightDirections, position, targetPosition);
         
         if (useDiagonal)
-            HandleOffsets(DiagonalDirections, DIAGONAL_PATH_WEIGHT, position, targetPosition);
+            HandleOffsets(DiagonalDirections, position, targetPosition);
     }
 
-    private void HandleOffsets(Vector2Int[] offsets,int pathWeight, Vector2Int position, Vector2Int targetPosition)
+    private void HandleOffsets(Vector2Int[] offsets,Vector2Int position, Vector2Int targetPosition)
     {
         foreach (Vector2Int offset in offsets)
         {
-            if (!_gridPathDatas.ContainsKey(position+offset))
+            Vector2Int positionWithOffset = position+offset;
+
+            if (!_gridPathDatas.ContainsKey(positionWithOffset))
                 continue;
 
-            if (_gridPathDatas[position+offset].IsClosed||!_gridPathDatas[position+offset].Valid)
+            if (!_gridPathDatas[positionWithOffset].Valid)
                 continue;
 
-            //PathNode neightBor = new PathNode(cellData, cellData.Position+offset, pathWeight);
-            PathNode neightBor = _gridPathDatas[position+offset];
-            neightBor.PreviousNode = _gridPathDatas[position];
-            neightBor.DistanceFromStart = _gridPathDatas[position].DistanceFromStart+pathWeight;
+            if (_gridPathDatas[positionWithOffset].IsClosed)
+                continue;
 
-            int weight = _gridPathDatas[position].DistanceFromStart+GetManhatanDistanceBetween(position, position+offset);
+            int tentativeDistance = _gridPathDatas[position].DistanceFromStart+GetManhatanDistanceBetween(position,positionWithOffset);
 
-            if (weight < neightBor.DistanceFromStart||!_openList.Contains(position+offset))
+            if (tentativeDistance < _gridPathDatas[positionWithOffset].DistanceFromStart)
             {
-                neightBor.DistanceFromStart = weight;
-                neightBor.DistanceToTarget = GetManhatanDistanceBetween(position+offset, targetPosition);
+                _gridPathDatas[positionWithOffset].PreviousNode = _gridPathDatas[position];
+                _gridPathDatas[positionWithOffset].DistanceFromStart = tentativeDistance;
+                _gridPathDatas[positionWithOffset].DistanceToTarget = GetManhatanDistanceBetween(positionWithOffset, targetPosition);
+                _gridPathDatas[positionWithOffset].CalculateWeight();
 
-                if (!_openList.Contains(position+offset))
-                    _openList.Enqueue(position+offset);
+                if (!_openList.Contains(positionWithOffset))
+                    _openList.Add(positionWithOffset);
             }
         }
     }
 
+    private Vector2Int GetBestNextPositionFromOpenList()
+    {
+        Vector2Int result = _openList[0];
+
+        foreach (Vector2Int position in _openList)
+        {
+            if 
+            (
+                _gridPathDatas[position].Weight<_gridPathDatas[result].Weight||
+                _gridPathDatas[position].Weight==_gridPathDatas[result].Weight&&
+                _gridPathDatas[position].DistanceToTarget<_gridPathDatas[result].DistanceToTarget
+            )
+
+                result = position;
+        }
+
+        return result;
+    }
+
+    private List<Vector2Int> GenerateResultPath(Vector2Int lastPosition)
+    {
+        List<Vector2Int> result = new List<Vector2Int>();
+
+        Vector2Int currentPosition = lastPosition;
+
+        while (_gridPathDatas[currentPosition].PreviousNode!=null)
+        {
+            result.Add(currentPosition);
+            currentPosition = _gridPathDatas[currentPosition].PreviousNode.Position;
+        }
+
+        result.Reverse();
+
+        return result;
+    }
+
     private int GetManhatanDistanceBetween(Vector2Int from, Vector2Int to)
     {
-        /*int deltaX = Mathf.Abs(from.x - to.x);
-        int deltaY = Mathf.Abs(from.y - to.y);
+        int xDistance = Mathf.Abs(from.x - to.x);
+        int yDistance = Mathf.Abs(from.y - to.y);
 
-        if (deltaX > deltaY)
-            return DIAGONAL_PATH_WEIGHT * deltaY + STRAIGHT_PATH_WEIGHT * (deltaX - deltaY);
-        return DIAGONAL_PATH_WEIGHT * deltaX + STRAIGHT_PATH_WEIGHT * (deltaY - deltaX);*/
+        int remaining = Mathf.Abs(xDistance-yDistance);
 
-        return (int)(Vector2Int.Distance(from, to)*10f);
+        return DIAGONAL_PATH_WEIGHT * Mathf.Min(xDistance,yDistance) + STRAIGHT_PATH_WEIGHT * remaining;
     }
     
 
@@ -147,14 +189,25 @@ public class PathFinder
         public PathNode PreviousNode {get; set;}
         public int DistanceToTarget {get; set;}
         public int DistanceFromStart {get; set;}
-        public int Weight {get; set;}
+        public int Weight {get; private set;}
         public bool IsClosed {get; set;}
         public bool Valid {get; set;}
         public Vector2Int Position {get; private set;}
+        public float CoctMultiplier {get; private set;} = 1f;
 
-        public PathNode(Vector2Int position)
+        public PathNode(Vector2Int position, float costMultiplier)
         {
             Position = position;
+
+            if (costMultiplier <= 0 )
+                throw new ArgumentOutOfRangeException("Cost multiplier for nodes must not be less or equal 0");
+
+            CoctMultiplier = costMultiplier;
+        }
+
+        public void CalculateWeight()
+        {
+            Weight = DistanceFromStart+DistanceToTarget;
         }
     }
 }
