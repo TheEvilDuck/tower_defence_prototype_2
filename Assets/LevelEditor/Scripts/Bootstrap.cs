@@ -5,6 +5,7 @@ using LevelEditor.Selectors;
 using LevelEditor.UI;
 using Levels.Logic;
 using Levels.TileControl;
+using Levels.Tiles;
 using Services.CameraManipulation;
 using Services.PlayerInput;
 using UnityEngine;
@@ -14,7 +15,7 @@ namespace LevelEditor
 {
     public class Bootstrap : MonoBehaviour
     {
-        [SerializeField]private TileConfig _tileConfig;
+        [SerializeField]private TileDatabase _tileDatabase;
         [SerializeField]private LevelEditorConfig _levelEditorConfig;
         [SerializeField]private Tilemap _groundTileMap;
         [SerializeField]private Tilemap _roadTileMap;
@@ -47,6 +48,8 @@ namespace LevelEditor
         private KeyHandler _lineKey;
         private KeyHandler _drawToolKey;
         private KeyHandler _eraseToolKey;
+        private KeyHandler _switchTileKey;
+        private KeyHandler _roadToggleKey;
         private BrushSelector _brushSelector;
         private FillSelector _fillSelector;
         private LineSelector _lineSelector;
@@ -59,6 +62,7 @@ namespace LevelEditor
         private LevelIconsAndLevelLoaderMediator _levelIconsAndLevelLoaderMediator;
         private LevelSettingsMediator _levelSettingsMediator;
         private LevelSavingResultFabric _levelSavingResultFabric;
+        private DrawCommandsFactory _drawCommandsFactory;
 
         private void Awake() 
         {
@@ -69,7 +73,7 @@ namespace LevelEditor
             _playerInput = new PlayerInput();
             _levelIconMaker = new LevelIconMaker(_screenShotCamera, _screenShotRenderTexture);
             _levelEditor = new LevelEditor(_level,_levelIconMaker,_levelLoader,_levelSavingResultFabric);
-            _tileController = new TileController(_tileConfig,_groundTileMap,_roadTileMap);
+            _tileController = new TileController(_tileDatabase,_groundTileMap,_roadTileMap);
             _sceneLoader = new SceneLoader();
             _menuParentsManager = new MenuParentsManager();
 
@@ -84,11 +88,15 @@ namespace LevelEditor
             _lineKey = new KeyHandler(_playerInput,_levelEditorConfig.LineKeyCode);
             _drawToolKey = new KeyHandler(_playerInput,_levelEditorConfig.AddGroundKeyCode);
             _eraseToolKey = new KeyHandler(_playerInput,_levelEditorConfig.DeleteGroundKeyCode);
+            _switchTileKey = new KeyHandler(_playerInput, _levelEditorConfig.SwitchTile);
+            _roadToggleKey = new KeyHandler(_playerInput,_levelEditorConfig.RoadToggle);
+
+            _drawCommandsFactory = new DrawCommandsFactory(_level.Grid);
 
             _brushSelector = new BrushSelector(_playerInput, _level.Grid);
             _fillSelector = new FillSelector(_playerInput, _level.Grid);
             _lineSelector = new LineSelector(_playerInput,_level.Grid);
-            _drawTool = new Tool(new DrawCommandsFactory(_level.Grid));
+            _drawTool = new Tool(_drawCommandsFactory);
             _eraseTool = new Tool(new EraseCommandFactory(_level.Grid));
 
             _levelEditorMediator = new LevelEditorMediator
@@ -104,6 +112,7 @@ namespace LevelEditor
                 _lineKey,
                 _drawToolKey,
                 _eraseToolKey,
+                _switchTileKey,
                 _levelSavingUI,
                 _drawTool,
                 _eraseTool,
@@ -115,7 +124,9 @@ namespace LevelEditor
                 _menuParentsManager,
                 _settingsMenu,
                 _wavesEditor,
-                _loadMenu
+                _loadMenu,
+                _drawCommandsFactory,
+                _roadToggleKey
                 
             );
             _cameraManipulation = new CameraManipulation(0.1f, Camera.main);
@@ -158,6 +169,7 @@ namespace LevelEditor
             _levelEditorInputBlockerMediator.Dispose();
             _levelIconsAndLevelLoaderMediator.Dispose();
             _levelSettingsMediator.Dispose();
+            _switchTileKey.Dispose();
         }
 
         private void Update() 

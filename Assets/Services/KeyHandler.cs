@@ -33,7 +33,6 @@ namespace Services.PlayerInput
         {
             if (_key == key)
             {
-                Debug.Log("DOWN");
                 Down?.Invoke();
             }
         }

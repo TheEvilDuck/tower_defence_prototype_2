@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using Levels.Logic;
+using Levels.Tiles;
 using Services.PlayerInput;
 using UnityEngine;
 using Grid = Levels.Logic.Grid;
@@ -48,22 +50,38 @@ namespace LevelEditor.Selectors
             if (!_grid.IsPositionValid(cellPosition))
                 return;
 
-            bool referenceCellType = _grid.IsCellAt(cellPosition);
+            TileType referencedType = TileType.Empty;
+
+            if (_grid.TryGetCellDataAt(cellPosition, out CellData cellData))
+            {
+                referencedType = cellData.Type;
+            }
 
             selectionStarted?.Invoke(cellPosition);
 
             _selectedCells.Add(cellPosition);
 
-            SelectCellsAround(cellPosition,referenceCellType);
+            SelectCellsAround(cellPosition,referencedType);
             cellsSelected?.Invoke();
 
         }
 
-        private void SelectCellsAround(Vector2Int center, bool referenceCellType)
+        private void SelectCellsAround(Vector2Int center, TileType referenceCellType)
         {
             foreach (Vector2Int direction in _directions)
             {
-                if (!_selectedCells.Contains(center+direction)&&_grid.IsPositionValid(center+direction)&&_grid.IsCellAt(center+direction)==referenceCellType)
+                if (!_grid.IsPositionValid(center+direction))
+                    continue;
+
+                if (_grid.IsCellAt(center+direction)&&referenceCellType == TileType.Empty)
+                    continue;
+
+                _grid.TryGetCellDataAt(center+direction, out CellData cellData); 
+
+                if (referenceCellType != cellData.Type)
+                    continue;
+
+                if (!_selectedCells.Contains(center+direction))
                 {
                     _selectedCells.Add(center+direction);
                     selectedCellsChanged?.Invoke(center+direction, true);

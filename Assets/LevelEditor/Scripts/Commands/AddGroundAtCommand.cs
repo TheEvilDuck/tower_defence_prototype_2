@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using LevelEditor.Selectors;
+using Levels.Tiles;
 using UnityEngine;
 using Grid = Levels.Logic.Grid;
 
@@ -9,16 +10,18 @@ namespace LevelEditor
     {
         private Grid _grid;
         private Vector2Int _cellPosition;
+        private readonly TileType _tileType;
 
-        public AddGroundAtCommand(Grid grid, Vector2Int cellPosition)
+        public AddGroundAtCommand(Grid grid, Vector2Int cellPosition, TileType tileType)
         {
             _grid = grid;
             _cellPosition = cellPosition;
+            _tileType = tileType;
         }
 
         public bool Execute()
         {
-            return _grid.CreateCellAt(_cellPosition);
+            return _grid.CreateCellAt(_cellPosition, _tileType);
         }
 
         public void Undo()

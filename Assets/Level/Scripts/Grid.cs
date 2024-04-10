@@ -1,19 +1,20 @@
 using System;
 using System.Collections.Generic;
+using Levels.Tiles;
 using Towers;
-using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Levels.Logic
 {
-    public class Grid: IDisposable
+    public class Grid
     {
-        private Cell[,] _cells;
+        private CellData[,] _cells;
+        private Dictionary<Vector2Int, Placable> _placables;
 
         private float _cellSize;
 
-        public event Action<Vector2Int,Cell> cellChanged;
-        public event Action<Vector2Int>cellAdded;
+        public event Action<Vector2Int,CellData> cellChanged;
+        public event Action<Vector2Int, TileType>cellAdded;
         public event Action<Vector2Int> cellRemoved;
 
         public float CellSize => _cellSize;
@@ -22,7 +23,8 @@ namespace Levels.Logic
 
         public Grid(int gridSize, float cellSize)
         {
-            _cells = new Cell[gridSize,gridSize];
+            _cells = new CellData[gridSize,gridSize];
+            _placables = new Dictionary<Vector2Int, Placable>();
             _cellSize = cellSize;
         }
 
@@ -30,10 +32,10 @@ namespace Levels.Logic
         {
             Clear();
 
-            _cells = new Cell[gridData.gridSize,gridData.gridSize];
+            _cells = new CellData[gridData.gridSize,gridData.gridSize];
 
-            foreach (int index in gridData.cellsIndexes)
-                CreateCellAt(ConvertIntToVector2Int(index,gridData.gridSize));
+            foreach (CellSavedData cell in gridData.cells)
+                CreateCellAt(ConvertIntToVector2Int(cell.index,gridData.gridSize), (TileType)cell.tileType);
 
             foreach(int roadIndex in gridData.roadIndexes)
                 BuildRoadAt(ConvertIntToVector2Int(roadIndex,gridData.gridSize));
@@ -45,10 +47,7 @@ namespace Levels.Logic
             {
                 for (int y = 0; y< _cells.GetLength(1); y++)
                 {
-                    if (_cells[x,y]!=null)
-                    {
-                        RemoveCellAt(new Vector2Int(x,y));
-                    }
+                    RemoveCellAt(new Vector2Int(x,y));
                 }
             }
         }
@@ -61,22 +60,37 @@ namespace Levels.Logic
             return false;
         }
 
+        public bool TryGetCellDataAt(Vector2Int position, out CellData cellData)
+        {
+            cellData = new CellData();
+
+            if (!IsCellAt(position))
+                return false;
+
+            cellData = _cells[position.x, position.y];
+
+            return true;
+        }
+
         public GridData ConvertToGridData()
         {
             GridData gridData = new GridData();
             gridData.gridSize = _cells.GetLength(0);
             
-            List<int>cellIndexes = new List<int>();
+            List<CellSavedData>cells= new List<CellSavedData>();
             List<int>roadIndexes = new List<int>();
 
             for (int x = 0;x<gridData.gridSize;x++)
             {
                 for (int y = 0; y< gridData.gridSize; y++)
                 {
-                    if (_cells[x,y]!=null)
+                    if (_cells[x,y].Type != TileType.Empty)
                     {
                         int index = (x*gridData.gridSize)+y;
-                        cellIndexes.Add(index);
+                        CellSavedData cellSavedData = new CellSavedData();
+                        cellSavedData.index = index;
+                        cellSavedData.tileType = (int)_cells[x,y].Type;
+                        cells.Add(cellSavedData);
 
                         if (_cells[x,y].HasRoad)
                             roadIndexes.Add(index);
@@ -84,7 +98,7 @@ namespace Levels.Logic
                 }
             }
 
-            gridData.cellsIndexes = cellIndexes.ToArray();
+            gridData.cells= cells.ToArray();
             gridData.roadIndexes = roadIndexes.ToArray();
 
             return gridData;
@@ -113,10 +127,10 @@ namespace Levels.Logic
             if (!IsPositionValid(position))
                 return false;
 
-            return !(_cells[position.x,position.y]==null);
+            return _cells[position.x,position.y].Type != TileType.Empty;
         }
 
-        public bool CreateCellAt(Vector2Int position)
+        public bool CreateCellAt(Vector2Int position, TileType tileType)
         {
             if (!IsPositionValid(position))
                 return false;
@@ -124,17 +138,9 @@ namespace Levels.Logic
             if (IsCellAt(position))
                 return false;
 
-            Cell cell= new Cell();
-
-            cellAdded?.Invoke(position);
-
-            cell.cellChanged+= () =>
-            {
-                cellChanged?.Invoke(position,cell);
-            };
-
-            _cells[position.x,position.y] = cell;
-
+            _cells[position.x,position.y].Type = tileType;
+            cellAdded?.Invoke(position, tileType);
+            
             return true;
         }
 
@@ -143,7 +149,9 @@ namespace Levels.Logic
             if (!IsCellAt(position))
                 return;
 
-            _cells[position.x,position.y].BuildRoad();
+            _cells[position.x,position.y].HasRoad = true;
+
+            cellChanged?.Invoke(position, _cells[position.x,position.y]);
         }
 
         public void RemoveRoadAt(Vector2Int position)
@@ -151,7 +159,9 @@ namespace Levels.Logic
             if (!IsCellAt(position))
                 return;
 
-            _cells[position.x,position.y].RemoveRoad();
+            _cells[position.x,position.y].HasRoad = false;
+
+            cellChanged?.Invoke(position, _cells[position.x,position.y]);
         }
 
         public bool RemoveCellAt(Vector2Int position)
@@ -159,7 +169,7 @@ namespace Levels.Logic
             if (!IsPositionValid(position))
                 return false;
 
-            if (_cells[position.x,position.y]==null)
+            if (_cells[position.x,position.y].Type == TileType.Empty)
                 return false;
 
             if (_cells[position.x,position.y].HasRoad)
@@ -167,19 +177,11 @@ namespace Levels.Logic
 
             DestroyAt(position);
 
-            _cells[position.x,position.y].Dispose();
-            _cells[position.x,position.y] = null;
+            _cells[position.x,position.y].Type = TileType.Empty;
 
             cellRemoved?.Invoke(position);
 
             return true;
-        }
-
-        public void Dispose()
-        {
-            foreach (Cell cell in _cells)
-                if (cell!=null)
-                    cell.Dispose();
         }
 
         public bool CanBuildAt(Vector2Int position)
@@ -187,7 +189,7 @@ namespace Levels.Logic
             if (!IsCellAt(position))
                 return false;
 
-            if (_cells[position.x,position.y].Placable != null)
+            if (_placables.ContainsKey(position))
                 return false;
 
             return true;
@@ -198,18 +200,19 @@ namespace Levels.Logic
             if (!CanBuildAt(position))
                 return false;
 
-            return _cells[position.x,position.y].TryPlace(placable);
+            return _placables.TryAdd(position, placable);
         }
 
         public void DestroyAt(Vector2Int position)
         {
-             if (!IsCellAt(position))
+            if (!IsCellAt(position))
                 return;
 
-            if (_cells[position.x,position.y].Placable == null)
+            if (!_placables.ContainsKey(position))
                 return;
 
-            _cells[position.x,position.y].TryDestroyPlacable();
+            _placables[position].DestroyPlacable();
+            _placables.Remove(position);
         }
 
         private Vector2Int ConvertIntToVector2Int(int index, int gridSize)

@@ -1,6 +1,7 @@
 using System;
 using Levels.Logic;
 using Levels.TileControl;
+using Levels.Tiles;
 using UnityEngine;
 
 namespace GamePlay
@@ -22,9 +23,9 @@ namespace GamePlay
             _level.Grid.cellAdded-=OnLevelCellAdded;
         }
 
-        private void OnLevelCellAdded(Vector2Int cellPosition)
+        private void OnLevelCellAdded(Vector2Int cellPosition, TileType tileType)
         {
-            _tileController.DrawAt(cellPosition);
+            _tileController.DrawAt(cellPosition, tileType);
         }
     }
 }

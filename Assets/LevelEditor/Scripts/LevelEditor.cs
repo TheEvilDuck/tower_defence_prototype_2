@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using LevelEditor.Selectors;
 using Levels.Logic;
+using Levels.Tiles;
 using UnityEngine;
 using Waves;
 
@@ -24,6 +25,11 @@ namespace LevelEditor
         private LevelData _currentLevelData;
         private string _currentLevelName;
         private readonly LevelSavingResultFabric _levelSavingResultFabric;
+        private readonly TileType[] _tiles = new TileType[] { TileType.Dirt, TileType.Sand};
+        private int _currentTileIndex = 0;
+        private bool _placeRoad = false;
+
+        public TileType CurrentTileType => _tiles[_currentTileIndex];
 
         public LevelEditor(Level level, LevelIconMaker levelIconMaker, LevelLoader levelLoader, LevelSavingResultFabric levelSavingResultFabric)
         {
@@ -138,5 +144,15 @@ namespace LevelEditor
             if (_currentTool!=null)
                 _currentTool.usingCompleted-=OnToolUsingCompleted;
         }
+
+        public void NextTileType()
+        {
+            _currentTileIndex++;
+
+            if (_currentTileIndex >= _tiles.Length)
+                _currentTileIndex = 0;
+        }
+
+        public void TogglePlacingRoad() => _placeRoad = !_placeRoad;
     }
 }

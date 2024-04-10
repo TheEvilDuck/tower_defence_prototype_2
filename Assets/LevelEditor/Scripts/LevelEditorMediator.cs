@@ -5,6 +5,7 @@ using LevelEditor.Selectors;
 using LevelEditor.UI;
 using Levels.Logic;
 using Levels.TileControl;
+using Levels.Tiles;
 using Services.PlayerInput;
 using UnityEngine;
 using UnityEngine.UI;
@@ -25,6 +26,7 @@ namespace LevelEditor
         private KeyHandler _lineKey;
         private KeyHandler _drawToolKey;
         private KeyHandler _eraseToolKey;
+        private KeyHandler _switchTile;
         private LevelSavingUI _levelSavingUI;
         private Tool _drawTool;
         private Tool _eraseTool;
@@ -37,6 +39,8 @@ namespace LevelEditor
         private SettingsMenu _settingsMenu;
         private WavesEditor _waveEditor;
         private LoadMenu _loadMenu;
+        private DrawCommandsFactory _drawCommandsFactory;
+        private KeyHandler _toggleRoadPlacingKey;
 
         public LevelEditorMediator
         (
@@ -51,6 +55,7 @@ namespace LevelEditor
             KeyHandler lineKey,
             KeyHandler drawToolKey,
             KeyHandler eraseToolKey,
+            KeyHandler switchTile,
             LevelSavingUI levelSavingUI,
             Tool drawTool,
             Tool eraseTool,
@@ -62,7 +67,9 @@ namespace LevelEditor
             MenuParentsManager menuParentsManager,
             SettingsMenu settingsMenu,
             WavesEditor wavesEditor,
-            LoadMenu loadMenu
+            LoadMenu loadMenu,
+            DrawCommandsFactory drawCommandsFactory,
+            KeyHandler toggleRoadPlacingKey
         )
         {
             _levelEditor = levelEditor;
@@ -88,6 +95,9 @@ namespace LevelEditor
             _settingsMenu = settingsMenu;
             _waveEditor = wavesEditor;
             _loadMenu = loadMenu;
+            _switchTile = switchTile;
+            _drawCommandsFactory = drawCommandsFactory;
+            _toggleRoadPlacingKey = toggleRoadPlacingKey;
 
             _levelEditor.ChangeSelector(_brushSelector);
             _levelEditor.ChangeTool(_drawTool);
@@ -109,6 +119,8 @@ namespace LevelEditor
             _buttonsBar.wavesButtonPressed+=OnWavesButtonPressed;
             _buttonsBar.loadButtonPressed+=OnLoadButtonPressed;
             _buttonsBar.deleteButtonPressed+=OnDeleteButtonPressed;
+            _switchTile.Down+=OnSwitchTilePressed;
+            _toggleRoadPlacingKey.Down+=OnTogglePlacingRoadPressed;
         }
 
 
@@ -131,6 +143,8 @@ namespace LevelEditor
             _buttonsBar.wavesButtonPressed-=OnWavesButtonPressed;
             _buttonsBar.loadButtonPressed-=OnLoadButtonPressed;
             _buttonsBar.deleteButtonPressed-=OnDeleteButtonPressed;
+            _switchTile.Down-=OnSwitchTilePressed;
+            _toggleRoadPlacingKey.Down-=OnTogglePlacingRoadPressed;
         }
 
         private void OnFillKeyDown() => _levelEditor.ChangeSelector(_fillSelector);
@@ -141,7 +155,7 @@ namespace LevelEditor
 
         private void OnEraseToolKeyDown() => _levelEditor.ChangeTool(_eraseTool);
 
-        private void OnCellChanged(Vector2Int cellId, Cell cell)
+        private void OnCellChanged(Vector2Int cellId, CellData cell)
         {
             if (cell.HasRoad)
                 _tileController.DrawRoadAt(cellId);
@@ -149,9 +163,9 @@ namespace LevelEditor
                 _tileController.RemoveRoadAt(cellId);
         }
 
-        private void OnCellAdded(Vector2Int cellId)
+        private void OnCellAdded(Vector2Int cellId, TileType tileType)
         {
-            _tileController.DrawAt(cellId);
+            _tileController.DrawAt(cellId, tileType);
         }
 
         private void OnCellRemoved(Vector2Int cellId)
@@ -197,5 +211,13 @@ namespace LevelEditor
             
             _levelEditor.SaveLevel(_waveEditor.WaveDatas.ToArray(),true);
         }
+
+        private void OnSwitchTilePressed()
+        {
+            _levelEditor.NextTileType();
+            _drawCommandsFactory.ChangeTileType(_levelEditor.CurrentTileType);
+        }
+
+        private void OnTogglePlacingRoadPressed() => _levelEditor.TogglePlacingRoad();
     }
 }

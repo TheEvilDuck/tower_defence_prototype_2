@@ -12,13 +12,16 @@ using Builder;
 using Towers;
 using System;
 using Unity.VisualScripting;
+using Levels.Tiles;
+using Enemies.AI;
 
 namespace GamePlay
 {
     public class Bootstrap : MonoBehaviour
     {
         [SerializeField]private float _cameraSpeed = 4f;
-        [SerializeField]private TileConfig _tileConfig;
+        [SerializeField]private TileDatabase _tileDatabase;
+        [SerializeField]private PathFindMultipliersDatabase _pathFindMultiplierDatabase;
         [SerializeField]private EnemiesDatabase _enemiesDatabase;
         [SerializeField]private Tilemap _groundTileMap;
         [SerializeField]private Tilemap _roadTileMap;
@@ -50,13 +53,13 @@ namespace GamePlay
 
             _level = new Level(levelData);
 
-            _tileController = new TileController(_tileConfig,_groundTileMap,_roadTileMap);
+            _tileController = new TileController(_tileDatabase,_groundTileMap,_roadTileMap);
 
             _levelAndTilesMediator = new LevelAndTilesMediator(_tileController,_level);
 
             _level.Grid.FillFromGridData(levelData.gridData);
 
-            _pathFinder = new PathFinder(_level.Grid);
+            _pathFinder = new PathFinder(_level.Grid,_pathFindMultiplierDatabase);
 
             _enemyFactory = new EnemyFactory(_enemiesDatabase,_pathFinder);
             //TO DO load wavedata from leveldata

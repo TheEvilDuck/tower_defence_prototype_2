@@ -3474,7 +3474,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 62fcb7c0bb168d846bb0571911680a28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _tileConfig: {fileID: 11400000, guid: 200680631d53efd43b652ee1178f56f8, type: 2}
+  _tileDatabase: {fileID: 11400000, guid: 166cb076905fb1c478db679a519e82ad, type: 2}
   _levelEditorConfig: {fileID: 11400000, guid: 6a5e036ad6e9e3e4e8b5c86970852485, type: 2}
   _groundTileMap: {fileID: 547901610}
   _roadTileMap: {fileID: 1179838658}
@@ -3482,8 +3482,8 @@ MonoBehaviour:
     startMoney: 100
     firstWaveDelay: 0
     gridData:
-      gridSize: 100
-      cellsIndexes: 
+      gridSize: 20
+      cells: []
       roadIndexes: 
     waves: []
   _backGround: {fileID: 1957862816}

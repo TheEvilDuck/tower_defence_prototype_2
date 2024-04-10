@@ -12,5 +12,7 @@ namespace LevelEditor
         [field: SerializeField]public KeyCode[] SaveKeyCodes {get; private set;}
         [field: SerializeField]public KeyCode AddGroundKeyCode {get; private set;}
         [field: SerializeField]public KeyCode DeleteGroundKeyCode {get; private set;}
+        [field: SerializeField]public KeyCode SwitchTile {get; private set;}
+        [field: SerializeField]public KeyCode RoadToggle {get; private set;}
     }
 }

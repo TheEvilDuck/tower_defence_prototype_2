@@ -1,6 +1,6 @@
 using System;
 using Enemies;
-using UnityEngine;
+using Enemies.AI;
 
 namespace GamePlay
 {
