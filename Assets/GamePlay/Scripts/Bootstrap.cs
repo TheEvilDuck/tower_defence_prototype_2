@@ -120,12 +120,25 @@ namespace GamePlay
 
                 if (_pathFinder.TryFindPath(enemyGridPosition,gridPosition,out List<Vector2Int> result, true))
                 {
-                    List<Vector2> path = new List<Vector2>();
+                    List<EnemyPathNode> path = new List<EnemyPathNode>();
 
                     foreach (Vector2Int gridPoint in result)
                     {
                         Vector2 worldPoint = _level.Grid.GridPositionToWorldPosition(gridPoint);
-                        path.Add(worldPoint);
+
+                        if (!_level.Grid.TryGetCellDataAt(gridPoint, out CellData cellData))
+                            throw new Exception("Path node returned invalid cell");
+
+                        if (!_pathFindMultiplierDatabase.TryGetValue(cellData.Type, out PathFindTileConfig config))
+                            throw new ArgumentException($"Did you forget to add {cellData.Type} to path find multiplier database?");
+
+                        EnemyPathNode enemyPathNode = new EnemyPathNode()
+                        {
+                            position = worldPoint,
+                            speedMultiplier = 1f/config.WeightMultiplier
+                            
+                        };
+                        path.Add(enemyPathNode);
                     }
 
                     enemy.UpdatePath(path);

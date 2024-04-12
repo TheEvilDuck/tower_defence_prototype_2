@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Common.Interfaces;
+using Enemies.AI;
 using UnityEngine;
 
 namespace Enemies
@@ -12,7 +13,7 @@ namespace Enemies
         public event Action tookDamage;
         private EnemyStats _baseStats;
         private LinkedList<EnemyStatsProvider> _statsModifiers;
-        private List<Vector2> _currentPath;
+        private List<EnemyPathNode> _currentPath;
 
         public EnemyStats Stats
         {
@@ -76,7 +77,7 @@ namespace Enemies
             tookDamage?.Invoke();
         }
 
-        public void UpdatePath(List<Vector2> path)
+        public void UpdatePath(List<EnemyPathNode> path)
         {
             _currentPath = path;
         }
@@ -89,7 +90,7 @@ namespace Enemies
             if (_currentPath.Count==0)
                 return;
 
-            Vector2 directionVector = _currentPath[0]-Position;
+            Vector2 directionVector = _currentPath[0].position-Position;
 
             if (directionVector.magnitude<=POSITION_ACCURACY)
             {
@@ -97,7 +98,7 @@ namespace Enemies
                 return;
             }
 
-            transform.Translate(directionVector.normalized*Stats.WalkSpeed*Time.deltaTime);
+            transform.Translate(directionVector.normalized*Stats.WalkSpeed*Time.deltaTime*_currentPath[0].speedMultiplier);
         }
     }
 }
