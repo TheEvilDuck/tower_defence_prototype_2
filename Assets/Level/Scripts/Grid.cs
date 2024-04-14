@@ -24,6 +24,16 @@ namespace Levels.Logic
         public Grid(int gridSize, float cellSize)
         {
             _cells = new CellData[gridSize,gridSize];
+
+            for (int x = 0; x < gridSize; x++)
+            {
+                for (int y = 0; y < gridSize; y++)
+                {
+                    _cells[x,y] = new CellData();
+                    _cells[x,y].Type = TileType.Empty;
+                }
+            }
+
             _placables = new Dictionary<Vector2Int, Placable>();
             _cellSize = cellSize;
         }
@@ -34,11 +44,20 @@ namespace Levels.Logic
 
             _cells = new CellData[gridData.gridSize,gridData.gridSize];
 
+            for (int x = 0; x < GridSize; x++)
+            {
+                for (int y = 0; y < GridSize; y++)
+                {
+                    _cells[x,y] = new CellData();
+                    _cells[x,y].Type = TileType.Empty;
+                }
+            }
+
             foreach (CellSavedData cell in gridData.cells)
-                CreateCellAt(ConvertIntToVector2Int(cell.index,gridData.gridSize), (TileType)cell.tileType);
+                CreateCellAt(ConvertIntToVector2Int(cell.index), (TileType)cell.tileType);
 
             foreach(int roadIndex in gridData.roadIndexes)
-                BuildRoadAt(ConvertIntToVector2Int(roadIndex,gridData.gridSize));
+                BuildRoadAt(ConvertIntToVector2Int(roadIndex));
         }
 
         public void Clear()
@@ -72,6 +91,8 @@ namespace Levels.Logic
             return true;
         }
 
+        public int ConvertVector2IntToIndex(Vector2Int cellPosition) => (cellPosition.x*GridSize)+cellPosition.y;
+
         public GridData ConvertToGridData()
         {
             GridData gridData = new GridData();
@@ -86,7 +107,7 @@ namespace Levels.Logic
                 {
                     if (_cells[x,y].Type != TileType.Empty)
                     {
-                        int index = (x*gridData.gridSize)+y;
+                        int index = ConvertVector2IntToIndex(new Vector2Int(x,y));
                         CellSavedData cellSavedData = new CellSavedData();
                         cellSavedData.index = index;
                         cellSavedData.tileType = (int)_cells[x,y].Type;
@@ -132,6 +153,13 @@ namespace Levels.Logic
 
         public bool CreateCellAt(Vector2Int position, TileType tileType)
         {
+            Debug.Log($"Trying to add {tileType} at {position}");
+            Debug.Log($"Is position valid? {IsPositionValid(position)}");
+            Debug.Log($"Is there a cell? {IsCellAt(position)}");
+            
+            Debug.Log($"Tile type before: {_cells[position.x,position.y].Type }");
+            
+
             if (!IsPositionValid(position))
                 return false;
 
@@ -215,10 +243,10 @@ namespace Levels.Logic
             _placables.Remove(position);
         }
 
-        private Vector2Int ConvertIntToVector2Int(int index, int gridSize)
+        public Vector2Int ConvertIntToVector2Int(int index)
         {
-            int x = (index/gridSize);
-            int y = (index%gridSize);
+            int x = (index / GridSize);
+            int y = (index % GridSize);
 
             return new Vector2Int(x,y);
         }

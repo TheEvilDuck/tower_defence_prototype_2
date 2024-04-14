@@ -69,17 +69,31 @@ namespace Enemies.AI
             _openList.Clear();
             result = new List<Vector2Int>();
 
+            Debug.Log($"Trying find path from {fromPosition} to {toPosition}");
+
             if (!_gridPathDatas.ContainsKey(fromPosition))
+            {
+                Debug.Log("Grid path datas doesn't contain start position");
                 return false;
+            }
 
             if (!_gridPathDatas[fromPosition].Valid)
+            {
+                Debug.Log("Start position is not valid");
                 return false;
+            }
 
             if (!_gridPathDatas.ContainsKey(toPosition))
+            {
+                Debug.Log("Grid path datas doesn't contain end position");
                 return false;
+            }
 
             if (!_gridPathDatas[toPosition].Valid)
+            {
+                Debug.Log("End position is not valid");
                 return false;
+            }
 
             foreach (var keyValuePair in _gridPathDatas)
             {

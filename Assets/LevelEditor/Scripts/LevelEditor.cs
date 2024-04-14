@@ -28,18 +28,25 @@ namespace LevelEditor
         private readonly TileType[] _tiles = new TileType[] { TileType.Dirt, TileType.Sand};
         private int _currentTileIndex = 0;
         private bool _placeRoad = false;
+        private SpawnerPositions _spawnerPositions;
 
         public TileType CurrentTileType => _tiles[_currentTileIndex];
 
-        public LevelEditor(Level level, LevelIconMaker levelIconMaker, LevelLoader levelLoader, LevelSavingResultFabric levelSavingResultFabric)
+        public LevelEditor(Level level, LevelIconMaker levelIconMaker, LevelLoader levelLoader, LevelSavingResultFabric levelSavingResultFabric, SpawnerPositions spawnerPositions)
         {
             _level = level;
             _levelLoader = levelLoader;
             _levelIconMaker = levelIconMaker;
             _currentLevelData = new LevelData();
             _levelSavingResultFabric = levelSavingResultFabric;
+            _spawnerPositions = spawnerPositions;
 
             _performedCommands = new Stack<ICommand>(MAX_COMMANDS_BUFFER);
+        }
+
+        public void CreateNewMap(Level level)
+        {
+            _level = level;
         }
 
         public void ChangeSelector(ISelector newSelector)
@@ -98,9 +105,21 @@ namespace LevelEditor
                 return;
             }
 
+            LevelData savingLevelData = _level.ConvertToLevelData(_currentLevelData.startMoney, _currentLevelData.firstWaveDelay, _currentLevelData.waves);
+            List<int> spawnerIndexes = new List<int>();
+
+            foreach (Vector2Int cellPosition in _spawnerPositions.Spawners)
+            {
+                int index = _level.Grid.ConvertVector2IntToIndex(cellPosition);
+                Debug.Log($"Trying to save spawner position at {cellPosition}, converted to index: {index}");
+                spawnerIndexes.Add(index);
+            }
+            
+            savingLevelData.spawnerPlaces = spawnerIndexes.ToArray();
+
             await _levelLoader.SaveLevel(
                 _currentLevelName,
-                _level.ConvertToLevelData(_currentLevelData.startMoney, _currentLevelData.firstWaveDelay, _currentLevelData.waves),
+                savingLevelData,
                 OnLevelSaved,
                 OnLevelSaveFailed);
         }

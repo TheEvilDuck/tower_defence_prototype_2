@@ -11,5 +11,7 @@ namespace Levels.Logic
         [SerializeField] public float firstWaveDelay;
         [SerializeField] public GridData gridData;
         [SerializeField] public WaveData[] waves;
+        [SerializeField] public int[] spawnerPlaces;
+        [SerializeField] public PlacableData[] placables;
     }
 }

@@ -10,7 +10,7 @@ namespace Builder
 {
     public class PlacableBuilder
     {
-        public event Action mainBuildingBuilt;
+        public event Action<Vector2Int> mainBuildingBuilt;
         private List<PlacableEnum> _availableTowers;
         private Placable _inConstructionPrefab;
         private PlacableEnum _currentId;
@@ -66,7 +66,7 @@ namespace Builder
             if (_currentId==PlacableEnum.MainBuilding)
             {
                 _mainBuildingBuilt = true;
-                mainBuildingBuilt?.Invoke();
+                mainBuildingBuilt?.Invoke(cellPosition);
             }
         }
     }

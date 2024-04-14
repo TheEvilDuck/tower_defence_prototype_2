@@ -14,12 +14,16 @@ namespace LevelEditor.UI
         [SerializeField] private Button _settingsButton;
         [SerializeField] private Button _exitButton;
         [SerializeField] private Button _wavesButton;
+        [SerializeField] private Button _newButton;
+        [SerializeField] private Button _spawnerButton;
         public event Action deleteButtonPressed;
         public event Action saveButtonPressed;
         public event Action loadButtonPressed;
         public event Action settingsButtonPressed;
         public event Action exitButtonPressed;
         public event Action wavesButtonPressed;
+        public event Action newButtonPressed;
+        public event Action spawnerButtonPressed;
 
         private void OnEnable() 
         {
@@ -29,6 +33,8 @@ namespace LevelEditor.UI
             _settingsButton.onClick.AddListener(OnSettingsButtonPressed);
             _exitButton.onClick.AddListener(OnExitButtonPressed);
             _wavesButton.onClick.AddListener(OnWavesButtonPressed);
+            _newButton.onClick.AddListener(OnNewButtonPressed);
+            _spawnerButton.onClick.AddListener(OnSpawnerButtonPressed);
         }
 
         private void OnDisable() 
@@ -39,6 +45,8 @@ namespace LevelEditor.UI
             _settingsButton.onClick.RemoveListener(OnSettingsButtonPressed);
             _exitButton.onClick.RemoveListener(OnExitButtonPressed);
             _wavesButton.onClick.RemoveListener(OnWavesButtonPressed);
+            _newButton.onClick.RemoveListener(OnNewButtonPressed);
+            _spawnerButton.onClick.RemoveListener(OnSpawnerButtonPressed);
         }
 
         private void OnDeleteButtonPressed() => deleteButtonPressed?.Invoke();
@@ -47,6 +55,8 @@ namespace LevelEditor.UI
         private void OnSettingsButtonPressed() => settingsButtonPressed?.Invoke();
         private void OnExitButtonPressed() => exitButtonPressed?.Invoke();
         private void OnWavesButtonPressed() => wavesButtonPressed?.Invoke();
+        private void OnNewButtonPressed() => newButtonPressed?.Invoke();
+        private void OnSpawnerButtonPressed() => spawnerButtonPressed?.Invoke();
 
     }
 }

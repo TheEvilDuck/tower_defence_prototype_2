@@ -6,6 +6,7 @@ using LevelEditor.UI;
 using Levels.Logic;
 using Levels.TileControl;
 using Levels.Tiles;
+using Levels.View;
 using Services.PlayerInput;
 using UnityEngine;
 using UnityEngine.UI;
@@ -41,6 +42,10 @@ namespace LevelEditor
         private LoadMenu _loadMenu;
         private DrawCommandsFactory _drawCommandsFactory;
         private KeyHandler _toggleRoadPlacingKey;
+        private Tool _spawnerPlacer;
+        private SpawnerPlacamentSelector _spawnerPlacementSelector;
+        private SpawnerPositions _spawnerPositions;
+        private SpawnersView _spawnersView;
 
         public LevelEditorMediator
         (
@@ -69,7 +74,11 @@ namespace LevelEditor
             WavesEditor wavesEditor,
             LoadMenu loadMenu,
             DrawCommandsFactory drawCommandsFactory,
-            KeyHandler toggleRoadPlacingKey
+            KeyHandler toggleRoadPlacingKey,
+            Tool spawnerPlacer,
+            SpawnerPlacamentSelector spawnerPlacementSelector,
+            SpawnerPositions spawnerPositions,
+            SpawnersView spawnersView
         )
         {
             _levelEditor = levelEditor;
@@ -98,6 +107,10 @@ namespace LevelEditor
             _switchTile = switchTile;
             _drawCommandsFactory = drawCommandsFactory;
             _toggleRoadPlacingKey = toggleRoadPlacingKey;
+            _spawnerPlacer = spawnerPlacer;
+            _spawnerPlacementSelector = spawnerPlacementSelector;
+            _spawnerPositions = spawnerPositions;
+            _spawnersView = spawnersView;
 
             _levelEditor.ChangeSelector(_brushSelector);
             _levelEditor.ChangeTool(_drawTool);
@@ -119,8 +132,12 @@ namespace LevelEditor
             _buttonsBar.wavesButtonPressed+=OnWavesButtonPressed;
             _buttonsBar.loadButtonPressed+=OnLoadButtonPressed;
             _buttonsBar.deleteButtonPressed+=OnDeleteButtonPressed;
+            _buttonsBar.newButtonPressed+=OnNewButtonPressed;
+            _buttonsBar.spawnerButtonPressed+=OnSpawnerButtonPressed;
             _switchTile.Down+=OnSwitchTilePressed;
             _toggleRoadPlacingKey.Down+=OnTogglePlacingRoadPressed;
+            _spawnerPositions.placed+=OnSpawnerAddedAt;
+            _spawnerPositions.removed+=OnSpawnerRemovedAt;
         }
 
 
@@ -143,8 +160,12 @@ namespace LevelEditor
             _buttonsBar.wavesButtonPressed-=OnWavesButtonPressed;
             _buttonsBar.loadButtonPressed-=OnLoadButtonPressed;
             _buttonsBar.deleteButtonPressed-=OnDeleteButtonPressed;
+            _buttonsBar.newButtonPressed-=OnNewButtonPressed;
+            _buttonsBar.spawnerButtonPressed-=OnSpawnerButtonPressed;
             _switchTile.Down-=OnSwitchTilePressed;
             _toggleRoadPlacingKey.Down-=OnTogglePlacingRoadPressed;
+            _spawnerPositions.placed-=OnSpawnerAddedAt;
+            _spawnerPositions.removed-=OnSpawnerRemovedAt;
         }
 
         private void OnFillKeyDown() => _levelEditor.ChangeSelector(_fillSelector);
@@ -219,5 +240,27 @@ namespace LevelEditor
         }
 
         private void OnTogglePlacingRoadPressed() => _levelEditor.TogglePlacingRoad();
+        private void OnNewButtonPressed()
+        {
+            _settingsMenu.RestoreDefaultValues();
+            _levelEditor.CleaerCommandsBuffer();
+            _level.Grid.Clear();
+            _waveEditor.DeleteCurrentData();
+        }
+        private void OnSpawnerButtonPressed()
+        {
+            _levelEditor.ChangeTool(_spawnerPlacer);
+            _levelEditor.ChangeSelector(_spawnerPlacementSelector);
+        }
+
+        private void OnSpawnerAddedAt(Vector2Int position)
+        {
+            _spawnersView.CreateViewAt(position);
+        }
+
+        private void OnSpawnerRemovedAt(Vector2Int position)
+        {
+            _spawnersView.RemoveViewAt(position);
+        }
     }
 }

@@ -14,6 +14,7 @@ using System;
 using Unity.VisualScripting;
 using Levels.Tiles;
 using Enemies.AI;
+using Levels.View;
 
 namespace GamePlay
 {
@@ -41,6 +42,7 @@ namespace GamePlay
         private BuilderMediator _builderMediator;
         private PlacableFactory _placableFactory;
         private PathFinder _pathFinder;
+        private SpawnerMediator _spawnerMediator;
         private void Awake() 
         {
             _playerInput = new PlayerInput();
@@ -54,29 +56,32 @@ namespace GamePlay
             _level = new Level(levelData);
 
             _tileController = new TileController(_tileDatabase,_groundTileMap,_roadTileMap);
-
             _levelAndTilesMediator = new LevelAndTilesMediator(_tileController,_level);
 
-            _level.Grid.FillFromGridData(levelData.gridData);
+            List<Vector2Int> spawnerPositions = new List<Vector2Int>();
 
+            foreach(int spawnerIndex in levelData.spawnerPlaces)
+            {
+                Vector2Int spawnerPosition = _level.Grid.ConvertIntToVector2Int(spawnerIndex);
+                Debug.Log($"Registered spawner at {spawnerPosition}");
+                spawnerPositions.Add(spawnerPosition);
+            }
+
+            _level.UpdateGridData(levelData.gridData);
             _pathFinder = new PathFinder(_level.Grid,_pathFindMultiplierDatabase);
 
-            _enemyFactory = new EnemyFactory(_enemiesDatabase,_pathFinder);
-            //TO DO load wavedata from leveldata
-            Wave[] waves = new Wave[1];
-            EnemyData testEnemyData = new EnemyData();
-            testEnemyData.id = EnemyEnum.Gray;
-            WaveEnemyData testWaveEnemyData = new WaveEnemyData();
-            testWaveEnemyData.count = 1;
-            testWaveEnemyData.enemyData = testEnemyData;
-            WaveEnemyData[] waveEnemyDatas = new WaveEnemyData[1];
-            waveEnemyDatas[0] = testWaveEnemyData;
-            WaveData waveData = new WaveData();
-            waveData.timeToTheNextWave = 10;
-            waveData.waveEnemyData = waveEnemyDatas;
-            waves[0] = new Wave(waveData);
-            //TO DO remove magic values
-            _enemySpawner = new EnemySpawner(waves, levelData.firstWaveDelay,1f,_enemyFactory);
+            Spawners spawners = new Spawners(spawnerPositions.ToArray(), _pathFinder);
+
+            _enemyFactory = new EnemyFactory(_enemiesDatabase,_pathFinder, _level.Grid, spawners, _pathFindMultiplierDatabase);
+            List<Wave> waves = new List<Wave>();
+
+            foreach (WaveData waveData in levelData.waves)
+            {
+                waves.Add(new Wave(waveData));
+            }
+
+            _enemySpawner = new EnemySpawner(waves.ToArray(), levelData.firstWaveDelay,1f,_enemyFactory);
+
             _placableFactory = new PlacableFactory(_towersDatabase,_enemySpawner);
 
             //TODO this must be loaded from level
@@ -87,12 +92,12 @@ namespace GamePlay
 
             _builder = new PlacableBuilder(availablePlacables, _placableFactory);
 
+            _spawnerMediator = new SpawnerMediator(_enemySpawner, _pathFinder, _builder, spawners, _level.Grid.GridSize);
+
+
             _towersPanel.Init(_towersDatabase);
 
             _builderMediator = new BuilderMediator(_playerInput,_builder, _level.Grid,_towersPanel);
-
-            
-            _playerInput.mouseRightClicked+=OnPlayerInputRightClicked;
         }
 
         private void OnDestroy() 
@@ -100,50 +105,13 @@ namespace GamePlay
             _cameraMediator.Dispose();
             _levelAndTilesMediator.Dispose();
             _builderMediator.Dispose();
-            _playerInput.mouseRightClicked-=OnPlayerInputRightClicked;
+            _spawnerMediator.Dispose();
         }
 
         void Update()
         {
             _playerInput.Update();
             _enemySpawner.Update();
-        }
-
-        private void OnPlayerInputRightClicked(Vector2 position)
-        {
-            Vector2Int gridPosition = _level.Grid.WorldPositionToGridPosition(position);
-        
-
-            foreach (Enemy enemy in _enemySpawner.Enemies)
-            {
-                Vector2Int enemyGridPosition = _level.Grid.WorldPositionToGridPosition(enemy.Position);
-
-                if (_pathFinder.TryFindPath(enemyGridPosition,gridPosition,out List<Vector2Int> result, true))
-                {
-                    List<EnemyPathNode> path = new List<EnemyPathNode>();
-
-                    foreach (Vector2Int gridPoint in result)
-                    {
-                        Vector2 worldPoint = _level.Grid.GridPositionToWorldPosition(gridPoint);
-
-                        if (!_level.Grid.TryGetCellDataAt(gridPoint, out CellData cellData))
-                            throw new Exception("Path node returned invalid cell");
-
-                        if (!_pathFindMultiplierDatabase.TryGetValue(cellData.Type, out PathFindTileConfig config))
-                            throw new ArgumentException($"Did you forget to add {cellData.Type} to path find multiplier database?");
-
-                        EnemyPathNode enemyPathNode = new EnemyPathNode()
-                        {
-                            position = worldPoint,
-                            speedMultiplier = 1f/config.WeightMultiplier
-                            
-                        };
-                        path.Add(enemyPathNode);
-                    }
-
-                    enemy.UpdatePath(path);
-                }
-            }
         }
     }
 }

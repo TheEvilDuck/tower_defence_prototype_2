@@ -6,6 +6,7 @@ using LevelEditor.UI;
 using Levels.Logic;
 using Levels.TileControl;
 using Levels.Tiles;
+using Levels.View;
 using Services.CameraManipulation;
 using Services.PlayerInput;
 using UnityEngine;
@@ -31,6 +32,7 @@ namespace LevelEditor
         [SerializeField]private UIInputBlocker _uIInputBlocker;
         [SerializeField]private LevelIconButton _levelIconButtonPrefab;
         [SerializeField]private LevelSavingResultDatabase _levelSavingResultDatabase;
+        [SerializeField]private GameObject _spawerPrefab;
 
         private Level _level;
         private LevelEditor _levelEditor;
@@ -53,8 +55,10 @@ namespace LevelEditor
         private BrushSelector _brushSelector;
         private FillSelector _fillSelector;
         private LineSelector _lineSelector;
+        private SpawnerPlacamentSelector _spawnerPlacementSelector;
         private Tool _drawTool;
         private Tool _eraseTool;
+        private Tool _spawnerPlacer;
         private MenuParentsManager _menuParentsManager;
         private LevelEditorInputBlockerMediator _levelEditorInputBlockerMediator;
         private LevelIconsLoader _levelIconsLoader;
@@ -63,16 +67,18 @@ namespace LevelEditor
         private LevelSettingsMediator _levelSettingsMediator;
         private LevelSavingResultFabric _levelSavingResultFabric;
         private DrawCommandsFactory _drawCommandsFactory;
+        private SpawnersView _spawnersView;
 
         private void Awake() 
         {
             _levelSavingResultFabric = new LevelSavingResultFabric(_levelSavingResultDatabase);
+            SpawnerPositions spawnerPositions = new SpawnerPositions();
 
             _level = new Level(_testLevelData);
             _levelLoader = new LevelLoader();
             _playerInput = new PlayerInput();
             _levelIconMaker = new LevelIconMaker(_screenShotCamera, _screenShotRenderTexture);
-            _levelEditor = new LevelEditor(_level,_levelIconMaker,_levelLoader,_levelSavingResultFabric);
+            _levelEditor = new LevelEditor(_level,_levelIconMaker,_levelLoader,_levelSavingResultFabric, spawnerPositions);
             _tileController = new TileController(_tileDatabase,_groundTileMap,_roadTileMap);
             _sceneLoader = new SceneLoader();
             _menuParentsManager = new MenuParentsManager();
@@ -96,8 +102,11 @@ namespace LevelEditor
             _brushSelector = new BrushSelector(_playerInput, _level.Grid);
             _fillSelector = new FillSelector(_playerInput, _level.Grid);
             _lineSelector = new LineSelector(_playerInput,_level.Grid);
+            _spawnerPlacementSelector = new SpawnerPlacamentSelector(_playerInput, _level.Grid);
             _drawTool = new Tool(_drawCommandsFactory);
             _eraseTool = new Tool(new EraseCommandFactory(_level.Grid));
+            _spawnerPlacer = new Tool(new AddSpawnerCommandFactory(_level.Grid, spawnerPositions));
+            _spawnersView = new SpawnersView(_spawerPrefab, _level.Grid.CellSize, _level.Grid.GridSize);
 
             _levelEditorMediator = new LevelEditorMediator
             (
@@ -126,7 +135,11 @@ namespace LevelEditor
                 _wavesEditor,
                 _loadMenu,
                 _drawCommandsFactory,
-                _roadToggleKey
+                _roadToggleKey,
+                _spawnerPlacer,
+                _spawnerPlacementSelector,
+                spawnerPositions,
+                _spawnersView
                 
             );
             _cameraManipulation = new CameraManipulation(0.1f, Camera.main);
@@ -154,6 +167,7 @@ namespace LevelEditor
         {
             _drawTool.Dispose();
             _eraseTool.Dispose();
+            _spawnerPlacer.Dispose();
             _undoKeyCombination.Dispose();
             _saveKeyCombination.Dispose();
             _fillKey.Dispose();
@@ -166,10 +180,12 @@ namespace LevelEditor
             _brushSelector.Dispose();
             _fillSelector.Dispose();
             _lineSelector.Disable();
+            _spawnerPlacementSelector.Disable();
             _levelEditorInputBlockerMediator.Dispose();
             _levelIconsAndLevelLoaderMediator.Dispose();
             _levelSettingsMediator.Dispose();
             _switchTileKey.Dispose();
+            _spawnersView.Dispose();
         }
 
         private void Update() 
