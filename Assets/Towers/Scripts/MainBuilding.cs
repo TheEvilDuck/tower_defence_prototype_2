@@ -26,7 +26,6 @@ namespace Towers
 
             if (_health <= 0)
             {
-                Debug.Log("Game over");
                 DestroyPlacable();
             }
         }

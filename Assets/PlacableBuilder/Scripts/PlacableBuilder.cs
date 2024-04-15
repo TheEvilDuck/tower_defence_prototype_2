@@ -1,14 +1,13 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using GamePlay;
 using Towers;
 using UnityEngine;
 using Grid = Levels.Logic.Grid;
 
 namespace Builder
 {
-    public class PlacableBuilder
+    public class PlacableBuilder: IMainBuilderProvider
     {
         public event Action<Vector2Int> mainBuildingBuilt;
         private List<PlacableEnum> _availableTowers;
@@ -17,7 +16,9 @@ namespace Builder
         private bool _waitForBuilding = false;
         private PlacableFactory _placableFactory;
         private bool _mainBuildingBuilt = false;
-        
+
+        public Placable MainBuilding {get; private set;}
+
         public PlacableBuilder(AvailablePlacables availablePlacables, PlacableFactory placableFactory, Placable inConstructionPrefab): this(availablePlacables,placableFactory)
         {
             _inConstructionPrefab = inConstructionPrefab;
@@ -65,6 +66,7 @@ namespace Builder
 
             if (_currentId==PlacableEnum.MainBuilding)
             {
+                MainBuilding = tower;
                 _mainBuildingBuilt = true;
                 mainBuildingBuilt?.Invoke(cellPosition);
             }

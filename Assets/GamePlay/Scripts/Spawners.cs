@@ -52,8 +52,6 @@ namespace GamePlay
 
         public Vector2Int GetRandomSpawnerPosition()
         {
-            Debug.Log(_availablePositions.Count);
-
             return _availablePositions[UnityEngine.Random.Range(0, _availablePositions.Count)];
         }
 

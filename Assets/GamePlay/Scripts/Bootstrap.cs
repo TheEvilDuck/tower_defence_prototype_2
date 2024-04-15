@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Services.PlayerInput;
@@ -11,10 +10,11 @@ using Waves;
 using Builder;
 using Towers;
 using System;
-using Unity.VisualScripting;
 using Levels.Tiles;
 using Enemies.AI;
-using Levels.View;
+using Unity.VisualScripting;
+using StateMachine = Common.States.StateMachine;
+using GamePlay.UI;
 
 namespace GamePlay
 {
@@ -28,6 +28,7 @@ namespace GamePlay
         [SerializeField]private Tilemap _roadTileMap;
         [SerializeField]private TowersDatabase _towersDatabase;
         [SerializeField]private TowersPanel _towersPanel;
+        [SerializeField] private GameOverView _gameOverView;
         [SerializeField]private string _testLevelName;
         private PlayerInput _playerInput;
         private CameraManipulation _cameraManipulation;
@@ -42,7 +43,7 @@ namespace GamePlay
         private BuilderMediator _builderMediator;
         private PlacableFactory _placableFactory;
         private PathFinder _pathFinder;
-        private SpawnerMediator _spawnerMediator;
+        private StateMachine _gamePlayerStateMachine;
         private void Awake() 
         {
             _playerInput = new PlayerInput();
@@ -92,26 +93,37 @@ namespace GamePlay
 
             _builder = new PlacableBuilder(availablePlacables, _placableFactory);
 
-            _spawnerMediator = new SpawnerMediator(_enemySpawner, _pathFinder, _builder, spawners, _level.Grid.GridSize);
-
-
             _towersPanel.Init(_towersDatabase);
 
             _builderMediator = new BuilderMediator(_playerInput,_builder, _level.Grid,_towersPanel);
+
+            SceneLoader sceneLoader = new SceneLoader();
+
+            _gamePlayerStateMachine = new StateMachine();
+            
+            PrepareState prepareState = new PrepareState(_gamePlayerStateMachine, _builder, spawners, false, _level.Grid.GridSize);
+            EnemySpawnState enemySpawnState = new EnemySpawnState(_gamePlayerStateMachine, _enemySpawner, _builder);
+            LoseState loseState = new LoseState(_gamePlayerStateMachine, _gameOverView, sceneLoader, _builderMediator);
+            WinState winState = new WinState(_gamePlayerStateMachine, _gameOverView, sceneLoader, _builderMediator);
+
+            _gamePlayerStateMachine.AddState(prepareState);
+            _gamePlayerStateMachine.AddState(enemySpawnState);
+            _gamePlayerStateMachine.AddState(loseState);
+            _gamePlayerStateMachine.AddState(winState);
         }
 
         private void OnDestroy() 
         {
-            _cameraMediator.Dispose();
-            _levelAndTilesMediator.Dispose();
-            _builderMediator.Dispose();
-            _spawnerMediator.Dispose();
+            _cameraMediator?.Dispose();
+            _levelAndTilesMediator?.Dispose();
+            _builderMediator?.Dispose();
+            _gamePlayerStateMachine?.Dispose();
         }
 
         void Update()
         {
-            _playerInput.Update();
-            _enemySpawner.Update();
+            _playerInput?.Update();
+            _gamePlayerStateMachine?.Update();
         }
     }
 }

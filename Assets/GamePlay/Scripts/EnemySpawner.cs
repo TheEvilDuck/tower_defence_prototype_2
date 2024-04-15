@@ -1,12 +1,7 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using Enemies;
-using Enemies.AI;
-using Levels.Logic;
 using UnityEngine;
 using Waves;
-using Grid = Levels.Logic.Grid;
 
 namespace GamePlay
 {
@@ -20,6 +15,7 @@ namespace GamePlay
         private bool _started = false;
         private List<Enemy>_enemies;
         public IEnumerable<Enemy>Enemies => _enemies;
+        public bool IsLastWave => _currentWaveId == _waves.Length && _waves.Length != 0;
         public EnemySpawner(Wave[] waves, float _firtsWaveDelay, float spawnRate, EnemyFactory enemyFactory)
         {
             _waves = waves;
@@ -72,6 +68,8 @@ namespace GamePlay
         private void OnEnemyDied(Enemy enemy)
         {
             enemy.died -= OnEnemyDied;
+
+            _enemies.Remove(enemy);
         }
     }
 }
