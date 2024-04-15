@@ -2,18 +2,20 @@ namespace Enemies
 {
     public class EnemyStats: IEnemyStatsProvider
     {
-        private int _health;
-        private int _maxHealth;
-        private float _walkSpeed;
+        public float WalkSpeed {get; private set;}
+        public int MaxHealth {get; private set;}
+        public int Health {get; private set;}
+        public float Range {get; private set;}
+        public float AttackRate {get; private set;}
+        public int Damage {get; private set;}
 
-        public float WalkSpeed => _walkSpeed;
-        public int MaxHealth => _maxHealth;
-        public int Health => _health;
-
-        public EnemyStats(int maxHealth, float walkSpeed)
+        public EnemyStats(int maxHealth, float walkSpeed, float range, float attackRate, int damage)
         {
-            _health = _maxHealth = maxHealth;
-            _walkSpeed = walkSpeed;
+            Health = MaxHealth = maxHealth;
+            WalkSpeed = walkSpeed;
+            Range = range;
+            AttackRate = attackRate;
+            Damage = damage;
         }
 
         public void ModifyHealth(int amount)
@@ -21,13 +23,13 @@ namespace Enemies
             if (amount == 0)
                 return;
 
-            _health+=amount;
+            Health+=amount;
 
-            if (_health<0)
-                _health = 0;
+            if (Health<0)
+                Health = 0;
 
-            if (_health>_maxHealth)
-                _health = _maxHealth;
+            if (Health>MaxHealth)
+                Health = MaxHealth;
         }
 
         public EnemyStats GetStats() => this;

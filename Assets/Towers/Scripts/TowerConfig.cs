@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Towers
 {
-    [CreateAssetMenu(fileName = "Tower config", menuName = "Configs/New tower config")]
+    [CreateAssetMenu(fileName = "Tower config", menuName = "Configs/Placable configs/New tower config")]
     public class TowerConfig : PlacableConfig
     {
         [field:SerializeField, Range(0.01f,30f)]public float AttackRate {get; private set; } = 1f;

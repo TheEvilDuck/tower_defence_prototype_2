@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using Common.Interfaces;
 using Enemies.AI;
+using Levels.Logic;
+using Towers;
 using UnityEngine;
 
 namespace Enemies
@@ -11,9 +13,13 @@ namespace Enemies
     {
         private const float POSITION_ACCURACY = 0.2f;
         public event Action tookDamage;
+        public event Action<Enemy> died;
         private EnemyStats _baseStats;
         private LinkedList<EnemyStatsProvider> _statsModifiers;
         private List<EnemyPathNode> _currentPath;
+        private IDamagable _currentTarget;
+        private IPlacableListHandler _placableListHandler;
+        private float _lastAttackTime;
 
         public EnemyStats Stats
         {
@@ -31,10 +37,11 @@ namespace Enemies
 
         public Vector2 Position => transform.position;
 
-        public void Init(int maxHealth, float walkSpeed)
+        public void Init(int maxHealth, float walkSpeed, float range, float attackRate, int damage, IPlacableListHandler placableListHandler)
         {
-            _baseStats = new EnemyStats(maxHealth, walkSpeed);
+            _baseStats = new EnemyStats(maxHealth, walkSpeed, range, attackRate, damage);
             _statsModifiers = new LinkedList<EnemyStatsProvider>();
+            _placableListHandler = placableListHandler;
         }
 
         public void AddStatsModifier(EnemyStatsProvider enemyStatsProvider)
@@ -74,6 +81,9 @@ namespace Enemies
         {
             Stats.ModifyHealth(-damage);
 
+            if (Stats.Health <= 0)
+                died?.Invoke(this);
+
             tookDamage?.Invoke();
         }
 
@@ -82,14 +92,64 @@ namespace Enemies
             _currentPath = path;
         }
 
+        private void FindTarget()
+        {
+            float distanceToNewTarget;
+
+            foreach (Placable placable in _placableListHandler.Placables)
+            {
+                if (placable == null)
+                    continue;
+
+                if (placable is not IDamagable damagable)
+                    continue;
+
+                distanceToNewTarget = Vector3.Distance(placable.Position, Position);
+
+                if (distanceToNewTarget <= Stats.Range)
+                {
+                    _currentTarget = damagable;
+                }
+            }
+        }
+
         private void Update() 
         {
+            if (Stats.Health <= 0)
+                return;
+
             if (_currentPath==null)
                 return;
 
             if (_currentPath.Count==0)
                 return;
 
+            FindTarget();
+
+            if (_currentTarget == null)
+            {
+                HandleMovement();
+            }
+            else
+            {
+                HandleAttack();
+            }
+
+            
+        }
+
+        private void HandleAttack()
+        {
+            if (Time.time - _lastAttackTime >= Stats.AttackRate)
+            {
+                _lastAttackTime = Time.time;
+
+                _currentTarget.TakeDamage(Stats.Damage);
+            }
+        }
+
+        private void HandleMovement()
+        {
             Vector2 directionVector = _currentPath[0].position-Position;
 
             if (directionVector.magnitude<=POSITION_ACCURACY)

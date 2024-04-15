@@ -54,6 +54,7 @@ namespace GamePlay
                 else
                 {
                     Enemy enemy = _enemyFactory.Get(enemyData.id);
+                    enemy.died += OnEnemyDied;
 
                     if (enemy!=null)
                     {
@@ -66,6 +67,11 @@ namespace GamePlay
         public void Start()
         {
             _started = true;
+        }
+
+        private void OnEnemyDied(Enemy enemy)
+        {
+            enemy.died -= OnEnemyDied;
         }
     }
 }

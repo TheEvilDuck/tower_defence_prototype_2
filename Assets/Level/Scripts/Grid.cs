@@ -1,12 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Levels.Tiles;
 using Towers;
 using UnityEngine;
 
 namespace Levels.Logic
 {
-    public class Grid
+    public class Grid: IPlacableListHandler
     {
         private CellData[,] _cells;
         private Dictionary<Vector2Int, Placable> _placables;
@@ -20,6 +21,7 @@ namespace Levels.Logic
         public float CellSize => _cellSize;
 
         public int GridSize => _cells.GetLength(0);
+        public IEnumerable<Placable> Placables => _placables.Values;
 
         public Grid(int gridSize, float cellSize)
         {
@@ -153,13 +155,6 @@ namespace Levels.Logic
 
         public bool CreateCellAt(Vector2Int position, TileType tileType)
         {
-            Debug.Log($"Trying to add {tileType} at {position}");
-            Debug.Log($"Is position valid? {IsPositionValid(position)}");
-            Debug.Log($"Is there a cell? {IsCellAt(position)}");
-            
-            Debug.Log($"Tile type before: {_cells[position.x,position.y].Type }");
-            
-
             if (!IsPositionValid(position))
                 return false;
 
@@ -228,7 +223,14 @@ namespace Levels.Logic
             if (!CanBuildAt(position))
                 return false;
 
-            return _placables.TryAdd(position, placable);
+            if (_placables.TryAdd(position, placable))
+            {
+                placable.destroyed += OnPlacableDestroyed;
+
+                return true;
+            }
+
+            return false;
         }
 
         public void DestroyAt(Vector2Int position)
@@ -249,6 +251,20 @@ namespace Levels.Logic
             int y = (index % GridSize);
 
             return new Vector2Int(x,y);
+        }
+
+        private void OnPlacableDestroyed(Placable placable)
+        {
+            placable.destroyed -= OnPlacableDestroyed;
+
+            foreach (var keyValuePair in _placables)
+            {
+                if (keyValuePair.Value == placable)
+                {
+                    _placables.Remove(keyValuePair.Key);
+                    return;
+                }
+            }
         }
     }
 }

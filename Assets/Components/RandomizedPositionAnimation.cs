@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class RandomizedPositionAnimation : PositionAnimation
 {
-    public RandomizedPositionAnimation(AnimationValueUpdater updater, Transform targetTransform, Vector2 offset) : base(updater, targetTransform, offset)
+    public RandomizedPositionAnimation(AnimationValueUpdater updater, Transform targetTransform, Vector2 offset, Vector2 startPosition) : base(updater, targetTransform, offset, startPosition)
     {
     }
 

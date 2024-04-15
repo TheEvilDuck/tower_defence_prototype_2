@@ -23,8 +23,6 @@ namespace Levels.TileControl
             _tileDatabase.TryGetValue(tileType, out TileConfig config);
 
             _groundTileMap.SetTile(new Vector3Int(position.x,position.y),config.Tile);
-
-            Debug.Log("A");
         }
 
         public void DrawRoadAt(Vector2Int position)

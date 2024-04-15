@@ -9,11 +9,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 971879b1f90449944a77f5c84231a44e, type: 3}
-  m_Name: Main building config
+  m_Script: {fileID: 11500000, guid: db3e27e6ae2898c4dbe98dab33907537, type: 3}
+  m_Name: Main building
   m_EditorClassIdentifier: 
   <Name>k__BackingField: Main building
-  <Cost>k__BackingField: 0
-  <BuildTime>k__BackingField: 5
-  CanBeDestroyed: 0
+  <Cost>k__BackingField: 100
+  <BuildTime>k__BackingField: 0
+  CanBeDestroyed: 1
   <Prefab>k__BackingField: {fileID: 3364900737472844234, guid: bc88b12986f55b048b0cdc6d4a33cdf3, type: 3}
+  <MaxHealth>k__BackingField: 100

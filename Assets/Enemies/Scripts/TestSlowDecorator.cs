@@ -12,7 +12,13 @@ namespace Enemies
         public override EnemyStats GetStats()
         {
             float walkSpeed = _wrappedEnemyStatsProvider.GetStats().WalkSpeed*_walkSpeedMultiplier;
-            return new EnemyStats(_wrappedEnemyStatsProvider.GetStats().MaxHealth, walkSpeed);
+            return new EnemyStats(
+                _wrappedEnemyStatsProvider.GetStats().MaxHealth, 
+                walkSpeed,
+                _wrappedEnemyStatsProvider.GetStats().Range,
+                _wrappedEnemyStatsProvider.GetStats().AttackRate,
+                _wrappedEnemyStatsProvider.GetStats().Damage
+                );
         }
     }
 }

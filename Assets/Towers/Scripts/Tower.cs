@@ -48,29 +48,45 @@ namespace Towers
 
         private void FindEnemyInRange()
         {
-            Enemy prevTarget = _target;
+            float distanceToTarget = float.MaxValue;
+            float distanceToNewEnemy = float.MaxValue;
+
+            if (_target != null)
+            {
+                distanceToTarget = Vector2.Distance(Position, _target.Position);
+
+                if (distanceToTarget > _range || _target.Stats.Health <= 0)
+                {
+                    _target = null;
+                    targetChanged?.Invoke(null);
+                }
+
+            }
 
             foreach (Enemy enemy in _spawner.Enemies)
             {
-                if (enemy == null)
+                if (enemy.Stats.Health <= 0)
                     continue;
 
-                Debug.Log(enemy.name);
+                distanceToNewEnemy = Vector2.Distance(Position, enemy.Position);
 
-                if (_target!=null)
-                    if (Vector3.Distance(_target.Position, Position)>_range)
-                        _target = null;
+                if (distanceToNewEnemy > _range)
+                    continue;
 
-                if (Vector3.Distance(enemy.Position, Position)<=_range)
-                    if (_target == null)
-                        _target = enemy;
-                    else if (Vector3.Distance(enemy.Position, Position)<Vector3.Distance(_target.Position, Position))
-                        _target = enemy;
-                        
+                if (_target == null)
+                {
+                    _target = enemy;
+                    targetChanged?.Invoke(_target);
+                    break;
+                }
+
+                if (distanceToNewEnemy < distanceToTarget)
+                {
+                    _target = enemy;
+                    targetChanged?.Invoke(_target);
+                    break;
+                }
             }
-
-            if (prevTarget!=_target)
-                targetChanged?.Invoke(_target);
         }
 
         private void HandleAttack()

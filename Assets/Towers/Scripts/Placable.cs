@@ -7,8 +7,9 @@ namespace Towers
 {
     public abstract class Placable: MonoBehaviour
     {
-        public event Action destroyed;
+        public event Action<Placable> destroyed;
         public bool CanBeDestroyed {get; private set;}
+        public Vector3 Position => transform.position;
         public virtual void Init(bool canBeDestroyed)
         {
             CanBeDestroyed = canBeDestroyed;
@@ -19,7 +20,7 @@ namespace Towers
             if (!CanBeDestroyed)
                 return;
 
-            destroyed?.Invoke();
+            destroyed?.Invoke(this);
 
             Destroy(gameObject);
         }

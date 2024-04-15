@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using Components;
 using Enemies;
 using UnityEngine;
@@ -13,11 +11,12 @@ namespace Towers.View
         [SerializeField]private ComponentsAnimator _animator;
         [SerializeField]private Transform _particlesPlace;
         [SerializeField]private Transform _particlesTransform;
-        [SerializeField]private float _attackRecoil = 10f;
+        [SerializeField]private float _attackRecoil = 6f;
 
         private Transform _targetTransform;
         private Vector3 _directionToLastTarget;
         private PositionAnimation _recoilAnimation;
+        private Vector3 _startPosition;
 
         private void Awake() 
         {
@@ -25,8 +24,9 @@ namespace Towers.View
             _tower.attacked+=OnTowerAttacked;
             _particles.animationEnd+=OnParticlesAnimationEnd;
 
-            WiggleAnimationValueUpdater updater = new WiggleAnimationValueUpdater(0,1f,90);
-            _recoilAnimation = new PositionAnimation(updater,transform, Vector2.zero);
+            WiggleAnimationValueUpdater updater = new WiggleAnimationValueUpdater(0.5f,1f,90);
+            _startPosition = transform.localPosition;
+            _recoilAnimation = new PositionAnimation(updater,transform, Vector2.zero, _startPosition);
         }
 
         private void OnDestroy() 

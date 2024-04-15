@@ -68,7 +68,10 @@ namespace Towers
 
             public void Visit(MainBuilding mainBuilding)
             {
-                
+                if (_config is not MainBuildingConfig mainBuildingConfig)
+                    throw new ArgumentException("Passed wrong config to init placable", "_config");
+
+                mainBuilding.Init(mainBuildingConfig.MaxHealth);
             }
         }
     }

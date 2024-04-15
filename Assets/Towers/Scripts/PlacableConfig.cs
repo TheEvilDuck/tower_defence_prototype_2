@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Towers
 {
-    [CreateAssetMenu(fileName = "Placable config", menuName = "Configs/New placable config")]
+    [CreateAssetMenu(fileName = "Placable config", menuName = "Configs/Placable configs/New placable config")]
     public class PlacableConfig : ScriptableObject
     {
         [field:SerializeField] public string Name {get; private set;}
