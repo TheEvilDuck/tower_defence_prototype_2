@@ -21,17 +21,24 @@ namespace GamePlay
         public override void Enter()
         {
             _placableBuilder.mainBuildingBuilt += OnMainBuildingBuilt;
+            _placableBuilder.canBuildMainBuilding += CanBuildMainBuilding;
         }
 
         public override void Exit()
         {
             _placableBuilder.mainBuildingBuilt -= OnMainBuildingBuilt;
+            _placableBuilder.canBuildMainBuilding -= CanBuildMainBuilding;
         }
 
         private void OnMainBuildingBuilt(Vector2Int cellPosition)
         {
+           _stateMachine.ChangeState<EnemySpawnState>();
+        }
+
+        private bool CanBuildMainBuilding(Vector2Int cellPosition)
+        {
             _spawners.CalculateAvailablePositions(cellPosition, _useDiagonal, _gridSize);
-            _stateMachine.ChangeState<EnemySpawnState>();
+            return _spawners.IsAnyPathToMainBuildingAvailable();
         }
     }
 

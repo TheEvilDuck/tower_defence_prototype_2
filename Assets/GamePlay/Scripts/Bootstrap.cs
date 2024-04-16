@@ -91,7 +91,7 @@ namespace GamePlay
                 placableIds = Enum.GetValues(typeof(PlacableEnum)).ConvertTo<PlacableEnum[]>()
             };
 
-            _builder = new PlacableBuilder(availablePlacables, _placableFactory);
+            _builder = new PlacableBuilder(availablePlacables, _placableFactory, true);
 
             _towersPanel.Init(_towersDatabase);
 
@@ -124,6 +124,7 @@ namespace GamePlay
         {
             _playerInput?.Update();
             _gamePlayerStateMachine?.Update();
+            _builder.Update();
         }
     }
 }

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <Name>k__BackingField: Big canon
   <Cost>k__BackingField: 100
-  <BuildTime>k__BackingField: 0
+  <BuildTime>k__BackingField: 10
   CanBeDestroyed: 1
   <Prefab>k__BackingField: {fileID: 7975762466027600639, guid: d64667ece7301cd42abd21a74e30ae57, type: 3}
   <AttackRate>k__BackingField: 4

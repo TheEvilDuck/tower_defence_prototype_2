@@ -40,6 +40,7 @@ namespace GamePlay
         private void OnMouseRightClicked(Vector2 position)
         {
             _grid.DestroyAt(_grid.WorldPositionToGridPosition(position));
+            _builder.DeleteInConstructionAt(_grid.WorldPositionToGridPosition(position));
         }
         private void OnTowerChosenInTowersPanel(PlacableEnum id)
         {

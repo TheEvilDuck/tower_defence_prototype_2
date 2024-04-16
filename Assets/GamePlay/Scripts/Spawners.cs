@@ -21,6 +21,8 @@ namespace GamePlay
             _availablePositions = new List<Vector2Int>();
         }
 
+        public bool IsAnyPathToMainBuildingAvailable() => _availablePositions.Count > 0;
+
         public void CalculateAvailablePositions(Vector2Int mainBuildingPosition, bool useDiagonal, int gridSize)
         {
             _paths.Clear();

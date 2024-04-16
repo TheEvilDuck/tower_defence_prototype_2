@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using GamePlay;
 using UnityEngine;
 
@@ -26,6 +24,11 @@ namespace Towers
             InitPlacable(tower, config);
 
             return tower;
+        }
+
+        public GameObject GetInConstruction()
+        {
+            return UnityEngine.Object.Instantiate(_towersDatabase.InConstructionPrefab);
         }
 
         public PlacableConfig GetConfig(PlacableEnum placableId)
@@ -61,7 +64,7 @@ namespace Towers
             public void Visit(Tower tower)
             {
                 if (_config is not TowerConfig towerConfig)
-                    throw new ArgumentException("Passed wrong config to init placable", "_config");
+                    throw new ArgumentException($"Passed wrong config to init placable, {_config.GetType()}");
 
                 tower.Init(_enemySpawner,towerConfig);
             }
@@ -69,7 +72,7 @@ namespace Towers
             public void Visit(MainBuilding mainBuilding)
             {
                 if (_config is not MainBuildingConfig mainBuildingConfig)
-                    throw new ArgumentException("Passed wrong config to init placable", "_config");
+                    throw new ArgumentException($"Passed wrong config to init placable, {_config.GetType()}");
 
                 mainBuilding.Init(mainBuildingConfig.MaxHealth);
             }
