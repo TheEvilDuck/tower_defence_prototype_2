@@ -14,6 +14,7 @@ namespace MainMenu
         [SerializeField]private Button _levelEditorButton;
         [SerializeField]private Button _settingsButton;
         [SerializeField]private Button _exitButton;
+        [field: SerializeField] public Transform LevelIconsParent {get; private set;}
 
 
         public event Action playButtonPressed;

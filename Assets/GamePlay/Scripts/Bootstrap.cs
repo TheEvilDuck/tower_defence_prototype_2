@@ -15,6 +15,7 @@ using Enemies.AI;
 using Unity.VisualScripting;
 using StateMachine = Common.States.StateMachine;
 using GamePlay.UI;
+using Common;
 
 namespace GamePlay
 {
@@ -29,7 +30,6 @@ namespace GamePlay
         [SerializeField]private TowersDatabase _towersDatabase;
         [SerializeField]private TowersPanel _towersPanel;
         [SerializeField] private GameOverView _gameOverView;
-        [SerializeField]private string _testLevelName;
         private PlayerInput _playerInput;
         private CameraManipulation _cameraManipulation;
         private CameraMediator _cameraMediator;
@@ -51,10 +51,11 @@ namespace GamePlay
             _cameraMediator = new CameraMediator(_playerInput,_cameraManipulation);
             _levelLoader = new LevelLoader();
 
-            if (!_levelLoader.TryLoadLevel(_testLevelName, out LevelData levelData))
+            if (!_levelLoader.TryLoadLevel(PlayerSettingsData.LoadChosenMapName(), out LevelData levelData))
                 throw new System.Exception("No level to load");
 
             _level = new Level(levelData);
+            PlayerStats playerStats = new PlayerStats(levelData.startMoney);
 
             _tileController = new TileController(_tileDatabase,_groundTileMap,_roadTileMap);
             _levelAndTilesMediator = new LevelAndTilesMediator(_tileController,_level);

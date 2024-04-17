@@ -141,8 +141,6 @@ namespace Builder
 
         private void CreatePlacable(Grid grid, Vector2Int cellPosition, PlacableEnum placableId)
         {
-            Debug.Log(placableId);
-
             Placable tower = _placableFactory.Get(placableId);
             Vector2 worldPosition = grid.GridPositionToWorldPosition(cellPosition);
             tower.transform.position = worldPosition;

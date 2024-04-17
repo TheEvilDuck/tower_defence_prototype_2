@@ -42,5 +42,11 @@ namespace Common
 
             menuParentToHide.Hide();
         }
+
+        public void HideAll()
+        {
+            foreach (IMenuParent menuParent in _menuParents)
+                menuParent.Hide();
+        }
     }
 }
