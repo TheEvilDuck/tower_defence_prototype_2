@@ -23,12 +23,14 @@ namespace Towers
 
         private bool _initilized = false;
         private float _attackTimer = 0;
-
-        private Vector3 Position => transform.position;
+        private bool _paused = false;
 
         private void Update() 
         {
             if (!_initilized!)
+                return;
+
+            if (_paused)
                 return;
 
             FindEnemyInRange();
@@ -43,6 +45,16 @@ namespace Towers
             _initilized = true;
 
             _attackTimer = 0;
+        }
+
+        public override void Pause()
+        {
+            _paused = true;
+        }
+
+        public override void UnPause()
+        {
+            _paused = false;
         }
 
 
@@ -104,5 +116,7 @@ namespace Towers
 
             _attackTimer+=Time.deltaTime;
         }
+
+        
     }
 }

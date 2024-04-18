@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Common.Interfaces;
 using Levels.Tiles;
 using Towers;
 using UnityEngine;
@@ -38,6 +39,22 @@ namespace Levels.Logic
 
             _placables = new Dictionary<Vector2Int, Placable>();
             _cellSize = cellSize;
+        }
+
+        public void Pause()
+        {
+            foreach(var keyValuePair in _placables)
+            {
+                keyValuePair.Value.Pause();
+            }
+        }
+
+        public void UnPause()
+        {
+            foreach(var keyValuePair in _placables)
+            {
+                keyValuePair.Value.UnPause();
+            }
         }
 
         public void FillFromGridData(GridData gridData)
@@ -241,8 +258,8 @@ namespace Levels.Logic
             if (!_placables.ContainsKey(position))
                 return;
 
-            _placables[position].DestroyPlacable();
-            _placables.Remove(position);
+            if (_placables[position].DestroyPlacable())
+                _placables.Remove(position);
         }
 
         public Vector2Int ConvertIntToVector2Int(int index)

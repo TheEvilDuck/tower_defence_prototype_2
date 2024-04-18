@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace Enemies
 {
-    public class Enemy : MonoBehaviour, IDamagable
+    public class Enemy : MonoBehaviour, IDamagable, IPausable
     {
         private const float POSITION_ACCURACY = 0.2f;
         public event Action tookDamage;
@@ -20,6 +20,8 @@ namespace Enemies
         private IDamagable _currentTarget;
         private IPlacableListHandler _placableListHandler;
         private float _lastAttackTime;
+        private bool _paused = false;
+        private float _pausedTime;
 
         public EnemyStats Stats
         {
@@ -42,6 +44,19 @@ namespace Enemies
             _baseStats = new EnemyStats(maxHealth, walkSpeed, range, attackRate, damage);
             _statsModifiers = new LinkedList<EnemyStatsProvider>();
             _placableListHandler = placableListHandler;
+        }
+
+        public void Pause()
+        {
+            _paused = true;
+            _pausedTime = Time.deltaTime;
+        }
+
+        public void UnPause()
+        {
+            _paused = false;
+            float pausedDeltaTime = Time.time - _pausedTime;
+            _lastAttackTime += pausedDeltaTime;
         }
 
         public void AddStatsModifier(EnemyStatsProvider enemyStatsProvider)
@@ -115,6 +130,9 @@ namespace Enemies
 
         private void Update() 
         {
+            if (_paused)
+                return;
+
             if (Stats.Health <= 0)
                 return;
 

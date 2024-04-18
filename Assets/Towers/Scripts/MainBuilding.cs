@@ -10,11 +10,22 @@ namespace Towers
     {
         private int _health;
         private int _maxHealth;
+        private bool _paused;
 
         public void Init(int maxHealth)
         {
             _maxHealth = maxHealth;
             _health = _maxHealth;
+        }
+
+        public override void Pause()
+        {
+            _paused = true;
+        }
+
+        public override void UnPause()
+        {
+            _paused = false;
         }
 
         public void TakeDamage(int damage)
@@ -26,6 +37,7 @@ namespace Towers
 
             if (_health <= 0)
             {
+                CanBeDestroyed = true;
                 DestroyPlacable();
             }
         }

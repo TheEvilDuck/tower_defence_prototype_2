@@ -1,11 +1,12 @@
 using System.Collections.Generic;
+using Common.Interfaces;
 using Enemies;
 using UnityEngine;
 using Waves;
 
 namespace GamePlay
 {
-    public class EnemySpawner
+    public class EnemySpawner: IPausable
     {
         private readonly float _spawnRate;
         private readonly EnemyFactory _enemyFactory;
@@ -13,6 +14,7 @@ namespace GamePlay
         private float _timer;
         private int _currentWaveId = 0;
         private bool _started = false;
+        private bool _paused = false;
         private List<Enemy>_enemies;
         public IEnumerable<Enemy>Enemies => _enemies;
         public bool IsLastWave => _currentWaveId == _waves.Length && _waves.Length != 0;
@@ -24,8 +26,31 @@ namespace GamePlay
             _spawnRate = spawnRate;
             _enemies = new List<Enemy>();
         }
+
+        public void Pause()
+        {
+            _paused = true;
+
+            foreach (Enemy enemy in _enemies)
+            {
+                enemy.Pause();
+            }
+        }
+
+        public void UnPause()
+        {
+            foreach (Enemy enemy in _enemies)
+            {
+                enemy.UnPause();
+            }
+
+            _paused = false;
+        }
         public void Update()
         {
+            if (_paused)
+                return;
+
             if (!_started)
                 return;
 
@@ -55,6 +80,9 @@ namespace GamePlay
                     if (enemy!=null)
                     {
                         _enemies.Add(enemy);
+
+                        if (_paused)
+                            enemy.Pause();
                     }
                 }
             }

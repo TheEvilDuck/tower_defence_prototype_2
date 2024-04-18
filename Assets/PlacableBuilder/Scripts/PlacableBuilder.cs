@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Common.Interfaces;
 using GamePlay;
 using Towers;
 using UnityEngine;
@@ -8,7 +9,7 @@ using Grid = Levels.Logic.Grid;
 
 namespace Builder
 {
-    public class PlacableBuilder: IMainBuilderProvider
+    public class PlacableBuilder: IMainBuilderProvider, IPausable
     {
         public event Action<Vector2Int> mainBuildingBuilt;
         public event Func<Vector2Int, bool> canBuildMainBuilding;
@@ -17,6 +18,7 @@ namespace Builder
         private bool _waitForBuilding = false;
         private PlacableFactory _placableFactory;
         private bool _mainBuildingBuilt = false;
+        private bool _paused = false;
         private Dictionary<InConstruction, InConstructionData> _inConstructions;
         private List<InConstruction> _markedToDeleteInConstructions;
 
@@ -30,6 +32,23 @@ namespace Builder
             _inConstructions = new Dictionary<InConstruction, InConstructionData>();
             _markedToDeleteInConstructions = new List<InConstruction>();
         }
+
+        public void Pause()
+        {
+            foreach (var keyValuePair in _inConstructions)
+            {
+                keyValuePair.Key.Pause();
+            }
+        }
+
+        public void UnPause()
+        {
+            foreach (var keyValuePair in _inConstructions)
+            {
+                keyValuePair.Key.UnPause();
+            }
+        }
+
 
         public void SwitchCurrentId(PlacableEnum id)
         {
@@ -53,6 +72,9 @@ namespace Builder
 
         public void Update()
         {
+            if (_paused)
+                return;
+
             foreach (var keyValuePair in _inConstructions)
             {
                 keyValuePair.Key.Update();
@@ -153,15 +175,14 @@ namespace Builder
 
             tower?.OnBuild();
 
-            if (_currentId==PlacableEnum.MainBuilding)
+            if (placableId==PlacableEnum.MainBuilding)
             {
                 MainBuilding = tower;
                 _mainBuildingBuilt = true;
                 mainBuildingBuilt?.Invoke(cellPosition);
             }
         }
-
-        private class InConstructionData
+        private struct InConstructionData
         {
             public GameObject InConstructionObject {get; private set;}
             public Grid Grid {get; private set;}

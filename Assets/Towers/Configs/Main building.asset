@@ -15,6 +15,6 @@ MonoBehaviour:
   <Name>k__BackingField: Main building
   <Cost>k__BackingField: 100
   <BuildTime>k__BackingField: 0
-  CanBeDestroyed: 1
+  CanBeDestroyed: 0
   <Prefab>k__BackingField: {fileID: 3364900737472844234, guid: bc88b12986f55b048b0cdc6d4a33cdf3, type: 3}
   <MaxHealth>k__BackingField: 100

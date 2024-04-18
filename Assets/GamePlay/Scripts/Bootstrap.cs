@@ -16,6 +16,8 @@ using Unity.VisualScripting;
 using StateMachine = Common.States.StateMachine;
 using GamePlay.UI;
 using Common;
+using Common.UI;
+using LevelEditor.UI;
 
 namespace GamePlay
 {
@@ -30,6 +32,9 @@ namespace GamePlay
         [SerializeField]private TowersDatabase _towersDatabase;
         [SerializeField]private TowersPanel _towersPanel;
         [SerializeField] private GameOverView _gameOverView;
+        [SerializeField] private PauseView _pauseView;
+        [SerializeField] private PauseButton _pauseButton;
+        [SerializeField] private UIInputBlocker _inputBlocker;
         private PlayerInput _playerInput;
         private CameraManipulation _cameraManipulation;
         private CameraMediator _cameraMediator;
@@ -44,8 +49,12 @@ namespace GamePlay
         private PlacableFactory _placableFactory;
         private PathFinder _pathFinder;
         private StateMachine _gamePlayerStateMachine;
+        private PausableManager _pausableManager;
+        private LevelEditorInputBlockerMediator _inputBlockerMediator;
+        private PauseMediator _pauseMediator;
         private void Awake() 
         {
+            _pausableManager = new PausableManager();
             _playerInput = new PlayerInput();
             _cameraManipulation = new CameraManipulation(_cameraSpeed, Camera.main);
             _cameraMediator = new CameraMediator(_playerInput,_cameraManipulation);
@@ -102,15 +111,34 @@ namespace GamePlay
 
             _gamePlayerStateMachine = new StateMachine();
             
+
+            _inputBlockerMediator = new LevelEditorInputBlockerMediator(_inputBlocker, _playerInput);
+
+            MenuParentsManager pauseMenus = new MenuParentsManager();
+            pauseMenus.Add(_pauseButton);
+            pauseMenus.Add(_pauseView);
+
+            _pausableManager.Add(_enemySpawner);
+            _pausableManager.Add(_playerInput);
+            _pausableManager.Add(_builder);
+            _pausableManager.Add(_level.Grid);
+
+            _pauseMediator = new PauseMediator(_pausableManager, _pauseView, _pauseButton, pauseMenus, sceneLoader);
+
+            pauseMenus.HideAll();
+            pauseMenus.Show(_pauseButton);
+
             PrepareState prepareState = new PrepareState(_gamePlayerStateMachine, _builder, spawners, false, _level.Grid.GridSize);
             EnemySpawnState enemySpawnState = new EnemySpawnState(_gamePlayerStateMachine, _enemySpawner, _builder);
-            LoseState loseState = new LoseState(_gamePlayerStateMachine, _gameOverView, sceneLoader, _builderMediator);
-            WinState winState = new WinState(_gamePlayerStateMachine, _gameOverView, sceneLoader, _builderMediator);
+            LoseState loseState = new LoseState(_gamePlayerStateMachine, _gameOverView, sceneLoader, _builderMediator, pauseMenus);
+            WinState winState = new WinState(_gamePlayerStateMachine, _gameOverView, sceneLoader, _builderMediator, pauseMenus);
 
             _gamePlayerStateMachine.AddState(prepareState);
             _gamePlayerStateMachine.AddState(enemySpawnState);
             _gamePlayerStateMachine.AddState(loseState);
             _gamePlayerStateMachine.AddState(winState);
+
+
         }
 
         private void OnDestroy() 
@@ -119,6 +147,8 @@ namespace GamePlay
             _levelAndTilesMediator?.Dispose();
             _builderMediator?.Dispose();
             _gamePlayerStateMachine?.Dispose();
+            _inputBlockerMediator?.Dispose();
+            _pauseMediator?.Dispose();
         }
 
         void Update()

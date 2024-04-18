@@ -1,29 +1,34 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
+using Common.Interfaces;
 using UnityEngine;
 
 namespace Towers
 {
-    public abstract class Placable: MonoBehaviour
+    public abstract class Placable: MonoBehaviour, IPausable
     {
         public event Action<Placable> destroyed;
-        public bool CanBeDestroyed {get; private set;}
+        public bool CanBeDestroyed {get; protected set;}
         public Vector3 Position => transform.position;
         public virtual void Init(bool canBeDestroyed)
         {
             CanBeDestroyed = canBeDestroyed;
         }
 
-        public void DestroyPlacable()
+        public bool DestroyPlacable()
         {
             if (!CanBeDestroyed)
-                return;
+                return false;
 
             destroyed?.Invoke(this);
 
             Destroy(gameObject);
+
+            return true;
         }
         public virtual void OnBuild() {}
+
+        public abstract void Pause();
+
+        public abstract void UnPause();
     }
 }

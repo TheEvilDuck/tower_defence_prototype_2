@@ -41,6 +41,7 @@ namespace MainMenu
         {
             _mainMenuMediator.Dispose();
             _levelIconsMediator.Dispose();
+            _levelIconsLoader.Delete();
         }
     }
 }

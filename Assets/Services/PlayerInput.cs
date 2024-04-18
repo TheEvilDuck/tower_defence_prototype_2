@@ -1,11 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Common.Interfaces;
 using UnityEngine;
 
 namespace Services.PlayerInput
 {
-    public class PlayerInput
+    public class PlayerInput: IPausable
     {
         public event Action<Vector2> mouseLeftClicked;
         public event Action<Vector2> mouseRightClicked;
@@ -23,6 +24,7 @@ namespace Services.PlayerInput
 
         //можно будет в меню клавиши назначать, сохранять в конфиг, а потом на сцене и в редакторе подгружать с конфига
         private List<KeyCode> _watchingKeys;
+        private bool _paused;
 
         private List<KeyCode>_currentCombination;
         public bool Blocked {get; set;} = false;
@@ -35,9 +37,16 @@ namespace Services.PlayerInput
             _watchingKeys = new List<KeyCode>();
         }
 
+        public void Pause() => _paused = true;
+
+        public void UnPause() => _paused = false;
+
 
         public void Update()
         {
+            if (_paused)
+                return;
+
             if (Blocked)
                 return;
 
@@ -117,6 +126,5 @@ namespace Services.PlayerInput
             if (_currentCombination.Count>0)
                 keysCombinationHold?.Invoke(_currentCombination.ToArray());
         }
-        
     }
 }
