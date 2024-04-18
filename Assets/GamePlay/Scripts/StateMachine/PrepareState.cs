@@ -21,13 +21,13 @@ namespace GamePlay
         public override void Enter()
         {
             _placableBuilder.mainBuildingBuilt += OnMainBuildingBuilt;
-            _placableBuilder.canBuildMainBuilding += CanBuildMainBuilding;
+            _placableBuilder.checkCanBuildMainBuilding += CanBuildMainBuilding;
         }
 
         public override void Exit()
         {
             _placableBuilder.mainBuildingBuilt -= OnMainBuildingBuilt;
-            _placableBuilder.canBuildMainBuilding -= CanBuildMainBuilding;
+            _placableBuilder.checkCanBuildMainBuilding -= CanBuildMainBuilding;
         }
 
         private void OnMainBuildingBuilt(Vector2Int cellPosition)

@@ -28,7 +28,7 @@ namespace GamePlay
                     placableButtonPressed?.Invoke(item.Key);
                 });
 
-                button.GetComponentInChildren<TextMeshProUGUI>().text = item.Value.Name;
+                button.GetComponentInChildren<TextMeshProUGUI>().text = $"{item.Value.Name}({item.Value.Cost})";
             }
         }
     }

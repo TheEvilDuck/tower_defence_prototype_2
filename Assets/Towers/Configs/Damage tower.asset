@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Damage tower
   m_EditorClassIdentifier: 
   <Name>k__BackingField: Damage tower
-  <Cost>k__BackingField: 0
+  <Cost>k__BackingField: 50
   <BuildTime>k__BackingField: 5
   CanBeDestroyed: 1
   <Prefab>k__BackingField: {fileID: 7975762466027600639, guid: 9e8bcaec1ed37784c8f9421569b5044a, type: 3}

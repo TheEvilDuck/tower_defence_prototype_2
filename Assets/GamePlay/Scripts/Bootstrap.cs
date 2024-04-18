@@ -35,6 +35,7 @@ namespace GamePlay
         [SerializeField] private PauseView _pauseView;
         [SerializeField] private PauseButton _pauseButton;
         [SerializeField] private UIInputBlocker _inputBlocker;
+        [SerializeField] private MoneyView _moneyView;
         private PlayerInput _playerInput;
         private CameraManipulation _cameraManipulation;
         private CameraMediator _cameraMediator;
@@ -52,6 +53,9 @@ namespace GamePlay
         private PausableManager _pausableManager;
         private LevelEditorInputBlockerMediator _inputBlockerMediator;
         private PauseMediator _pauseMediator;
+        private PlayerStatsUpdater _playerStatsUpdater;
+        private BuildPossibilityChecker _buildPossibilityChecker;
+        private MoneyMediator _moneyMediator;
         private void Awake() 
         {
             _pausableManager = new PausableManager();
@@ -93,7 +97,7 @@ namespace GamePlay
 
             _enemySpawner = new EnemySpawner(waves.ToArray(), levelData.firstWaveDelay,1f,_enemyFactory);
 
-            _placableFactory = new PlacableFactory(_towersDatabase,_enemySpawner);
+            _placableFactory = new PlacableFactory(_towersDatabase,_enemySpawner, playerStats);
 
             //TODO this must be loaded from level
             AvailablePlacables availablePlacables = new AvailablePlacables()
@@ -138,7 +142,10 @@ namespace GamePlay
             _gamePlayerStateMachine.AddState(loseState);
             _gamePlayerStateMachine.AddState(winState);
 
+            _playerStatsUpdater = new PlayerStatsUpdater(playerStats, _builder, _towersDatabase);
+            _buildPossibilityChecker = new BuildPossibilityChecker(playerStats, _builder, _towersDatabase);
 
+            _moneyMediator = new MoneyMediator(playerStats, _moneyView);
         }
 
         private void OnDestroy() 
@@ -149,6 +156,9 @@ namespace GamePlay
             _gamePlayerStateMachine?.Dispose();
             _inputBlockerMediator?.Dispose();
             _pauseMediator?.Dispose();
+            _playerStatsUpdater?.Dispose();
+            _buildPossibilityChecker?.Dispose();
+            _moneyMediator?.Dispose();
         }
 
         void Update()

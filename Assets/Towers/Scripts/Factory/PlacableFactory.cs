@@ -8,11 +8,13 @@ namespace Towers
     {
         TowersDatabase _towersDatabase;
         EnemySpawner _enemySpawner;
+        PlayerStats _playerStats;
 
-        public PlacableFactory(TowersDatabase towersDatabase, EnemySpawner enemySpawner)
+        public PlacableFactory(TowersDatabase towersDatabase, EnemySpawner enemySpawner, PlayerStats playerStats)
         {
             _towersDatabase = towersDatabase;
             _enemySpawner = enemySpawner;
+            _playerStats = playerStats;
         }
 
         public Placable Get(PlacableEnum placableId)
@@ -41,7 +43,7 @@ namespace Towers
 
         private void InitPlacable(Placable placable, PlacableConfig config)
         {
-            PlacableInitilizer placableInitilizer = new PlacableInitilizer(config,_enemySpawner);
+            PlacableInitilizer placableInitilizer = new PlacableInitilizer(config,_enemySpawner,_playerStats);
             placableInitilizer.Visit(placable);
         }
 
@@ -49,11 +51,13 @@ namespace Towers
         {
             private PlacableConfig _config;
             private EnemySpawner _enemySpawner;
+            private PlayerStats _playerStats;
 
-            public PlacableInitilizer(PlacableConfig config, EnemySpawner enemySpawner)
+            public PlacableInitilizer(PlacableConfig config, EnemySpawner enemySpawner, PlayerStats playerStats)
             {
                 _config = config;
                 _enemySpawner = enemySpawner;
+                _playerStats = playerStats;
             }
             public void Visit(Placable placable)
             {
@@ -75,6 +79,14 @@ namespace Towers
                     throw new ArgumentException($"Passed wrong config to init placable, {_config.GetType()}");
 
                 mainBuilding.Init(mainBuildingConfig.MaxHealth);
+            }
+
+            public void Visit(MoneyGiver moneyGiver)
+            {
+                if (_config is not MoneyGiverConfig moneyGiverConfig)
+                    throw new ArgumentException($"Passed wrong config to init placable, {_config.GetType()}");
+
+                moneyGiver.Init(moneyGiverConfig, _playerStats);
             }
         }
     }

@@ -12,7 +12,12 @@ namespace Builder
     public class PlacableBuilder: IMainBuilderProvider, IPausable
     {
         public event Action<Vector2Int> mainBuildingBuilt;
-        public event Func<Vector2Int, bool> canBuildMainBuilding;
+        public event Func<Vector2Int, bool> checkCanBuildMainBuilding;
+        public event Func<PlacableEnum, bool> checkCanBuild;
+        public event Action<PlacableEnum> placableBuilt;
+        public event Action<PlacableEnum> placableDestroyed;
+        public event Action<PlacableEnum> placableBuildStarted;
+        public event Action<PlacableEnum> placableBuildCanceled;
         private List<PlacableEnum> _availableTowers;
         private PlacableEnum _currentId;
         private bool _waitForBuilding = false;
@@ -64,6 +69,7 @@ namespace Builder
             {
                 if (keyValuePair.Value.CellPosition == cellPosition)
                 {
+                    placableBuildCanceled?.Invoke(keyValuePair.Value.PlacableId);
                     keyValuePair.Key.Cancel();
                     return;
                 }
@@ -105,15 +111,21 @@ namespace Builder
             if (!grid.CanBuildAt(cellPosition))
                 throw new Exception("Didn't you forget to delete inConstrucion placable?");
 
+            bool? canBuild = checkCanBuild?.Invoke(_currentId);
+
+                if (canBuild !=null)
+                    if (!(bool)canBuild)
+                        return;
+
             if (_currentId==PlacableEnum.MainBuilding)
             {
                 if (_mainBuildingBuilt)
                     return;
 
-                bool? canBuild = canBuildMainBuilding?.Invoke(cellPosition);
+                bool? canBuildMainBuilding = checkCanBuildMainBuilding?.Invoke(cellPosition);
 
-                if (canBuild !=null)
-                    if (!(bool)canBuild)
+                if (canBuildMainBuilding !=null)
+                    if (!(bool)canBuildMainBuilding)
                         return;
             }
 
@@ -126,6 +138,8 @@ namespace Builder
                 InConstructionData inConstructionData = new InConstructionData(inConstructionObject, grid, cellPosition, _currentId);
                 _inConstructions.Add(inConstruction, inConstructionData);
                 inConstruction.end += OnInConstructionEnd;
+
+                placableBuildStarted?.Invoke(_currentId);
 
 
             }
@@ -175,12 +189,24 @@ namespace Builder
 
             tower?.OnBuild();
 
+            Action<Placable> placableDestroyedTemp = null;
+
+            placableDestroyedTemp = (Placable placable) =>
+            {
+                placable.destroyed -= placableDestroyedTemp;
+                placableDestroyed?.Invoke(placableId);
+            };
+
+            tower.destroyed += placableDestroyedTemp;
+
             if (placableId==PlacableEnum.MainBuilding)
             {
                 MainBuilding = tower;
                 _mainBuildingBuilt = true;
                 mainBuildingBuilt?.Invoke(cellPosition);
             }
+
+            placableBuilt?.Invoke(placableId);
         }
         private struct InConstructionData
         {

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Main building
   m_EditorClassIdentifier: 
   <Name>k__BackingField: Main building
-  <Cost>k__BackingField: 100
+  <Cost>k__BackingField: 0
   <BuildTime>k__BackingField: 0
   CanBeDestroyed: 0
   <Prefab>k__BackingField: {fileID: 3364900737472844234, guid: bc88b12986f55b048b0cdc6d4a33cdf3, type: 3}

@@ -12,5 +12,6 @@ namespace Common.UI
         public void OnPointerEnter(PointerEventData eventData) => pointerEntered?.Invoke(this);
 
         public void OnPointerExit(PointerEventData eventData) => poinerExited?.Invoke(this);
+        private void OnDisable() => poinerExited?.Invoke(this);
     }
 }

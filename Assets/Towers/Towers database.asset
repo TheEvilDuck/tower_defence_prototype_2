@@ -19,4 +19,8 @@ MonoBehaviour:
     Value: {fileID: 11400000, guid: 3604c54e7024e3947a94167c6ecac89a, type: 2}
   - Key: 4
     Value: {fileID: 11400000, guid: 9394b6e60665ff04ebfb89dc37e784b2, type: 2}
+  - Key: 5
+    Value: {fileID: 11400000, guid: ca7cfb8301ed37443bead84636abc958, type: 2}
+  - Key: 6
+    Value: {fileID: 11400000, guid: c6838a981fc0b8948b1f5cf3e0c3b514, type: 2}
   <InConstructionPrefab>k__BackingField: {fileID: 3004441590416729987, guid: 39ea3a1bf7abd354997d3c0d3facd1e6, type: 3}

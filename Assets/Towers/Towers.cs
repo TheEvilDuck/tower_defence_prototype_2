@@ -1,7 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
 namespace Towers
 {
     public enum PlacableEnum
@@ -10,6 +6,8 @@ namespace Towers
         Test = 1,
         Test2 = 2,
         DamageTower = 3,
-        BigCanon = 4
+        BigCanon = 4,
+        SmallFactory = 5,
+        BigFactory = 6
     }
 }
