@@ -109,7 +109,7 @@ namespace Builder
                 return;
 
             if (!grid.CanBuildAt(cellPosition))
-                throw new Exception("Didn't you forget to delete inConstrucion placable?");
+                return;
 
             bool? canBuild = checkCanBuild?.Invoke(_currentId);
 

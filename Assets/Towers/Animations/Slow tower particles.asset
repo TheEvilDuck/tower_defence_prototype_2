@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4d1097f9bb134f34a8892cdf02ec99af, type: 3}
+  m_Name: Slow tower particles
+  m_EditorClassIdentifier: 
+  _sprites:
+  - {fileID: -596885995, guid: 39ba90e916bc19245b2b6a8b4baf3b58, type: 3}
+  - {fileID: 1369828944, guid: 39ba90e916bc19245b2b6a8b4baf3b58, type: 3}
+  - {fileID: 1182762227, guid: 39ba90e916bc19245b2b6a8b4baf3b58, type: 3}
+  - {fileID: 963650079, guid: 39ba90e916bc19245b2b6a8b4baf3b58, type: 3}
+  - {fileID: 1790183770, guid: 39ba90e916bc19245b2b6a8b4baf3b58, type: 3}
+  - {fileID: -536639579, guid: 39ba90e916bc19245b2b6a8b4baf3b58, type: 3}
+  _loop: 0
+  _secondsPerFrame: 0.04

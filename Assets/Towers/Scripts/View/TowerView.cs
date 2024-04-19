@@ -9,7 +9,8 @@ namespace Towers.View
     {
         [SerializeField]private Tower _tower;
         [SerializeField]private SimpleSpriteAnimationComponent _particles;
-        [SerializeField]private SpriteAnimationData _particlesAnimation;
+        [SerializeField]private SpriteAnimationData[] _particlesAnimations;
+        [SerializeField, Range(-180f, 180f)]private float _particlesRotationAngle;
         [SerializeField]private ComponentsAnimator _animator;
         [SerializeField]private Transform _particlesPlace;
         [SerializeField]private Transform _particlesTransform;
@@ -29,6 +30,7 @@ namespace Towers.View
             WiggleAnimationValueUpdater updater = new WiggleAnimationValueUpdater(0.5f,1f,90);
             _startPosition = transform.localPosition;
             _recoilAnimation = new PositionAnimation(updater,transform, Vector2.zero, _startPosition);
+            _particles.transform.Rotate(0,0,  _particlesRotationAngle,  Space.Self);
         }
 
         private void OnDestroy() 
@@ -61,7 +63,9 @@ namespace Towers.View
             _particles.gameObject.SetActive(true);
             _particlesTransform.rotation = transform.rotation;
             _particlesTransform.position = _particlesPlace.position;
-            _particles.StartAnimation(_particlesAnimation);
+
+            SpriteAnimationData randomAnimation = _particlesAnimations[UnityEngine.Random.Range(0, _particlesAnimations.Length)];
+            _particles.StartAnimation(randomAnimation);
 
             _recoilAnimation.ChangeOffset(-_directionToLastTarget.normalized*_attackRecoil);
             _animator.AddAnimation(_recoilAnimation);

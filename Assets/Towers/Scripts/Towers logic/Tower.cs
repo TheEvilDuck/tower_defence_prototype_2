@@ -19,7 +19,7 @@ namespace Towers
         private float _attackRate;
         private EnemySpawner _spawner;
 
-        private Enemy _target;
+        protected Enemy _target;
 
         private bool _initilized = false;
         private float _attackTimer = 0;
@@ -36,7 +36,7 @@ namespace Towers
             FindEnemyInRange();
             HandleAttack();
         }
-        public void Init(EnemySpawner spawner, TowerConfig towerConfig)
+        public virtual void Init(EnemySpawner spawner, TowerConfig towerConfig)
         {
             _range = towerConfig.Range;
             _damage = towerConfig.Damage;
@@ -110,12 +110,15 @@ namespace Towers
             {
                 _attackTimer = 0;
                 _target.TakeDamage(_damage);
+                OnAttack();
                 attacked?.Invoke();
                 return;
             }
 
             _attackTimer+=Time.deltaTime;
         }
+
+        protected virtual void OnAttack(){}
 
         
     }

@@ -8,6 +8,8 @@ namespace Towers
         DamageTower = 3,
         BigCanon = 4,
         SmallFactory = 5,
-        BigFactory = 6
+        BigFactory = 6,
+        MiniGun = 7,
+        SlowTower = 8
     }
 }
