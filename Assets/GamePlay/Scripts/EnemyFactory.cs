@@ -28,7 +28,7 @@ namespace GamePlay
                 throw new ArgumentException($"There is no config for {enemyid} in enemies database");
 
             Enemy enemy = UnityEngine.Object.Instantiate(config.Prefab);
-            enemy.Init(config.MaxHealth,config.WalkSpeed, config.Range, config.AttackRate, config.Damage, _grid);
+            enemy.Init(config, _grid);
             Vector2Int randomSpawnerLocation = _spawners.GetRandomSpawnerPosition();
             Vector2 position = _grid.GridPositionToWorldPosition(randomSpawnerLocation);
             enemy.transform.position = position;

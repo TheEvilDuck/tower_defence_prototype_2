@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Common.Interfaces;
 using Enemies;
@@ -6,7 +7,7 @@ using Waves;
 
 namespace GamePlay
 {
-    public class EnemySpawner: IPausable
+    public class EnemySpawner: IPausable, ITimer
     {
         private readonly float _spawnRate;
         private readonly EnemyFactory _enemyFactory;
@@ -16,6 +17,9 @@ namespace GamePlay
         private bool _started = false;
         private bool _paused = false;
         private List<Enemy>_enemies;
+
+        public event Action<float> ticked;
+
         public IEnumerable<Enemy>Enemies => _enemies;
         public bool IsLastWave => _currentWaveId == _waves.Length && _waves.Length != 0;
         public EnemySpawner(Wave[] waves, float _firtsWaveDelay, float spawnRate, EnemyFactory enemyFactory)
@@ -50,6 +54,8 @@ namespace GamePlay
         {
             if (_paused)
                 return;
+
+            ticked?.Invoke(Time.deltaTime);
 
             if (!_started)
                 return;

@@ -1,6 +1,6 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
+using BuffSystem;
 using Common.Interfaces;
 using Enemies.AI;
 using Levels.Logic;
@@ -9,13 +9,13 @@ using UnityEngine;
 
 namespace Enemies
 {
-    public class Enemy : MonoBehaviour, IDamagable, IPausable
+    public class Enemy : MonoBehaviour, IDamagable, IPausable, IBuffable<EnemyStats>
     {
         private const float POSITION_ACCURACY = 0.2f;
         public event Action tookDamage;
         public event Action<Enemy> died;
         private EnemyStats _baseStats;
-        private LinkedList<EnemyStatsProvider> _statsModifiers;
+        private EnemyStats _currentStats;
         private List<EnemyPathNode> _currentPath;
         private IDamagable _currentTarget;
         private IPlacableListHandler _placableListHandler;
@@ -23,27 +23,28 @@ namespace Enemies
         private bool _paused = false;
         private float _pausedTime;
 
-        public EnemyStats Stats
-        {
-            get
-            {
-                if (_statsModifiers == null)
-                    throw new System.Exception("Enemy must be initialized first");
-
-                if (_statsModifiers.Count>0)
-                    return _statsModifiers.Last.Value.GetStats();
-
-                return _baseStats;
-            }
-        }
+        private List<IBuff<EnemyStats>> _buffs;
 
         public Vector2 Position => transform.position;
 
-        public void Init(int maxHealth, float walkSpeed, float range, float attackRate, int damage, IPlacableListHandler placableListHandler)
+        public void Init(EnemyConfig enemyConfig, IPlacableListHandler placableListHandler)
         {
-            _baseStats = new EnemyStats(maxHealth, walkSpeed, range, attackRate, damage);
-            _statsModifiers = new LinkedList<EnemyStatsProvider>();
+            _baseStats = new EnemyStats(enemyConfig);
+            _currentStats = _baseStats;
+            _buffs = new List<IBuff<EnemyStats>>();
             _placableListHandler = placableListHandler;
+        }
+
+        public void AddBuff(IBuff<EnemyStats> buff)
+        {
+            _buffs.Add(buff);
+            RecalculateCurrentStats();
+        }
+
+        public void RemoveBuff(IBuff<EnemyStats> buff)
+        {
+            if (_buffs.Remove(buff))
+                RecalculateCurrentStats();
         }
 
         public void Pause()
@@ -59,44 +60,11 @@ namespace Enemies
             _lastAttackTime += pausedDeltaTime;
         }
 
-        public void AddStatsModifier(EnemyStatsProvider enemyStatsProvider)
-        {
-            if (_statsModifiers.Contains(enemyStatsProvider))
-                return; 
-
-            if (_statsModifiers.Count>0)
-                enemyStatsProvider.Wrap(_statsModifiers.Last.Value);
-            else
-                enemyStatsProvider.Wrap(_baseStats);
-            
-            _statsModifiers.AddLast(enemyStatsProvider);
-        }
-
-        public void RemoveStatsModifer(EnemyStatsProvider enemyStatsProvider)
-        {
-            if (!_statsModifiers.Contains(enemyStatsProvider))
-                return;
-
-            LinkedListNode<EnemyStatsProvider> node = _statsModifiers.Find(enemyStatsProvider);
-
-            IEnemyStatsProvider prevProvider = _baseStats;
-
-            if (node.Next!=null)
-            {
-                if (node.Previous!=null)
-                    prevProvider = node.Previous.Value;
-
-                node.Next.Value.Wrap(prevProvider);
-            }
-
-            _statsModifiers.Remove(enemyStatsProvider);
-        }
-
         public void TakeDamage(int damage)
         {
-            Stats.ModifyHealth(-damage);
+            _currentStats.ModifyHealth(-damage);
 
-            if (Stats.Health <= 0)
+            if (_currentStats.health <= 0)
                 died?.Invoke(this);
 
             tookDamage?.Invoke();
@@ -121,7 +89,7 @@ namespace Enemies
 
                 distanceToNewTarget = Vector3.Distance(placable.Position, Position);
 
-                if (distanceToNewTarget <= Stats.Range)
+                if (distanceToNewTarget <= _currentStats.range)
                 {
                     _currentTarget = damagable;
                 }
@@ -133,7 +101,7 @@ namespace Enemies
             if (_paused)
                 return;
 
-            if (Stats.Health <= 0)
+            if (_currentStats.health <= 0)
                 return;
 
             if (_currentPath==null)
@@ -158,11 +126,11 @@ namespace Enemies
 
         private void HandleAttack()
         {
-            if (Time.time - _lastAttackTime >= Stats.AttackRate)
+            if (Time.time - _lastAttackTime >= _currentStats.attackRate)
             {
                 _lastAttackTime = Time.time;
 
-                _currentTarget.TakeDamage(Stats.Damage);
+                _currentTarget.TakeDamage(_currentStats.damage);
             }
         }
 
@@ -176,7 +144,17 @@ namespace Enemies
                 return;
             }
 
-            transform.Translate(directionVector.normalized*Stats.WalkSpeed*Time.deltaTime*_currentPath[0].speedMultiplier);
+            transform.Translate(directionVector.normalized*_currentStats.walkSpeed*Time.deltaTime*_currentPath[0].speedMultiplier);
+        }
+
+        private void RecalculateCurrentStats()
+        {
+            _currentStats = _baseStats;
+
+            foreach (var buff in _buffs)
+            {
+                _currentStats = buff.Apply(_currentStats);
+            }
         }
     }
 }

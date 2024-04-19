@@ -1,21 +1,23 @@
+using BuffSystem;
+
 namespace Enemies
 {
-    public class EnemyStats: IEnemyStatsProvider
+    public struct EnemyStats: IStats
     {
-        public float WalkSpeed {get; private set;}
-        public int MaxHealth {get; private set;}
-        public int Health {get; private set;}
-        public float Range {get; private set;}
-        public float AttackRate {get; private set;}
-        public int Damage {get; private set;}
+        public float walkSpeed;
+        public int maxHealth;
+        public int health;
+        public float range;
+        public float attackRate;
+        public int damage;
 
-        public EnemyStats(int maxHealth, float walkSpeed, float range, float attackRate, int damage)
+        public EnemyStats(EnemyConfig enemyConfig)
         {
-            Health = MaxHealth = maxHealth;
-            WalkSpeed = walkSpeed;
-            Range = range;
-            AttackRate = attackRate;
-            Damage = damage;
+            walkSpeed = enemyConfig.WalkSpeed;
+            health = maxHealth = enemyConfig.MaxHealth;
+            range = enemyConfig.Range;
+            attackRate = enemyConfig.AttackRate;
+            damage = enemyConfig.Damage;
         }
 
         public void ModifyHealth(int amount)
@@ -23,15 +25,13 @@ namespace Enemies
             if (amount == 0)
                 return;
 
-            Health+=amount;
+            health+=amount;
 
-            if (Health<0)
-                Health = 0;
+            if (health<0)
+                health = 0;
 
-            if (Health>MaxHealth)
-                Health = MaxHealth;
+            if (health>maxHealth)
+                health = maxHealth;
         }
-
-        public EnemyStats GetStats() => this;
     }
 }

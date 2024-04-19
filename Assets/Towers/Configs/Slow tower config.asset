@@ -21,3 +21,4 @@ MonoBehaviour:
   <Damage>k__BackingField: 2
   <Range>k__BackingField: 3
   <SlowMulriplier>k__BackingField: 0.9
+  <SlowTime>k__BackingField: 2

@@ -17,7 +17,7 @@ namespace Towers
         private float _range;
         private int _damage;
         private float _attackRate;
-        private EnemySpawner _spawner;
+        protected EnemySpawner _spawner;
 
         protected Enemy _target;
 
@@ -67,7 +67,7 @@ namespace Towers
             {
                 distanceToTarget = Vector2.Distance(Position, _target.Position);
 
-                if (distanceToTarget > _range || _target.Stats.Health <= 0)
+                if (distanceToTarget > _range)
                 {
                     _target = null;
                     targetChanged?.Invoke(null);
@@ -77,9 +77,6 @@ namespace Towers
 
             foreach (Enemy enemy in _spawner.Enemies)
             {
-                if (enemy.Stats.Health <= 0)
-                    continue;
-
                 distanceToNewEnemy = Vector2.Distance(Position, enemy.Position);
 
                 if (distanceToNewEnemy > _range)
