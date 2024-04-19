@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Common;
 using Enemies;
 using Enemies.AI;
 using Levels.Logic;
@@ -11,14 +12,12 @@ namespace GamePlay
     public class EnemyFactory
     {
         private readonly EnemiesDatabase _enemies;
-        private readonly PathFinder _pathFinder;
         private readonly Spawners _spawners;
         private readonly Grid _grid;
         private readonly PathFindMultipliersDatabase _pathFindMultiplierDatabase;
-        public EnemyFactory(EnemiesDatabase enemies, PathFinder pathFinder, Grid grid, Spawners spawners, PathFindMultipliersDatabase pathFindMultipliersDatabase)
+        public EnemyFactory(EnemiesDatabase enemies, Grid grid, Spawners spawners, PathFindMultipliersDatabase pathFindMultipliersDatabase)
         {
             _enemies = enemies;
-            _pathFinder = pathFinder;
             _grid = grid;
             _spawners = spawners;
             _pathFindMultiplierDatabase = pathFindMultipliersDatabase;

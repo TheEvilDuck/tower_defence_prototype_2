@@ -144,14 +144,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ffa20220ed5873b45b2b45012a203e23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _sprites:
-  - {fileID: -711332732, guid: 8cc29c0c2becf9348845c14ec87fdd2f, type: 3}
-  - {fileID: -1359102460, guid: 8cc29c0c2becf9348845c14ec87fdd2f, type: 3}
-  - {fileID: 1646774141, guid: 8cc29c0c2becf9348845c14ec87fdd2f, type: 3}
-  - {fileID: 1191100526, guid: 8cc29c0c2becf9348845c14ec87fdd2f, type: 3}
-  _loop: 1
-  _playOnAwake: 1
-  _secondsPerFrame: 0.8
 --- !u!114 &5357255870428074322
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -177,3 +169,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _enemy: {fileID: 4835739807219631629}
+  _idleAnimation: {fileID: 11400000, guid: 34d2a19c015e76b448524b342980f579, type: 2}

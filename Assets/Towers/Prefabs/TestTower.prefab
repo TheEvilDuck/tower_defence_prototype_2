@@ -97,18 +97,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ffa20220ed5873b45b2b45012a203e23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _sprites:
-  - {fileID: 511544125, guid: fe63de886dc80c64c86c5c902d7c2a1e, type: 3}
-  - {fileID: -355055187, guid: fe63de886dc80c64c86c5c902d7c2a1e, type: 3}
-  - {fileID: -1111907830, guid: fe63de886dc80c64c86c5c902d7c2a1e, type: 3}
-  - {fileID: -662014977, guid: fe63de886dc80c64c86c5c902d7c2a1e, type: 3}
-  - {fileID: 398062639, guid: fe63de886dc80c64c86c5c902d7c2a1e, type: 3}
-  - {fileID: 806814897, guid: fe63de886dc80c64c86c5c902d7c2a1e, type: 3}
-  - {fileID: 2072413217, guid: fe63de886dc80c64c86c5c902d7c2a1e, type: 3}
-  - {fileID: 7494884, guid: fe63de886dc80c64c86c5c902d7c2a1e, type: 3}
-  _loop: 0
-  _playOnAwake: 0
-  _secondsPerFrame: 0.05
 --- !u!1 &1662722057392729349
 GameObject:
   m_ObjectHideFlags: 0
@@ -242,6 +230,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _tower: {fileID: 7975762466027600639}
   _particles: {fileID: 1374351977210391873}
+  _particlesAnimation: {fileID: 11400000, guid: b96583e52bd9f6c4ea3cc016ec161924, type: 2}
   _animator: {fileID: 6730446580807167429}
   _particlesPlace: {fileID: 7990143637876683097}
   _particlesTransform: {fileID: 7638518567720209995}

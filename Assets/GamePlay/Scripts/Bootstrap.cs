@@ -87,7 +87,7 @@ namespace GamePlay
 
             Spawners spawners = new Spawners(spawnerPositions.ToArray(), _pathFinder);
 
-            _enemyFactory = new EnemyFactory(_enemiesDatabase,_pathFinder, _level.Grid, spawners, _pathFindMultiplierDatabase);
+            _enemyFactory = new EnemyFactory(_enemiesDatabase, _level.Grid, spawners, _pathFindMultiplierDatabase);
             List<Wave> waves = new List<Wave>();
 
             foreach (WaveData waveData in levelData.waves)

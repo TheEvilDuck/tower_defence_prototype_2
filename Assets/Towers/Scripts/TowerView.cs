@@ -1,4 +1,5 @@
 using Components;
+using Components.SimpleSpriteAnimator;
 using Enemies;
 using UnityEngine;
 
@@ -8,6 +9,7 @@ namespace Towers.View
     {
         [SerializeField]private Tower _tower;
         [SerializeField]private SimpleSpriteAnimationComponent _particles;
+        [SerializeField]private SpriteAnimationData _particlesAnimation;
         [SerializeField]private ComponentsAnimator _animator;
         [SerializeField]private Transform _particlesPlace;
         [SerializeField]private Transform _particlesTransform;
@@ -59,7 +61,7 @@ namespace Towers.View
             _particles.gameObject.SetActive(true);
             _particlesTransform.rotation = transform.rotation;
             _particlesTransform.position = _particlesPlace.position;
-            _particles.StartAnimation();
+            _particles.StartAnimation(_particlesAnimation);
 
             _recoilAnimation.ChangeOffset(-_directionToLastTarget.normalized*_attackRecoil);
             _animator.AddAnimation(_recoilAnimation);

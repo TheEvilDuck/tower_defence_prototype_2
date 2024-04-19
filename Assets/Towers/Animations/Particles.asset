@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4d1097f9bb134f34a8892cdf02ec99af, type: 3}
+  m_Name: Particles
+  m_EditorClassIdentifier: 
+  _sprites:
+  - {fileID: 511544125, guid: fe63de886dc80c64c86c5c902d7c2a1e, type: 3}
+  - {fileID: -355055187, guid: fe63de886dc80c64c86c5c902d7c2a1e, type: 3}
+  - {fileID: -1111907830, guid: fe63de886dc80c64c86c5c902d7c2a1e, type: 3}
+  - {fileID: -662014977, guid: fe63de886dc80c64c86c5c902d7c2a1e, type: 3}
+  - {fileID: 398062639, guid: fe63de886dc80c64c86c5c902d7c2a1e, type: 3}
+  - {fileID: 806814897, guid: fe63de886dc80c64c86c5c902d7c2a1e, type: 3}
+  - {fileID: 2072413217, guid: fe63de886dc80c64c86c5c902d7c2a1e, type: 3}
+  - {fileID: 7494884, guid: fe63de886dc80c64c86c5c902d7c2a1e, type: 3}
+  _loop: 0
+  _secondsPerFrame: 0.04
