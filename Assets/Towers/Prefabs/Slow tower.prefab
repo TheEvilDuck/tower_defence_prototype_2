@@ -26,7 +26,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 590713434681396668}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.01, y: 0.425, z: 0}
+  m_LocalPosition: {x: 0.01, y: 0.4288, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -78,9 +78,9 @@ SpriteRenderer:
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
-  m_DrawMode: 0
+  m_DrawMode: 2
   m_Size: {x: 1, y: 1}
-  m_AdaptiveModeThreshold: 0.5
+  m_AdaptiveModeThreshold: 1
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
@@ -192,8 +192,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2931887511218287743}
-  - component: {fileID: 4152319320860184448}
   - component: {fileID: 6730446580807167429}
+  - component: {fileID: 5304651869069852324}
   m_Layer: 0
   m_Name: Canon
   m_TagString: Untagged
@@ -217,27 +217,6 @@ Transform:
   m_Father: {fileID: 3004441590416729998}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4152319320860184448
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2688688894467034294}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d9c4c29bf84596c48b383cdf06f2dee4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _tower: {fileID: 1296995247484078620}
-  _particles: {fileID: 1374351977210391873}
-  _particlesAnimations:
-  - {fileID: 11400000, guid: 828a64a22d0de5e4c9ee1e0e90f458d4, type: 2}
-  _particlesRotationAngle: 0
-  _animator: {fileID: 6730446580807167429}
-  _particlesPlace: {fileID: 7990143637876683097}
-  _particlesTransform: {fileID: 7638518567720209995}
-  _attackRecoil: 0.002
 --- !u!114 &6730446580807167429
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -250,6 +229,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 438cd358a31184b46adf8fc18008846a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &5304651869069852324
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2688688894467034294}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0669baadc6df65e498d524e3c96557aa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _tower: {fileID: 1296995247484078620}
+  _particles: {fileID: 1374351977210391873}
+  _particlesAnimations:
+  - {fileID: 11400000, guid: 828a64a22d0de5e4c9ee1e0e90f458d4, type: 2}
+  _particlesRotationAngle: 0
+  _animator: {fileID: 6730446580807167429}
+  _particlesPlace: {fileID: 7990143637876683097}
+  _particlesTransform: {fileID: 7638518567720209995}
+  _attackRecoil: 0.05
+  _particlesSpriteRenderer: {fileID: 5964652972264772943}
 --- !u!1 &3004441590416729987
 GameObject:
   m_ObjectHideFlags: 0

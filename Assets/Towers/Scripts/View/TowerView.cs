@@ -7,17 +7,17 @@ namespace Towers.View
 {
     public class TowerView : MonoBehaviour
     {
-        [SerializeField]private Tower _tower;
-        [SerializeField]private SimpleSpriteAnimationComponent _particles;
-        [SerializeField]private SpriteAnimationData[] _particlesAnimations;
-        [SerializeField, Range(-180f, 180f)]private float _particlesRotationAngle;
+        [SerializeField]protected Tower _tower;
+        [SerializeField]protected SimpleSpriteAnimationComponent _particles;
+        [SerializeField]protected SpriteAnimationData[] _particlesAnimations;
+        [SerializeField, Range(-180f, 180f)]protected float _particlesRotationAngle;
         [SerializeField]private ComponentsAnimator _animator;
-        [SerializeField]private Transform _particlesPlace;
-        [SerializeField]private Transform _particlesTransform;
+        [SerializeField]protected Transform _particlesPlace;
+        [SerializeField]protected Transform _particlesTransform;
         [SerializeField]private float _attackRecoil = 6f;
 
-        private Transform _targetTransform;
-        private Vector3 _directionToLastTarget;
+        protected Transform _targetTransform;
+        protected Vector3 _directionToLastTarget;
         private PositionAnimation _recoilAnimation;
         private Vector3 _startPosition;
 
@@ -31,6 +31,8 @@ namespace Towers.View
             _startPosition = transform.localPosition;
             _recoilAnimation = new PositionAnimation(updater,transform, Vector2.zero, _startPosition);
             _particles.transform.Rotate(0,0,  _particlesRotationAngle,  Space.Self);
+
+            OnInit();
         }
 
         private void OnDestroy() 
@@ -60,17 +62,20 @@ namespace Towers.View
 
         private void OnTowerAttacked()
         {
+            _recoilAnimation.ChangeOffset(-_directionToLastTarget.normalized*_attackRecoil);
+            _animator.AddAnimation(_recoilAnimation);
+            PariclesOnAttack();
+        }
+
+        protected virtual void PariclesOnAttack()
+        {
+            SpriteAnimationData randomAnimation = _particlesAnimations[UnityEngine.Random.Range(0, _particlesAnimations.Length)];
+            _particles.StartAnimation(randomAnimation);
             _particles.gameObject.SetActive(true);
             _particlesTransform.rotation = transform.rotation;
             _particlesTransform.position = _particlesPlace.position;
-
-            SpriteAnimationData randomAnimation = _particlesAnimations[UnityEngine.Random.Range(0, _particlesAnimations.Length)];
-            _particles.StartAnimation(randomAnimation);
-
-            _recoilAnimation.ChangeOffset(-_directionToLastTarget.normalized*_attackRecoil);
-            _animator.AddAnimation(_recoilAnimation);
-
         }
         private void OnParticlesAnimationEnd() => _particles.gameObject.SetActive(false);
+        protected virtual void OnInit() {}
     }
 }

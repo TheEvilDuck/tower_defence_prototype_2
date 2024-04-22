@@ -1,9 +1,6 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using Common.UI;
 using Services.PlayerInput;
-using UnityEngine;
 
 namespace LevelEditor.UI
 {
@@ -27,7 +24,7 @@ namespace LevelEditor.UI
             _inputBlocker.blockEnded-=OnBlockerEnd;
         }
 
-        private void OnBlockerStart() => _playerInput.MouseBlocked = true;
-        private void OnBlockerEnd() => _playerInput.MouseBlocked = false;
+        private void OnBlockerStart() => _playerInput.BlockMouse();
+        private void OnBlockerEnd() => _playerInput.UnBlockMouse();
     }
 }

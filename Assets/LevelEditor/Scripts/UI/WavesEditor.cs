@@ -25,6 +25,7 @@ namespace LevelEditor.UI
         [SerializeField]private EnemySettings _enemySettingsPrefab;
         [SerializeField]private Transform _enemySettingsParent;
         [SerializeField]private EnemiesDatabase _enemiesDatabase;
+        [SerializeField]private EnemiesSelector _enemiesSelector;
         private List<WaveData> _waveDatas;
         private Dictionary<WaveData, List<EnemySettings>>_enemySettingsView;
         private int _currentWaveId = 0;
@@ -52,7 +53,11 @@ namespace LevelEditor.UI
             }
         }
 
-        public void Hide() => gameObject.SetActive(false);
+        public void Hide()
+        {
+            _enemiesSelector.gameObject.SetActive(false);
+            gameObject.SetActive(false);
+        }
 
         public void Show() => gameObject.SetActive(true);
 
@@ -134,7 +139,7 @@ namespace LevelEditor.UI
                     enemySettingsOfWave.Add(enemySettings);
                     enemySettings.deleteButtonPressed+=OnEnemySettingsDeleted;
 
-                    enemySettings.Init(_enemiesDatabase, MAX_ENEMY_COUNT_IN_ENEMY_SETTINGS);
+                    enemySettings.Init(MAX_ENEMY_COUNT_IN_ENEMY_SETTINGS, _enemiesSelector);
                     enemySettings.FillFromWaveEnemyData(waveEnemyData);
 
                     enemySettings.Hide();
@@ -311,7 +316,7 @@ namespace LevelEditor.UI
             enemySettingsOfWave.Add(enemySettings);
             enemySettings.deleteButtonPressed+=OnEnemySettingsDeleted;
 
-            enemySettings.Init(_enemiesDatabase, MAX_ENEMY_COUNT_IN_ENEMY_SETTINGS);
+            enemySettings.Init(MAX_ENEMY_COUNT_IN_ENEMY_SETTINGS, _enemiesSelector);
 
             
         }

@@ -21,6 +21,8 @@ namespace Services.PlayerInput
         public event Action<KeyCode>keyHold;
         public event Action<KeyCode>keyDown;
         public event Action<float>mouseWheelScrolled;
+        public event Action<bool> blocked;
+        public event Action<bool> mouseBlocked;
 
         //можно будет в меню клавиши назначать, сохранять в конфиг, а потом на сцене и в редакторе подгружать с конфига
         private List<KeyCode> _watchingKeys;
@@ -40,6 +42,30 @@ namespace Services.PlayerInput
         public void Pause() => _paused = true;
 
         public void UnPause() => _paused = false;
+
+        public void Block()
+        {
+            Blocked = true;
+            blocked?.Invoke(Blocked);
+        }
+
+        public void UnBlock()
+        {
+            Blocked = false;
+            blocked?.Invoke(Blocked);
+        }
+
+        public void BlockMouse()
+        {
+            MouseBlocked = true;
+            mouseBlocked?.Invoke(MouseBlocked);
+        }
+
+        public void UnBlockMouse()
+        {
+            MouseBlocked = false;
+            mouseBlocked?.Invoke(MouseBlocked);
+        }
 
 
         public void Update()

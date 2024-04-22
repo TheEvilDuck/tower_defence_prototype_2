@@ -20,4 +20,4 @@ MonoBehaviour:
   - {fileID: 1790183770, guid: 39ba90e916bc19245b2b6a8b4baf3b58, type: 3}
   - {fileID: -536639579, guid: 39ba90e916bc19245b2b6a8b4baf3b58, type: 3}
   _loop: 0
-  _secondsPerFrame: 0.04
+  _secondsPerFrame: 0.06

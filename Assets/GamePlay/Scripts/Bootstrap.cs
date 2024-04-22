@@ -36,6 +36,7 @@ namespace GamePlay
         [SerializeField] private PauseButton _pauseButton;
         [SerializeField] private UIInputBlocker _inputBlocker;
         [SerializeField] private MoneyView _moneyView;
+        [SerializeField] private MainBuildingHealth _healthUI;
         private PlayerInput _playerInput;
         private CameraManipulation _cameraManipulation;
         private CameraMediator _cameraMediator;
@@ -56,6 +57,7 @@ namespace GamePlay
         private PlayerStatsUpdater _playerStatsUpdater;
         private BuildPossibilityChecker _buildPossibilityChecker;
         private MoneyMediator _moneyMediator;
+        private MainBuldingMediator _mainBuildingMediator;
         private void Awake() 
         {
             _pausableManager = new PausableManager();
@@ -146,6 +148,8 @@ namespace GamePlay
             _buildPossibilityChecker = new BuildPossibilityChecker(playerStats, _builder, _towersDatabase);
 
             _moneyMediator = new MoneyMediator(playerStats, _moneyView);
+
+            _mainBuildingMediator = new MainBuldingMediator(_builder, _healthUI);
         }
 
         private void OnDestroy() 
@@ -159,6 +163,7 @@ namespace GamePlay
             _playerStatsUpdater?.Dispose();
             _buildPossibilityChecker?.Dispose();
             _moneyMediator?.Dispose();
+            _mainBuildingMediator?.Dispose();
         }
 
         void Update()

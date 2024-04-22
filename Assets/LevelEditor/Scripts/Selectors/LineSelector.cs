@@ -31,6 +31,7 @@ namespace LevelEditor.Selectors
             _playerInput.mouseLeftClicked-=OnMouseLeftDown;
             _playerInput.mouseLeftHold-=OnMoseLeftMove;
             _playerInput.mouseLeftUp-=OnMouseLeftUp;
+            _playerInput.mouseBlocked -= OnMouseBlocked;
         }
 
         public void Enable()
@@ -38,6 +39,7 @@ namespace LevelEditor.Selectors
             _playerInput.mouseLeftClicked+=OnMouseLeftDown;
             _playerInput.mouseLeftHold+=OnMoseLeftMove;
             _playerInput.mouseLeftUp+=OnMouseLeftUp;
+            _playerInput.mouseBlocked += OnMouseBlocked;
         }
 
         private void OnMouseLeftDown(Vector2 mousePosition)
@@ -56,6 +58,9 @@ namespace LevelEditor.Selectors
         {
             if (!_inProcess)
                 return;
+
+            if (_playerInput.MouseBlocked)
+                OnMouseLeftUp(mousePosition);
 
             Vector2Int cellPosition = _grid.WorldPositionToGridPosition(mousePosition);
 
@@ -114,6 +119,12 @@ namespace LevelEditor.Selectors
             _inProcess = false;
 
             cellsSelected?.Invoke();
+        }
+
+        private void OnMouseBlocked(bool isBlocked)
+        {
+            if (isBlocked)
+                OnMouseLeftUp(Vector2.zero);
         }
 
     }

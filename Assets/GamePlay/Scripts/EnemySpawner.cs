@@ -104,6 +104,7 @@ namespace GamePlay
             enemy.died -= OnEnemyDied;
 
             _enemies.Remove(enemy);
+            UnityEngine.GameObject.Destroy(enemy);
         }
     }
 }

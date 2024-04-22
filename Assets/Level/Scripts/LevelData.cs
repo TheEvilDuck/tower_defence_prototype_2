@@ -5,13 +5,13 @@ using Waves;
 namespace Levels.Logic
 {
     [Serializable]
-    public class LevelData
+    public struct LevelData
     {
-        [SerializeField] public int startMoney;
-        [SerializeField] public float firstWaveDelay;
-        [SerializeField] public GridData gridData;
-        [SerializeField] public WaveData[] waves;
-        [SerializeField] public int[] spawnerPlaces;
-        [SerializeField] public PlacableData[] placables;
+        public int startMoney;
+        public float firstWaveDelay;
+        public GridData gridData;
+        public WaveData[] waves;
+        public int[] spawnerPlaces;
+        public PlacableData[] placables;
     }
 }

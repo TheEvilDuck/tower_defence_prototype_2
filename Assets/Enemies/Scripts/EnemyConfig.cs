@@ -1,3 +1,4 @@
+using Components.SimpleSpriteAnimator;
 using UnityEngine;
 
 namespace Enemies

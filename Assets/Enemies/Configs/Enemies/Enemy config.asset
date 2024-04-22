@@ -14,5 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <Name>k__BackingField: Small enemy
   <MaxHealth>k__BackingField: 20
+  <Damage>k__BackingField: 5
   <WalkSpeed>k__BackingField: 3.1
+  <Range>k__BackingField: 1
+  <AttackRate>k__BackingField: 1
   <Prefab>k__BackingField: {fileID: 4835739807219631629, guid: ecc77dcc56944f64bbd3bc3841fb705d, type: 3}

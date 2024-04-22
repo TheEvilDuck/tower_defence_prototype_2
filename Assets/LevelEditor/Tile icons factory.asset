@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cd56f0d3f560a194e817dbb274802985, type: 3}
+  m_Name: Tile icons factory
+  m_EditorClassIdentifier: 
+  _buttonPrefab: {fileID: 8453732880399529172, guid: 3d83712b6c7de8943b7adba2c5ca94e8, type: 3}
+  _icons:
+  - <Tile>k__BackingField: 1
+    <Icon>k__BackingField: {fileID: 21300000, guid: 0fad96cf484b2cd4cb1fa704cd8b0089, type: 3}
+  - <Tile>k__BackingField: 2
+    <Icon>k__BackingField: {fileID: 21300000, guid: 80d494665027c2a43bfb99892cf5fd7a, type: 3}

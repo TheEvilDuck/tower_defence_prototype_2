@@ -16,6 +16,7 @@ namespace LevelEditor.UI
         [SerializeField] private Button _wavesButton;
         [SerializeField] private Button _newButton;
         [SerializeField] private Button _spawnerButton;
+        [SerializeField] private Button _toolsButton;
         public event Action deleteButtonPressed;
         public event Action saveButtonPressed;
         public event Action loadButtonPressed;
@@ -24,6 +25,7 @@ namespace LevelEditor.UI
         public event Action wavesButtonPressed;
         public event Action newButtonPressed;
         public event Action spawnerButtonPressed;
+        public event Action toolsButtonPressed;
 
         private void OnEnable() 
         {
@@ -35,6 +37,7 @@ namespace LevelEditor.UI
             _wavesButton.onClick.AddListener(OnWavesButtonPressed);
             _newButton.onClick.AddListener(OnNewButtonPressed);
             _spawnerButton.onClick.AddListener(OnSpawnerButtonPressed);
+            _toolsButton.onClick.AddListener(OnToolsButtonPressed);
         }
 
         private void OnDisable() 
@@ -47,6 +50,7 @@ namespace LevelEditor.UI
             _wavesButton.onClick.RemoveListener(OnWavesButtonPressed);
             _newButton.onClick.RemoveListener(OnNewButtonPressed);
             _spawnerButton.onClick.RemoveListener(OnSpawnerButtonPressed);
+            _toolsButton.onClick.RemoveListener(OnToolsButtonPressed);
         }
 
         private void OnDeleteButtonPressed() => deleteButtonPressed?.Invoke();
@@ -57,6 +61,7 @@ namespace LevelEditor.UI
         private void OnWavesButtonPressed() => wavesButtonPressed?.Invoke();
         private void OnNewButtonPressed() => newButtonPressed?.Invoke();
         private void OnSpawnerButtonPressed() => spawnerButtonPressed?.Invoke();
+        private void OnToolsButtonPressed() => toolsButtonPressed?.Invoke();
 
     }
 }

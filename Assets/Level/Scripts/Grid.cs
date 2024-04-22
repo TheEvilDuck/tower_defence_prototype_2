@@ -72,8 +72,10 @@ namespace Levels.Logic
                 }
             }
 
-            foreach (CellSavedData cell in gridData.cells)
-                CreateCellAt(ConvertIntToVector2Int(cell.index), (TileType)cell.tileType);
+            for (int i = 0; i < gridData.cells.Length; i+=2)
+            {
+                CreateCellAt(ConvertIntToVector2Int(gridData.cells[i]), (TileType)gridData.cells[i+1]);
+            }
 
             foreach(int roadIndex in gridData.roadIndexes)
                 BuildRoadAt(ConvertIntToVector2Int(roadIndex));
@@ -117,7 +119,7 @@ namespace Levels.Logic
             GridData gridData = new GridData();
             gridData.gridSize = _cells.GetLength(0);
             
-            List<CellSavedData>cells= new List<CellSavedData>();
+            List<int>cells= new List<int>();
             List<int>roadIndexes = new List<int>();
 
             for (int x = 0;x<gridData.gridSize;x++)
@@ -127,10 +129,9 @@ namespace Levels.Logic
                     if (_cells[x,y].Type != TileType.Empty)
                     {
                         int index = ConvertVector2IntToIndex(new Vector2Int(x,y));
-                        CellSavedData cellSavedData = new CellSavedData();
-                        cellSavedData.index = index;
-                        cellSavedData.tileType = (int)_cells[x,y].Type;
-                        cells.Add(cellSavedData);
+                        cells.Add(index);
+                        int tileType = (int)_cells[x,y].Type;
+                        cells.Add(tileType);
 
                         if (_cells[x,y].HasRoad)
                             roadIndexes.Add(index);

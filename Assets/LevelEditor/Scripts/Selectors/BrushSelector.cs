@@ -23,10 +23,36 @@ namespace LevelEditor.Selectors
             _grid = grid;
         }
 
+        public void Dispose()
+        {
+            Disable();
+        }
+
+        public void Enable()
+        {
+            _selectedCells = new List<Vector2Int>();
+
+            _playerInput.mouseLeftUp+=OnMouseLeftUp;
+            _playerInput.mouseLeftClicked+=OnMouseLeftDown;
+            _playerInput.mousePositionChanged+=OnMouseMoved;
+            _playerInput.mouseBlocked += OnMouseBlocked;
+        }
+
+        public void Disable()
+        {
+            _playerInput.mouseLeftUp-=OnMouseLeftUp;
+            _playerInput.mouseLeftClicked-=OnMouseLeftDown;
+            _playerInput.mousePositionChanged-=OnMouseMoved;
+            _playerInput.mouseBlocked -= OnMouseBlocked;
+        }
+
         private void OnMouseMoved(Vector2 mousePosition)
         {
             if (!_inProgress)
                 return;
+
+            if (_playerInput.MouseBlocked)
+                OnMouseLeftUp(mousePosition);
 
             Vector2Int cellPosition = _grid.WorldPositionToGridPosition(mousePosition);
 
@@ -60,28 +86,15 @@ namespace LevelEditor.Selectors
             if (_selectedCells.Count>0)
                 cellsSelected?.Invoke();
         }
-        public void Dispose()
-        {
-            _playerInput.mouseLeftUp-=OnMouseLeftUp;
-            _playerInput.mouseLeftClicked-=OnMouseLeftDown;
-            _playerInput.mousePositionChanged-=OnMouseMoved;
-        }
 
-        public void Enable()
+        private void OnMouseBlocked(bool isBlocked)
         {
-            _selectedCells = new List<Vector2Int>();
-
-            _playerInput.mouseLeftUp+=OnMouseLeftUp;
-            _playerInput.mouseLeftClicked+=OnMouseLeftDown;
-            _playerInput.mousePositionChanged+=OnMouseMoved;
+            if (isBlocked)
+            {
+                OnMouseLeftUp(Vector2.zero);
+            }
         }
-
-        public void Disable()
-        {
-            _playerInput.mouseLeftUp-=OnMouseLeftUp;
-            _playerInput.mouseLeftClicked-=OnMouseLeftDown;
-            _playerInput.mousePositionChanged-=OnMouseMoved;
-        }
+        
     }
 
 }

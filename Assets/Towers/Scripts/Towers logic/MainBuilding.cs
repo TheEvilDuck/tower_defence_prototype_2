@@ -12,6 +12,9 @@ namespace Towers
         private int _maxHealth;
         private bool _paused;
 
+        public Action<int> healthChanged;
+        public int Health => _health;
+
         public void Init(int maxHealth)
         {
             _maxHealth = maxHealth;
@@ -34,6 +37,7 @@ namespace Towers
                 return;
 
             _health -= damage;
+            healthChanged?.Invoke(_health);
 
             if (_health <= 0)
             {

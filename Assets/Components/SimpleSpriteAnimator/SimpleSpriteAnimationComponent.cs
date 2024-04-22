@@ -9,13 +9,13 @@ namespace Components.SimpleSpriteAnimator
         [SerializeField] private bool _hideOnStop = true;
         public event Action animationEnd;
 
-        private SpriteRenderer _spriteRenderer;
+        private SpriteRenderer _spriteContainer;
         private SpriteAnimation _currentAnimation;
         private bool _playing = false;
 
         private void Awake() 
         {
-            _spriteRenderer = GetComponent<SpriteRenderer>();
+            _spriteContainer = GetComponent<SpriteRenderer>();
         }
 
         void Update()
@@ -23,7 +23,7 @@ namespace Components.SimpleSpriteAnimator
             if (!_playing)
                 return;
 
-            _currentAnimation?.Tick(_spriteRenderer);
+            _currentAnimation?.Tick(_spriteContainer);
         }
 
         public void StartAnimation(SpriteAnimationData spriteAnimationData)
@@ -37,7 +37,7 @@ namespace Components.SimpleSpriteAnimator
             _currentAnimation = spriteAnimationData.StartNewAnimation();
             _currentAnimation.animationEnd += OnAnimationEnd;
 
-            _spriteRenderer.enabled = true;
+            _spriteContainer.enabled = true;
         }
 
         public void StopAnimation()
@@ -57,7 +57,7 @@ namespace Components.SimpleSpriteAnimator
             spriteAnimation.animationEnd -= OnAnimationEnd;
 
             if (_hideOnStop)
-                _spriteRenderer.enabled = false;
+                _spriteContainer.enabled = false;
         }
     }
 

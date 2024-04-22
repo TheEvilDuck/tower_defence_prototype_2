@@ -25,12 +25,8 @@ namespace LevelEditor
         private LevelData _currentLevelData;
         private string _currentLevelName;
         private readonly LevelSavingResultFabric _levelSavingResultFabric;
-        private readonly TileType[] _tiles = new TileType[] { TileType.Dirt, TileType.Sand};
-        private int _currentTileIndex = 0;
         private bool _placeRoad = false;
         private SpawnerPositions _spawnerPositions;
-
-        public TileType CurrentTileType => _tiles[_currentTileIndex];
 
         public LevelEditor(Level level, LevelIconMaker levelIconMaker, LevelLoader levelLoader, LevelSavingResultFabric levelSavingResultFabric, SpawnerPositions spawnerPositions)
         {
@@ -162,14 +158,6 @@ namespace LevelEditor
         {
             if (_currentTool!=null)
                 _currentTool.usingCompleted-=OnToolUsingCompleted;
-        }
-
-        public void NextTileType()
-        {
-            _currentTileIndex++;
-
-            if (_currentTileIndex >= _tiles.Length)
-                _currentTileIndex = 0;
         }
 
         public void TogglePlacingRoad() => _placeRoad = !_placeRoad;

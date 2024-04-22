@@ -23,6 +23,8 @@ namespace Enemies
         private bool _paused = false;
         private float _pausedTime;
 
+        public bool IsDead => _currentStats.health > 0;
+
         private List<IBuff<EnemyStats>> _buffs;
 
         public Vector2 Position => transform.position;

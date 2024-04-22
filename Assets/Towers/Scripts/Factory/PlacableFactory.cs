@@ -88,6 +88,14 @@ namespace Towers
 
                 moneyGiver.Init(moneyGiverConfig, _playerStats);
             }
+
+            public void Visit(SlowBomb slowBomb)
+            {
+                if (_config is not SlowBombConfig slowBombConfig)
+                    throw new ArgumentException($"Passed wrong config to init placable, {_config.GetType()}");
+
+                slowBomb.Init(slowBombConfig, _enemySpawner);
+            }
         }
     }
 }

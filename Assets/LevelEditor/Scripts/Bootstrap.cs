@@ -1,5 +1,6 @@
 using Common;
 using Common.UI;
+using Enemies;
 using GamePlay;
 using LevelEditor.Selectors;
 using LevelEditor.UI;
@@ -33,6 +34,11 @@ namespace LevelEditor
         [SerializeField]private LevelIconButton _levelIconButtonPrefab;
         [SerializeField]private LevelSavingResultDatabase _levelSavingResultDatabase;
         [SerializeField]private GameObject _spawerPrefab;
+        [SerializeField]private SelectorsToolBar _selectorsToolBar;
+        [SerializeField]private TilesToolBar _tilesToolBar;
+        [SerializeField]private DrawTypeToolBar _drawTypeToolBar;
+        [SerializeField] private ToolButtons _toolButtons;
+        [SerializeField] private EnemiesSelector _enemiesSelector;
 
         private Level _level;
         private LevelEditor _levelEditor;
@@ -68,6 +74,7 @@ namespace LevelEditor
         private LevelSavingResultFabric _levelSavingResultFabric;
         private DrawCommandsFactory _drawCommandsFactory;
         private SpawnersView _spawnersView;
+        private ToolBarMediator _toolBarMediator;
 
         private void Awake() 
         {
@@ -86,6 +93,7 @@ namespace LevelEditor
             _menuParentsManager.Add(_settingsMenu);
             _menuParentsManager.Add(_wavesEditor);
             _menuParentsManager.Add(_loadMenu);
+            _menuParentsManager.Add(_toolButtons);
 
             _undoKeyCombination = new KeyCombinationHandler(_playerInput,_levelEditorConfig.UndoKeyCodes);
             _saveKeyCombination = new KeyCombinationHandler(_playerInput,_levelEditorConfig.SaveKeyCodes);
@@ -139,7 +147,8 @@ namespace LevelEditor
                 _spawnerPlacer,
                 _spawnerPlacementSelector,
                 spawnerPositions,
-                _spawnersView
+                _spawnersView,
+                _toolButtons
                 
             );
             _cameraManipulation = new CameraManipulation(0.1f, Camera.main);
@@ -154,6 +163,14 @@ namespace LevelEditor
             _levelSettingsMediator = new LevelSettingsMediator(_settingsMenu, _levelEditor);
 
             _wavesEditor.Init();
+
+            _selectorsToolBar.Init(_brushSelector, _fillSelector, _lineSelector);
+
+            _tilesToolBar.Init();
+            _drawTypeToolBar.Init(_drawTool, _eraseTool);
+            _toolButtons.Init();
+
+            _toolBarMediator = new ToolBarMediator(_selectorsToolBar, _levelEditor, _drawCommandsFactory, _tilesToolBar, _drawTypeToolBar);
         }
 
         private void Start() 
@@ -186,6 +203,7 @@ namespace LevelEditor
             _levelSettingsMediator.Dispose();
             _switchTileKey.Dispose();
             _spawnersView.Dispose();
+            _toolBarMediator.Dispose();
         }
 
         private void Update() 

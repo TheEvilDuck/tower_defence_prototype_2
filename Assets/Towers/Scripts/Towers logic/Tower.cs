@@ -82,7 +82,7 @@ namespace Towers
                 if (distanceToNewEnemy > _range)
                     continue;
 
-                if (_target == null)
+                if (_target == null || _target != null && !_target.IsDead)
                 {
                     _target = enemy;
                     targetChanged?.Invoke(_target);

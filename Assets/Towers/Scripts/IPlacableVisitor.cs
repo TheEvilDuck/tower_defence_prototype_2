@@ -1,7 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
 namespace Towers
 {
     public interface IPlacableVisitor
@@ -10,5 +6,6 @@ namespace Towers
         public void Visit(Tower tower);
         public void Visit(MainBuilding mainBuilding);
         public void Visit(MoneyGiver moneyGiver);
+        public void Visit(SlowBomb slowBomb);
     }
 }

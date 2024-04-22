@@ -10,7 +10,7 @@ namespace Components.SimpleSpriteAnimator
         [SerializeField] private bool _loop = false;
         [SerializeField, Range(0.01f, 10f)] private float _secondsPerFrame = 1;
 
-        
+        public float SecondsPrefFrame => _secondsPerFrame;
 
         public SpriteAnimation StartNewAnimation()
         {
