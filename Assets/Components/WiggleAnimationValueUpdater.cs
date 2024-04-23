@@ -8,6 +8,8 @@ public class WiggleAnimationValueUpdater : SmoothAnimationValueUpdater
     {
         float smoothValue = base.GetNextValue();
 
+        StepsLeft--;
+
         return smoothValue*UnityEngine.Random.Range(-1f,1f);
     }
 }

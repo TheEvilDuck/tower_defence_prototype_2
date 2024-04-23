@@ -6,7 +6,7 @@ public class PositionAnimation : Animation
     protected readonly Transform _targetTrasform;
     protected Vector2 _offset;
     protected Vector2 _startPosition;
-    public PositionAnimation(AnimationValueUpdater updater, Transform targetTransform, Vector2 offset, Vector2 startPosition) : base(updater)
+    public PositionAnimation(IAnimationValueUpdater updater, Transform targetTransform, Vector2 offset, Vector2 startPosition) : base(updater)
     {
         _targetTrasform = targetTransform;
         _offset = offset;

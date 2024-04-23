@@ -3,10 +3,10 @@ using System;
 public abstract class Animation
 {
     public event Action<Animation> end;
-    protected readonly AnimationValueUpdater _updater;
+    protected readonly IAnimationValueUpdater _updater;
     private bool _playing;
 
-    public Animation(AnimationValueUpdater updater)
+    public Animation(IAnimationValueUpdater updater)
     {
         _updater = updater;
     }
@@ -34,15 +34,13 @@ public abstract class Animation
         if (!_playing)
             return;
 
-        if (_updater.StepsLeft<=0)
+        if (_updater.End)
             Stop();
 
         float value = _updater.GetNextValue();
         OnUpdate(value);
 
-        _updater.StepsLeft--;
-
-        if (_updater.StepsLeft==0)
+        if (_updater.End)
             Stop();
     }
 

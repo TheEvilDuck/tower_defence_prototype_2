@@ -13,6 +13,8 @@ public class SmoothAnimationValueUpdater: AnimationValueUpdater
         float result = Mathf.Lerp(_baseValue,_targetValue,_blending);
         _blending-=1f/_steps;
 
+        StepsLeft--;
+
         return result;
     }
 

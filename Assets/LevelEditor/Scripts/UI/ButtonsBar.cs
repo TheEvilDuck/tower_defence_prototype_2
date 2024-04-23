@@ -17,6 +17,7 @@ namespace LevelEditor.UI
         [SerializeField] private Button _newButton;
         [SerializeField] private Button _spawnerButton;
         [SerializeField] private Button _toolsButton;
+        [SerializeField] private Button _towersButton;
         public event Action deleteButtonPressed;
         public event Action saveButtonPressed;
         public event Action loadButtonPressed;
@@ -26,6 +27,7 @@ namespace LevelEditor.UI
         public event Action newButtonPressed;
         public event Action spawnerButtonPressed;
         public event Action toolsButtonPressed;
+        public event Action towersButtonPressed;
 
         private void OnEnable() 
         {
@@ -38,6 +40,7 @@ namespace LevelEditor.UI
             _newButton.onClick.AddListener(OnNewButtonPressed);
             _spawnerButton.onClick.AddListener(OnSpawnerButtonPressed);
             _toolsButton.onClick.AddListener(OnToolsButtonPressed);
+            _towersButton.onClick.AddListener(OnTowersButtonPressed);
         }
 
         private void OnDisable() 
@@ -51,6 +54,7 @@ namespace LevelEditor.UI
             _newButton.onClick.RemoveListener(OnNewButtonPressed);
             _spawnerButton.onClick.RemoveListener(OnSpawnerButtonPressed);
             _toolsButton.onClick.RemoveListener(OnToolsButtonPressed);
+            _towersButton.onClick.RemoveListener(OnTowersButtonPressed);
         }
 
         private void OnDeleteButtonPressed() => deleteButtonPressed?.Invoke();
@@ -62,6 +66,7 @@ namespace LevelEditor.UI
         private void OnNewButtonPressed() => newButtonPressed?.Invoke();
         private void OnSpawnerButtonPressed() => spawnerButtonPressed?.Invoke();
         private void OnToolsButtonPressed() => toolsButtonPressed?.Invoke();
+        private void OnTowersButtonPressed() => towersButtonPressed?.Invoke();
 
     }
 }

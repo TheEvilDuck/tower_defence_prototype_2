@@ -1,10 +1,7 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using Common.UI;
 using LevelEditor.UI;
 using Levels.Logic;
-using UnityEngine;
 
 namespace LevelEditor
 {
@@ -16,8 +13,16 @@ namespace LevelEditor
         private Level _level;
         private WavesEditor _wavesEditor;
         private SettingsMenu _settingsMenu;
+        private SpawnerPositions _spawnerPositions;
 
-        public LevelIconsAndLevelLoaderMediator(LevelLoader levelLoader, LevelIconsLoader levelIconsLoader, LevelEditor levelEditor, Level level, WavesEditor wavesEditor, SettingsMenu settingsMenu)
+        public LevelIconsAndLevelLoaderMediator(
+            LevelLoader levelLoader, 
+            LevelIconsLoader levelIconsLoader, 
+            LevelEditor levelEditor, 
+            Level level, 
+            WavesEditor wavesEditor, 
+            SettingsMenu settingsMenu,
+            SpawnerPositions spawnerPositions)
         {
             _levelLoader = levelLoader;
             _levelIconsLoader = levelIconsLoader;
@@ -25,6 +30,7 @@ namespace LevelEditor
             _level = level;
             _wavesEditor = wavesEditor;
             _settingsMenu = settingsMenu;
+            _spawnerPositions = spawnerPositions;
 
             _levelIconsLoader.mapIconPressed+=OnIconPressed;
         }
@@ -43,6 +49,7 @@ namespace LevelEditor
                 _wavesEditor.LoadFromLevelData(levelData);
                 _settingsMenu.LoadLevelName(mapName);
                 _settingsMenu.LoadFromLevelData(levelData);
+                _spawnerPositions.LoadFromLevelData(levelData.spawnerPlaces, _level.Grid);
             }
         }
     }

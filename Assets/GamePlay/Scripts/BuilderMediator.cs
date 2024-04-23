@@ -1,7 +1,6 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using Builder;
+using GamePlay.UI;
 using Services.PlayerInput;
 using Towers;
 using UnityEngine;
@@ -26,12 +25,14 @@ namespace GamePlay
             _playerInput.mouseLeftClicked+=OnMouseLeftClicked;
             _playerInput.mouseRightClicked+=OnMouseRightClicked;
             _towersPanel.placableButtonPressed+=OnTowerChosenInTowersPanel;
+            _playerInput.mousePositionChanged += OnMouseMoved;
         }
         public void Dispose()
         {
             _playerInput.mouseLeftClicked-=OnMouseLeftClicked;
             _playerInput.mouseRightClicked-=OnMouseRightClicked;
             _towersPanel.placableButtonPressed-=OnTowerChosenInTowersPanel;
+            _playerInput.mousePositionChanged -= OnMouseMoved;
         }
         private void OnMouseLeftClicked(Vector2 position)
         {
@@ -39,12 +40,27 @@ namespace GamePlay
         }
         private void OnMouseRightClicked(Vector2 position)
         {
-            _grid.DestroyAt(_grid.WorldPositionToGridPosition(position));
-            _builder.DeleteInConstructionAt(_grid.WorldPositionToGridPosition(position));
+            if (_builder.PreviewAble)
+            {
+                _builder.DisablePreview();
+            }
+            else
+            {
+                _grid.DestroyAt(_grid.WorldPositionToGridPosition(position));
+                _builder.DeleteInConstructionAt(_grid.WorldPositionToGridPosition(position));
+            }
         }
         private void OnTowerChosenInTowersPanel(PlacableEnum id)
         {
             _builder.SwitchCurrentId(id);
+        }
+
+        private void OnMouseMoved(Vector2 position)
+        {
+            Vector2Int gridPos = _grid.WorldPositionToGridPosition(position);
+            Vector2 worldPos = _grid.GridPositionToWorldPosition(gridPos);
+
+            _builder.MovePreview(worldPos);
         }
     }
 }

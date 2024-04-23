@@ -47,6 +47,7 @@ namespace LevelEditor
         private SpawnerPositions _spawnerPositions;
         private SpawnersView _spawnersView;
         private ToolButtons _toolButtons;
+        private TowersMenu _towersMenu;
 
         public LevelEditorMediator
         (
@@ -80,7 +81,8 @@ namespace LevelEditor
             SpawnerPlacamentSelector spawnerPlacementSelector,
             SpawnerPositions spawnerPositions,
             SpawnersView spawnersView,
-            ToolButtons toolButtons
+            ToolButtons toolButtons,
+            TowersMenu towersMenu
         )
         {
             _levelEditor = levelEditor;
@@ -114,6 +116,7 @@ namespace LevelEditor
             _spawnerPositions = spawnerPositions;
             _spawnersView = spawnersView;
             _toolButtons = toolButtons;
+            _towersMenu = towersMenu;
 
             _levelEditor.ChangeSelector(_brushSelector);
             _levelEditor.ChangeTool(_drawTool);
@@ -141,6 +144,7 @@ namespace LevelEditor
             _toggleRoadPlacingKey.Down+=OnTogglePlacingRoadPressed;
             _spawnerPositions.placed+=OnSpawnerAddedAt;
             _spawnerPositions.removed+=OnSpawnerRemovedAt;
+            _buttonsBar.towersButtonPressed += OnTowersButtonPressed;
         }
 
 
@@ -169,6 +173,7 @@ namespace LevelEditor
             _toggleRoadPlacingKey.Down-=OnTogglePlacingRoadPressed;
             _spawnerPositions.placed-=OnSpawnerAddedAt;
             _spawnerPositions.removed-=OnSpawnerRemovedAt;
+            _buttonsBar.towersButtonPressed -= OnTowersButtonPressed;
         }
 
         private void OnFillKeyDown() => _levelEditor.ChangeSelector(_fillSelector);
@@ -221,6 +226,7 @@ namespace LevelEditor
         private void OnSettingsButtonPressed() => _menuParentsManager.Show(_settingsMenu);
         private void OnWavesButtonPressed() => _menuParentsManager.Show(_waveEditor);
         private void OnLoadButtonPressed() => _menuParentsManager.Show(_loadMenu);
+        private void OnTowersButtonPressed() => _menuParentsManager.Show(_towersMenu);
         private void OnToolButtonPresed()
         {
             _menuParentsManager.Show(_toolButtons);

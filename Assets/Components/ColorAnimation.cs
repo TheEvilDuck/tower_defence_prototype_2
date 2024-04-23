@@ -7,7 +7,7 @@ public class ColorAnimation : Animation
     private readonly Color _startColor;
     private SpriteRenderer _target;
 
-    public ColorAnimation(AnimationValueUpdater updater,Color color, SpriteRenderer spriteRenderer): base(updater)
+    public ColorAnimation(IAnimationValueUpdater updater,Color color, SpriteRenderer spriteRenderer): base(updater)
     {
         _color = color;
         _target = spriteRenderer;

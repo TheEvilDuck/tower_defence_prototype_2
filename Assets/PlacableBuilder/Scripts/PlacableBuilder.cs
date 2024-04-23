@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Common.Interfaces;
 using GamePlay;
 using Towers;
@@ -9,7 +8,7 @@ using Grid = Levels.Logic.Grid;
 
 namespace Builder
 {
-    public class PlacableBuilder: IMainBuilderProvider, IPausable
+    public class PlacableBuilder: IMainBuilderProvider, IPausable, IDisposable
     {
         public event Action<Vector2Int> mainBuildingBuilt;
         public event Func<Vector2Int, bool> checkCanBuildMainBuilding;
@@ -26,16 +25,29 @@ namespace Builder
         private bool _paused = false;
         private Dictionary<InConstruction, InConstructionData> _inConstructions;
         private List<InConstruction> _markedToDeleteInConstructions;
+        private PlacablePreview _preview;
+        private GameObjectIconProvider<PlacableEnum> _icons;
 
         public Placable MainBuilding {get; private set;}
+        public bool PreviewAble => _preview.gameObject.activeInHierarchy;
 
-        public PlacableBuilder(AvailablePlacables availablePlacables, PlacableFactory placableFactory, bool waitForBuilding)
+        public PlacableBuilder(AvailablePlacables availablePlacables, PlacableFactory placableFactory, bool waitForBuilding, PlacablePreview previewPrefab, GameObjectIconProvider<PlacableEnum> icons)
         {
             _waitForBuilding = waitForBuilding;
             _availableTowers = new List<PlacableEnum>(availablePlacables.placableIds);
             _placableFactory = placableFactory;
             _inConstructions = new Dictionary<InConstruction, InConstructionData>();
             _markedToDeleteInConstructions = new List<InConstruction>();
+            _icons = icons;
+
+            _preview = GameObject.Instantiate(previewPrefab);
+            DisablePreview();
+        }
+
+        public void Dispose()
+        {
+            if (_preview != null)
+                GameObject.Destroy(_preview.gameObject);
         }
 
         public void Pause()
@@ -61,6 +73,20 @@ namespace Builder
                 throw new ArgumentException($"This tower is not available: {id}");
 
             _currentId = id;
+            _preview.UpdatePreview(_icons.Get(id));
+            EnablePreview();
+        }
+
+        public void EnablePreview() => _preview?.gameObject.SetActive(true);
+
+        public void DisablePreview() => _preview?.gameObject.SetActive(false);
+
+        public void MovePreview(Vector2 position)
+        {
+            if (_preview == null)
+                return;
+
+            _preview.transform.position = position;
         }
 
         public void DeleteInConstructionAt(Vector2Int cellPosition)
@@ -103,30 +129,48 @@ namespace Builder
             Vector2Int cellPosition = grid.WorldPositionToGridPosition(position);
 
             if (IsInConstructionAt(cellPosition))
+            {
+                _preview.CantBuildAnimation();
                 return;
+            }
 
             if (!grid.IsCellAt(cellPosition))
+            {
+                _preview.CantBuildAnimation();
                 return;
+            }
 
             if (!grid.CanBuildAt(cellPosition))
+            {
+                _preview.CantBuildAnimation();
                 return;
+            }
 
             bool? canBuild = checkCanBuild?.Invoke(_currentId);
 
                 if (canBuild !=null)
                     if (!(bool)canBuild)
+                    {
+                        _preview.CantBuildAnimation();
                         return;
+                    }
 
             if (_currentId==PlacableEnum.MainBuilding)
             {
                 if (_mainBuildingBuilt)
+                {
+                    _preview.CantBuildAnimation();
                     return;
+                }
 
                 bool? canBuildMainBuilding = checkCanBuildMainBuilding?.Invoke(cellPosition);
 
                 if (canBuildMainBuilding !=null)
                     if (!(bool)canBuildMainBuilding)
+                    {
+                        _preview.CantBuildAnimation();
                         return;
+                    }
             }
 
             if (_waitForBuilding)
@@ -147,6 +191,8 @@ namespace Builder
             {
                 CreatePlacable(grid, cellPosition, _currentId);
             }
+
+            DisablePreview();
 
             
         }
@@ -208,6 +254,7 @@ namespace Builder
 
             placableBuilt?.Invoke(placableId);
         }
+
         private struct InConstructionData
         {
             public GameObject InConstructionObject {get; private set;}

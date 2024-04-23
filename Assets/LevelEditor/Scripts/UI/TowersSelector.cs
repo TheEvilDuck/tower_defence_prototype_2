@@ -1,40 +1,39 @@
 using System;
 using System.Collections.Generic;
 using Enemies;
+using Towers;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace LevelEditor.UI
 {
-    public class EnemiesSelector : MonoBehaviour
+    public class TowersSelector : MonoBehaviour
     {
         [SerializeField] private EnemyButton _enemyViewButtonPrefab;
         [SerializeField] private Transform _contentTransform;
-        [SerializeField] private EnemiesDatabase _enemiesDatabase;
-        [SerializeField] private EnemyInfo _enemyInfo;
+        [SerializeField] private TowersDatabase _towersDatabase;
         [SerializeField] private Button _selectedButton;
         [SerializeField] private Button _cancelButton;
 
-        public event Action<EnemyEnum> enemySelected;
+        public event Action<PlacableEnum> towerSelected;
         public event Action canceled;
-        private EnemyEnum _selectedEnemy;
+        private PlacableEnum _selectedTower;
         private Dictionary<EnemyButton, Action> _buttons;
-        private GameObjectIconProvider<EnemyEnum> _gameObjectIconProvider;
+        private GameObjectIconProvider<PlacableEnum> _gameObjectIconProvider;
 
-        public void Init(GameObjectIconProvider<EnemyEnum> gameObjectIconProvider)
+        public void Init(GameObjectIconProvider<PlacableEnum> gameObjectIconProvider)
         {
             _gameObjectIconProvider = gameObjectIconProvider;
 
             _buttons = new Dictionary<EnemyButton, Action>();
 
-            foreach (var databaseItem in _enemiesDatabase.Items)
+            foreach (var databaseItem in _towersDatabase.Items)
             {
                 EnemyButton button = Instantiate(_enemyViewButtonPrefab, _contentTransform);
 
                 Action OnClick = () =>
                 {
-                    _selectedEnemy = databaseItem.Key;
-                    _enemyInfo.UpdateInfo(databaseItem.Value);
+                    _selectedTower = databaseItem.Key;
                 };
 
                 button.clicked += OnClick;
@@ -64,21 +63,20 @@ namespace LevelEditor.UI
             canceled?.Invoke();
         }
 
-        public void ShowWithPreloadedId(EnemyEnum id)
+        public void ShowWithPreloadedId(PlacableEnum id)
         {
-            if (!_enemiesDatabase.TryGetValue(id, out var config))
+            if (!_towersDatabase.TryGetValue(id, out var config))
                 throw new Exception("AAAAAAAAAA");
 
-            _selectedEnemy = id;
-            _enemyInfo.UpdateInfo(config);
+            _selectedTower = id;
         }
 
         private void OnSelectedButtonPressed()
         {
-            if (!_enemiesDatabase.TryGetValue(_selectedEnemy, out var config))
+            if (!_towersDatabase.TryGetValue(_selectedTower, out var config))
                 throw new Exception();
 
-            enemySelected?.Invoke(_selectedEnemy);
+            towerSelected?.Invoke(_selectedTower);
             gameObject.SetActive(false);
         }
     }

@@ -1,3 +1,4 @@
+using System.Collections;
 using Common;
 using Common.UI;
 using Enemies;
@@ -10,6 +11,7 @@ using Levels.Tiles;
 using Levels.View;
 using Services.CameraManipulation;
 using Services.PlayerInput;
+using Towers;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -39,6 +41,12 @@ namespace LevelEditor
         [SerializeField]private DrawTypeToolBar _drawTypeToolBar;
         [SerializeField] private ToolButtons _toolButtons;
         [SerializeField] private EnemiesSelector _enemiesSelector;
+        [SerializeField] private Camera _renderTextureCamera;
+        [SerializeField] private RenderTexture _iconsRenderTexture;
+        [SerializeField] private Transform _iconsGameObjectTransform;
+        [SerializeField] private EnemiesDatabase _enemiesDatabase;
+        [SerializeField] private TowersDatabase _towersDatabase;
+        [SerializeField] private TowersMenu _towersMenu;
 
         private Level _level;
         private LevelEditor _levelEditor;
@@ -75,9 +83,39 @@ namespace LevelEditor
         private DrawCommandsFactory _drawCommandsFactory;
         private SpawnersView _spawnersView;
         private ToolBarMediator _toolBarMediator;
+        private GameObjectIconsMaker _gameObjectIconsMaker;
+        private GameObjectIconProvider<EnemyEnum> _enemiesIcons;
+        private GameObjectIconProvider<PlacableEnum> _towersIcons;
 
-        private void Awake() 
+        private IEnumerator Start() 
         {
+            var wait = new WaitForEndOfFrame();
+
+            _gameObjectIconsMaker = new GameObjectIconsMaker(_renderTextureCamera, _iconsRenderTexture, _iconsGameObjectTransform);
+
+            _enemiesIcons = new GameObjectIconProvider<EnemyEnum>();
+            _towersIcons = new GameObjectIconProvider<PlacableEnum>();
+
+            foreach (var item in _enemiesDatabase.Items)
+            {
+                Texture2D texture = _gameObjectIconsMaker.Get(item.Value.Prefab);
+                _enemiesIcons.FillWith(item.Key, texture);
+                yield return wait;
+            }
+
+            RenderTexture.active = _iconsRenderTexture;
+            _renderTextureCamera.enabled = true;
+
+            foreach (var item in _towersDatabase.Items)
+            {
+                Texture2D texture = _gameObjectIconsMaker.Get(item.Value.Prefab);
+                _towersIcons.FillWith(item.Key, texture);
+                yield return wait;
+            }
+
+            RenderTexture.active = _iconsRenderTexture;
+            _renderTextureCamera.enabled = true;
+
             _levelSavingResultFabric = new LevelSavingResultFabric(_levelSavingResultDatabase);
             SpawnerPositions spawnerPositions = new SpawnerPositions();
 
@@ -94,6 +132,7 @@ namespace LevelEditor
             _menuParentsManager.Add(_wavesEditor);
             _menuParentsManager.Add(_loadMenu);
             _menuParentsManager.Add(_toolButtons);
+            _menuParentsManager.Add(_towersMenu);
 
             _undoKeyCombination = new KeyCombinationHandler(_playerInput,_levelEditorConfig.UndoKeyCodes);
             _saveKeyCombination = new KeyCombinationHandler(_playerInput,_levelEditorConfig.SaveKeyCodes);
@@ -148,7 +187,8 @@ namespace LevelEditor
                 _spawnerPlacementSelector,
                 spawnerPositions,
                 _spawnersView,
-                _toolButtons
+                _toolButtons,
+                _towersMenu
                 
             );
             _cameraManipulation = new CameraManipulation(0.1f, Camera.main);
@@ -158,23 +198,22 @@ namespace LevelEditor
 
             _levelIconsLoader = new LevelIconsLoader(_levelLoader,_loadMenu.ParentToIcons,_levelIconButtonPrefab);
 
-            _levelIconsAndLevelLoaderMediator = new LevelIconsAndLevelLoaderMediator(_levelLoader,_levelIconsLoader, _levelEditor,_level,_wavesEditor,_settingsMenu);
+            _levelIconsAndLevelLoaderMediator = new LevelIconsAndLevelLoaderMediator(_levelLoader,_levelIconsLoader, _levelEditor,_level,_wavesEditor,_settingsMenu, spawnerPositions);
 
             _levelSettingsMediator = new LevelSettingsMediator(_settingsMenu, _levelEditor);
 
-            _wavesEditor.Init();
+            _wavesEditor.Init(_enemiesIcons);
 
             _selectorsToolBar.Init(_brushSelector, _fillSelector, _lineSelector);
 
             _tilesToolBar.Init();
             _drawTypeToolBar.Init(_drawTool, _eraseTool);
             _toolButtons.Init();
+            _towersMenu.Init(_towersIcons);
 
             _toolBarMediator = new ToolBarMediator(_selectorsToolBar, _levelEditor, _drawCommandsFactory, _tilesToolBar, _drawTypeToolBar);
-        }
+            _enemiesSelector.Init(_enemiesIcons);
 
-        private void Start() 
-        {
             _backGround.position = new Vector3(_testLevelData.gridData.gridSize/2f,_testLevelData.gridData.gridSize/2f);
             _screenShotCamera.transform.Translate(new Vector3(_testLevelData.gridData.gridSize/2f,_testLevelData.gridData.gridSize/2f));
             _backGround.localScale = new Vector3(_testLevelData.gridData.gridSize,_testLevelData.gridData.gridSize);
@@ -208,7 +247,7 @@ namespace LevelEditor
 
         private void Update() 
         {
-            _playerInput.Update();
+            _playerInput?.Update();
         }
     }
 }

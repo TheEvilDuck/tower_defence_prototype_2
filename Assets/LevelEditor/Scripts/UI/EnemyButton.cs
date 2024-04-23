@@ -1,5 +1,4 @@
 using System;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,11 +7,11 @@ namespace LevelEditor.UI
     public class EnemyButton : MonoBehaviour
     {
         [SerializeField] private Button _button;
-        [SerializeField] private TextMeshProUGUI _buttonText;
+        [SerializeField] private RawImage _rawImage;
 
         public event Action clicked;
 
-        public void UpdateText(string enemyName) => _buttonText.text = enemyName;
+        public void UpdateTexture(Texture2D texture) => _rawImage.texture = texture;
 
         private void OnEnable() 
         {

@@ -30,6 +30,7 @@ namespace LevelEditor.UI
         private Dictionary<WaveData, List<EnemySettings>>_enemySettingsView;
         private int _currentWaveId = 0;
         private bool _inited = false;
+        private GameObjectIconProvider<EnemyEnum> _gameObjectIconProvider;
         public bool Active => gameObject.activeInHierarchy;
         public IEnumerable<WaveData> WaveDatas => _waveDatas;
         private int CurrentWaveId
@@ -55,17 +56,11 @@ namespace LevelEditor.UI
 
         public void Hide()
         {
-            _enemiesSelector.gameObject.SetActive(false);
+            _enemiesSelector.Hide();
             gameObject.SetActive(false);
         }
 
         public void Show() => gameObject.SetActive(true);
-
-        private void Awake() 
-        {
-            if (!_inited)
-                Init();
-        }
 
         private void OnEnable() 
         {
@@ -87,8 +82,9 @@ namespace LevelEditor.UI
             _timeToTheNextWaveSlider.changed-=OnTimeToTheNextWaveSliderChanged;
         }
 
-        public void Init()
+        public void Init(GameObjectIconProvider<EnemyEnum> gameObjectIconProvider)
         {
+            _gameObjectIconProvider = gameObjectIconProvider;
             _waveDatas = new List<WaveData>();
             _enemySettingsView = new Dictionary<WaveData, List<EnemySettings>>();
             _addEnemiesButton.gameObject.SetActive(false);
@@ -139,7 +135,7 @@ namespace LevelEditor.UI
                     enemySettingsOfWave.Add(enemySettings);
                     enemySettings.deleteButtonPressed+=OnEnemySettingsDeleted;
 
-                    enemySettings.Init(MAX_ENEMY_COUNT_IN_ENEMY_SETTINGS, _enemiesSelector);
+                    enemySettings.Init(MAX_ENEMY_COUNT_IN_ENEMY_SETTINGS, _enemiesSelector, _gameObjectIconProvider);
                     enemySettings.FillFromWaveEnemyData(waveEnemyData);
 
                     enemySettings.Hide();
@@ -316,7 +312,7 @@ namespace LevelEditor.UI
             enemySettingsOfWave.Add(enemySettings);
             enemySettings.deleteButtonPressed+=OnEnemySettingsDeleted;
 
-            enemySettings.Init(MAX_ENEMY_COUNT_IN_ENEMY_SETTINGS, _enemiesSelector);
+            enemySettings.Init(MAX_ENEMY_COUNT_IN_ENEMY_SETTINGS, _enemiesSelector, _gameObjectIconProvider);
 
             
         }

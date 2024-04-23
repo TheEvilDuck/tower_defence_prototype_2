@@ -18,6 +18,8 @@ using GamePlay.UI;
 using Common;
 using Common.UI;
 using LevelEditor.UI;
+using System.Collections;
+using System.Threading.Tasks;
 
 namespace GamePlay
 {
@@ -37,6 +39,10 @@ namespace GamePlay
         [SerializeField] private UIInputBlocker _inputBlocker;
         [SerializeField] private MoneyView _moneyView;
         [SerializeField] private MainBuildingHealth _healthUI;
+        [SerializeField] private Camera _renderCamera;
+        [SerializeField] private RenderTexture _renderTexture;
+        [SerializeField] private Transform _placeForRender;
+        [SerializeField] private PlacablePreview _placablePreviewPrefab;
         private PlayerInput _playerInput;
         private CameraManipulation _cameraManipulation;
         private CameraMediator _cameraMediator;
@@ -58,8 +64,24 @@ namespace GamePlay
         private BuildPossibilityChecker _buildPossibilityChecker;
         private MoneyMediator _moneyMediator;
         private MainBuldingMediator _mainBuildingMediator;
-        private void Awake() 
+        private GameObjectIconProvider<PlacableEnum> _towersIcons;
+        private GameObjectIconsMaker _iconsMaker;
+        private IEnumerator Start() 
         {
+            var wait = new WaitForEndOfFrame();
+            _towersIcons = new GameObjectIconProvider<PlacableEnum>();
+
+            _iconsMaker = new GameObjectIconsMaker(_renderCamera, _renderTexture, _placeForRender);
+
+            foreach (var idAndConfig in _towersDatabase.Items)
+            {
+                Texture2D texture = _iconsMaker.Get<Placable>(idAndConfig.Value.Prefab);
+                _towersIcons.FillWith(idAndConfig.Key, texture);
+                yield return wait;
+            }
+
+            _renderCamera.enabled = false;
+
             _pausableManager = new PausableManager();
             _playerInput = new PlayerInput();
             _cameraManipulation = new CameraManipulation(_cameraSpeed, Camera.main);
@@ -107,9 +129,9 @@ namespace GamePlay
                 placableIds = Enum.GetValues(typeof(PlacableEnum)).ConvertTo<PlacableEnum[]>()
             };
 
-            _builder = new PlacableBuilder(availablePlacables, _placableFactory, true);
+            _builder = new PlacableBuilder(availablePlacables, _placableFactory, true, _placablePreviewPrefab, _towersIcons);
 
-            _towersPanel.Init(_towersDatabase);
+            _towersPanel.Init(_towersDatabase, _towersIcons);
 
             _builderMediator = new BuilderMediator(_playerInput,_builder, _level.Grid,_towersPanel);
 
@@ -170,7 +192,7 @@ namespace GamePlay
         {
             _playerInput?.Update();
             _gamePlayerStateMachine?.Update();
-            _builder.Update();
+            _builder?.Update();
         }
     }
 }
