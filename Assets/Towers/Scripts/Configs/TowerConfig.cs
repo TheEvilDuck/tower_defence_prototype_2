@@ -1,6 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
-using Towers;
+using Towers.Configs;
 using UnityEngine;
 
 namespace Towers

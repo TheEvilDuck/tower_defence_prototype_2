@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using Common;
 using Common.Interfaces;
-using GamePlay;
+using Levels.Logic;
 using Towers;
+using Towers.Configs;
 using UnityEngine;
 using Grid = Levels.Logic.Grid;
 
@@ -13,8 +15,8 @@ namespace Builder
         public event Action<Vector2Int> mainBuildingBuilt;
         public event Func<Vector2Int, bool> checkCanBuildMainBuilding;
         public event Func<PlacableEnum, bool> checkCanBuild;
-        public event Action<PlacableEnum> placableBuilt;
-        public event Action<PlacableEnum> placableDestroyed;
+        public event Action<PlacableEnum, Vector2Int> placableBuilt;
+        public event Action<PlacableEnum, Vector2Int> placableDestroyed;
         public event Action<PlacableEnum> placableBuildStarted;
         public event Action<PlacableEnum> placableBuildCanceled;
         private List<PlacableEnum> _availableTowers;
@@ -27,18 +29,28 @@ namespace Builder
         private List<InConstruction> _markedToDeleteInConstructions;
         private PlacablePreview _preview;
         private GameObjectIconProvider<PlacableEnum> _icons;
+        private PlacablesContainer _placables;
 
         public Placable MainBuilding {get; private set;}
         public bool PreviewAble => _preview.gameObject.activeInHierarchy;
 
-        public PlacableBuilder(AvailablePlacables availablePlacables, PlacableFactory placableFactory, bool waitForBuilding, PlacablePreview previewPrefab, GameObjectIconProvider<PlacableEnum> icons)
+        public PlacableBuilder
+        (
+            PlacableEnum[] availablePlacables, 
+            PlacableFactory placableFactory, 
+            bool waitForBuilding, 
+            PlacablePreview previewPrefab, 
+            GameObjectIconProvider<PlacableEnum> icons,
+            PlacablesContainer placablesContainer
+        )
         {
             _waitForBuilding = waitForBuilding;
-            _availableTowers = new List<PlacableEnum>(availablePlacables.placableIds);
+            _availableTowers = new List<PlacableEnum>(availablePlacables);
             _placableFactory = placableFactory;
             _inConstructions = new Dictionary<InConstruction, InConstructionData>();
             _markedToDeleteInConstructions = new List<InConstruction>();
             _icons = icons;
+            _placables = placablesContainer;
 
             _preview = GameObject.Instantiate(previewPrefab);
             DisablePreview();
@@ -121,7 +133,16 @@ namespace Builder
             _markedToDeleteInConstructions.Clear();
         }
 
-        public void Build(Vector2 position, Grid grid)
+        public void BuildFromPlacableDatas(PlacableData[] placableDatas, Grid grid)
+        {
+            foreach (var placableData in placableDatas)
+            {
+                CreatePlacable(grid.ConvertIntToVector2Int(placableData.index), placableData.placable, grid);
+
+            }
+        }
+
+        public bool Build(Vector2 position, Grid grid)
         {
             if (_availableTowers.Count==0)
                 throw new Exception("There are no available towers???");
@@ -131,19 +152,19 @@ namespace Builder
             if (IsInConstructionAt(cellPosition))
             {
                 _preview.CantBuildAnimation();
-                return;
+                return false;
             }
 
             if (!grid.IsCellAt(cellPosition))
             {
                 _preview.CantBuildAnimation();
-                return;
+                return false;
             }
 
-            if (!grid.CanBuildAt(cellPosition))
+            if (!_placables.CanBuildAt(cellPosition))
             {
                 _preview.CantBuildAnimation();
-                return;
+                return false;
             }
 
             bool? canBuild = checkCanBuild?.Invoke(_currentId);
@@ -152,7 +173,7 @@ namespace Builder
                     if (!(bool)canBuild)
                     {
                         _preview.CantBuildAnimation();
-                        return;
+                        return false;
                     }
 
             if (_currentId==PlacableEnum.MainBuilding)
@@ -160,7 +181,7 @@ namespace Builder
                 if (_mainBuildingBuilt)
                 {
                     _preview.CantBuildAnimation();
-                    return;
+                    return false;
                 }
 
                 bool? canBuildMainBuilding = checkCanBuildMainBuilding?.Invoke(cellPosition);
@@ -169,7 +190,7 @@ namespace Builder
                     if (!(bool)canBuildMainBuilding)
                     {
                         _preview.CantBuildAnimation();
-                        return;
+                        return false;
                     }
             }
 
@@ -189,12 +210,11 @@ namespace Builder
             }
             else
             {
-                CreatePlacable(grid, cellPosition, _currentId);
+                CreatePlacable(cellPosition, _currentId, grid);
             }
 
-            DisablePreview();
+            return true;
 
-            
         }
 
         private bool IsInConstructionAt(Vector2Int cellPosition)
@@ -218,16 +238,16 @@ namespace Builder
                 return;
             }
 
-            CreatePlacable(_inConstructions[inConstruction].Grid, _inConstructions[inConstruction].CellPosition, _inConstructions[inConstruction].PlacableId);
+            CreatePlacable(_inConstructions[inConstruction].CellPosition, _inConstructions[inConstruction].PlacableId, _inConstructions[inConstruction].Grid);
         }
 
-        private void CreatePlacable(Grid grid, Vector2Int cellPosition, PlacableEnum placableId)
+        private void CreatePlacable(Vector2Int cellPosition, PlacableEnum placableId, Grid grid)
         {
             Placable tower = _placableFactory.Get(placableId);
             Vector2 worldPosition = grid.GridPositionToWorldPosition(cellPosition);
             tower.transform.position = worldPosition;
 
-            if (!grid.TryBuildAt(cellPosition, tower))
+            if (!_placables.TryBuildAt(cellPosition, tower))
             {
                 tower.DestroyPlacable();
                 throw new Exception("Didn't you forget to delete inConstrucion placable?");
@@ -239,8 +259,11 @@ namespace Builder
 
             placableDestroyedTemp = (Placable placable) =>
             {
+                if (placableId == PlacableEnum.MainBuilding)
+                    _mainBuildingBuilt = false;
+
                 placable.destroyed -= placableDestroyedTemp;
-                placableDestroyed?.Invoke(placableId);
+                placableDestroyed?.Invoke(placableId, cellPosition);
             };
 
             tower.destroyed += placableDestroyedTemp;
@@ -252,7 +275,7 @@ namespace Builder
                 mainBuildingBuilt?.Invoke(cellPosition);
             }
 
-            placableBuilt?.Invoke(placableId);
+            placableBuilt?.Invoke(placableId, cellPosition);
         }
 
         private struct InConstructionData

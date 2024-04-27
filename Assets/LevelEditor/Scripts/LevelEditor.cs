@@ -1,10 +1,14 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Common;
+using LevelEditor.Commands;
+using LevelEditor.LevelSaving;
 using LevelEditor.Selectors;
+using LevelEditor.Tools;
+using LevelEditor.UI;
 using Levels.Logic;
-using Levels.Tiles;
+using Towers;
 using UnityEngine;
 using Waves;
 
@@ -18,26 +22,30 @@ namespace LevelEditor
         private const int MIN_LEVEL_NAME_LENGTH = 3;
         private Level _level;
         private Stack<ICommand>_performedCommands;
+        private Stack<ICommand>_canceledCommands;
         private LevelLoader _levelLoader;
-        private LevelIconMaker _levelIconMaker;
+        private IconsMaker _levelIconMaker;
         private ISelector _currentSelector;
         private Tool _currentTool;
         private LevelData _currentLevelData;
         private string _currentLevelName;
-        private readonly LevelSavingResultFabric _levelSavingResultFabric;
+        private readonly LevelSavingResultFactory _levelSavingResultFactory;
         private bool _placeRoad = false;
         private SpawnerPositions _spawnerPositions;
+        private TowersPlaceMenu _towersPlaceMenu;
 
-        public LevelEditor(Level level, LevelIconMaker levelIconMaker, LevelLoader levelLoader, LevelSavingResultFabric levelSavingResultFabric, SpawnerPositions spawnerPositions)
+        public LevelEditor(Level level, IconsMaker levelIconMaker, LevelLoader levelLoader, LevelSavingResultFactory levelSavingResultFactory, SpawnerPositions spawnerPositions, TowersPlaceMenu towersPlaceMenu)
         {
             _level = level;
             _levelLoader = levelLoader;
             _levelIconMaker = levelIconMaker;
             _currentLevelData = new LevelData();
-            _levelSavingResultFabric = levelSavingResultFabric;
+            _levelSavingResultFactory = levelSavingResultFactory;
             _spawnerPositions = spawnerPositions;
+            _towersPlaceMenu = towersPlaceMenu;
 
             _performedCommands = new Stack<ICommand>(MAX_COMMANDS_BUFFER);
+            _canceledCommands = new Stack<ICommand>(MAX_COMMANDS_BUFFER);
         }
 
         public void CreateNewMap(Level level)
@@ -68,7 +76,11 @@ namespace LevelEditor
            }
         }
 
-        public void CleaerCommandsBuffer() => _performedCommands.Clear();
+        public void CleaerCommandsBuffer()
+        {
+            _performedCommands.Clear();
+            _canceledCommands.Clear();
+        }
 
         public void UndoLastCommand()
         {
@@ -78,30 +90,48 @@ namespace LevelEditor
             ICommand command = _performedCommands.Pop();
 
             if (command!=null)
+            {   
                 command.Undo();
+                _canceledCommands.Push(command);
+            }
+        }
+
+        public void RedoCommand()
+        {
+            if (_canceledCommands.Count==0)
+                return;
+            
+            ICommand command = _canceledCommands.Pop();
+
+            if (command!=null)
+            {   
+                command.Execute();
+                _performedCommands.Push(command);
+            }
         }
 
         public void UpdateLevelName(string newName) => _currentLevelName = newName;
         public void UpdateLevelStartMoney(int startMoney) => _currentLevelData.startMoney = startMoney;
         public void UpdateLevelFirstWaveDelay(float delay) => _currentLevelData.firstWaveDelay = delay;
 
-        private async Task SaveLevel(WaveData[] waveDatas)
+        private async Task SaveLevel(WaveData[] waveDatas, PlacableEnum[] availableTowers)
         {
             _currentLevelData.waves = waveDatas;
 
             if (string.IsNullOrWhiteSpace(_currentLevelName))
             {
-                levelSaveTried.Invoke(_levelSavingResultFabric.Get(ResultType.EmptyName));
+                levelSaveTried.Invoke(_levelSavingResultFactory.Get(ResultType.EmptyName));
                 return;
             }
 
             if (_currentLevelName.Length < MIN_LEVEL_NAME_LENGTH)
             {
-                levelSaveTried.Invoke(_levelSavingResultFabric.Get(ResultType.ShortName));
+                levelSaveTried.Invoke(_levelSavingResultFactory.Get(ResultType.ShortName));
                 return;
             }
 
             LevelData savingLevelData = _level.ConvertToLevelData(_currentLevelData.startMoney, _currentLevelData.firstWaveDelay, _currentLevelData.waves);
+            savingLevelData.allowedPlacables = availableTowers;
             List<int> spawnerIndexes = new List<int>();
 
             foreach (Vector2Int cellPosition in _spawnerPositions.Spawners)
@@ -112,6 +142,7 @@ namespace LevelEditor
             }
             
             savingLevelData.spawnerPlaces = spawnerIndexes.ToArray();
+            savingLevelData.placables = _towersPlaceMenu.ConvertToPlacableDatas(_level.Grid);
 
             await _levelLoader.SaveLevel(
                 _currentLevelName,
@@ -120,38 +151,41 @@ namespace LevelEditor
                 OnLevelSaveFailed);
         }
 
-        public async void SaveLevel(WaveData[] waveDatas, bool mapOverride)
+        public async void SaveLevel(WaveData[] waveDatas, PlacableEnum[] availableTowers, bool mapOverride)
         {
             if (_levelLoader.LevelExists(_currentLevelName))
             {
                 if (!mapOverride)
                 {
-                    levelSaveTried.Invoke(_levelSavingResultFabric.Get(ResultType.MapOverride));
+                    levelSaveTried.Invoke(_levelSavingResultFactory.Get(ResultType.MapOverride));
                     return;
                 }
             }
 
-            await SaveLevel(waveDatas);
+            await SaveLevel(waveDatas, availableTowers);
         }
 
         private async void OnLevelSaved()
         {
-            await _levelLoader.CreateLevelIcon(_currentLevelName,_levelIconMaker.MakeLevelIcon(),OnLevelIconCreated);
+            await _levelLoader.CreateLevelIcon(_currentLevelName,_levelIconMaker.Get(),OnLevelIconCreated);
         }
 
         private void OnLevelSaveFailed()
         {
-            levelSaveTried.Invoke(_levelSavingResultFabric.Get(ResultType.Error));
+            levelSaveTried.Invoke(_levelSavingResultFactory.Get(ResultType.Error));
         }
 
         private void OnLevelIconCreated()
         {
-            levelSaveTried.Invoke(_levelSavingResultFabric.Get(ResultType.Success));
+            levelSaveTried.Invoke(_levelSavingResultFactory.Get(ResultType.Success));
         }
 
         private void OnToolUsingCompleted(ICommand resultCommand)
         {
+            _canceledCommands.Clear();
             _performedCommands.Push(resultCommand);
+
+            Debug.Log("Command added to performed");
         }
 
         public void Dispose()

@@ -1,9 +1,6 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using Enemies;
-using GamePlay;
-using Towers.View;
+using GamePlay.EnemiesSpawning;
 using UnityEngine;
 
 namespace Towers

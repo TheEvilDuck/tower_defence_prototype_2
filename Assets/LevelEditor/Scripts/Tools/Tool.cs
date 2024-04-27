@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using LevelEditor.Commands;
+using LevelEditor.Commands.Factory;
 using LevelEditor.Selectors;
 using UnityEngine;
 
-namespace LevelEditor
+namespace LevelEditor.Tools
 {
     public class Tool: IDisposable
     {
@@ -72,6 +74,8 @@ namespace LevelEditor
             
             if (command.Execute())
             {
+                Debug.Log("Command executed");
+
                 _currentCommandSequence.AddCommand(command);
                 _affectedCells.TryAdd(cellPosition,command);
             }

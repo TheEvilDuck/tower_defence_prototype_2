@@ -1,14 +1,11 @@
 using System;
-using LevelEditor.Selectors;
 using UnityEngine;
-using UnityEngine.UI;
-using LevelEditor;
 using Levels.Tiles;
-using UnityEngine.Tilemaps;
 using System.Collections.Generic;
 using Common.Interfaces;
+using Levels.Logic;
 
-namespace LevelEditor.UI
+namespace LevelEditor.UI.Toolbars
 {
     public class TilesToolBar : MonoBehaviour, ITilesProvider, IMenuParent
     {

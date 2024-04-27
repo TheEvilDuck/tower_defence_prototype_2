@@ -2,11 +2,11 @@ using Common;
 using Common.States;
 using GamePlay.UI;
 
-namespace GamePlay
+namespace GamePlay.States
 {
     public class WinState : GameOverState
     {
-        public WinState(StateMachine stateMachine, GameOverView gameOverView, SceneLoader sceneLoader, BuilderMediator builderMediator, MenuParentsManager menuParentsManager) : base(stateMachine, gameOverView, sceneLoader,builderMediator,menuParentsManager)
+        public WinState(StateMachine stateMachine, GameOverView gameOverView, SceneLoader sceneLoader, MenuParentsManager menuParentsManager) : base(stateMachine, gameOverView, sceneLoader,menuParentsManager)
         {
         }
 

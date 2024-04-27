@@ -1,10 +1,9 @@
 using System;
 using BuffSystem;
-using Common.Interfaces;
 using Enemies;
 using Enemies.Buffs;
-using GamePlay;
-using UnityEngine;
+using GamePlay.EnemiesSpawning;
+using Towers.Configs;
 
 namespace Towers
 {

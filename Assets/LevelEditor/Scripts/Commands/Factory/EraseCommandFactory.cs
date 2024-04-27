@@ -1,7 +1,7 @@
 using Grid = Levels.Logic.Grid;
 using UnityEngine;
 
-namespace LevelEditor
+namespace LevelEditor.Commands.Factory
 {
     public class EraseCommandFactory : CommandFactory
     {

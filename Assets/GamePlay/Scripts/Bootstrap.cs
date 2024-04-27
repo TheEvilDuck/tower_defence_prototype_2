@@ -2,24 +2,24 @@ using System.Collections.Generic;
 using UnityEngine;
 using Services.PlayerInput;
 using Services.CameraManipulation;
-using Levels.TileControl;
 using UnityEngine.Tilemaps;
 using Levels.Logic;
 using Enemies;
 using Waves;
 using Builder;
 using Towers;
-using System;
 using Levels.Tiles;
 using Enemies.AI;
-using Unity.VisualScripting;
 using StateMachine = Common.States.StateMachine;
 using GamePlay.UI;
 using Common;
-using Common.UI;
-using LevelEditor.UI;
 using System.Collections;
-using System.Threading.Tasks;
+using GamePlay.Mediators;
+using GamePlay.Player;
+using GamePlay.EnemiesSpawning;
+using Common.UI.InputBlocking;
+using GamePlay.States;
+using System.Linq;
 
 namespace GamePlay
 {
@@ -58,7 +58,7 @@ namespace GamePlay
         private PathFinder _pathFinder;
         private StateMachine _gamePlayerStateMachine;
         private PausableManager _pausableManager;
-        private LevelEditorInputBlockerMediator _inputBlockerMediator;
+        private InputBlockerMediator _inputBlockerMediator;
         private PauseMediator _pauseMediator;
         private PlayerStatsUpdater _playerStatsUpdater;
         private BuildPossibilityChecker _buildPossibilityChecker;
@@ -92,12 +92,14 @@ namespace GamePlay
                 throw new System.Exception("No level to load");
 
             _level = new Level(levelData);
+            PlacablesContainer placablesContainer = new PlacablesContainer(_level.Grid);
             PlayerStats playerStats = new PlayerStats(levelData.startMoney);
 
             _tileController = new TileController(_tileDatabase,_groundTileMap,_roadTileMap);
             _levelAndTilesMediator = new LevelAndTilesMediator(_tileController,_level);
 
             List<Vector2Int> spawnerPositions = new List<Vector2Int>();
+            _level.UpdateGridData(levelData.gridData);
 
             foreach(int spawnerIndex in levelData.spawnerPlaces)
             {
@@ -106,12 +108,14 @@ namespace GamePlay
                 spawnerPositions.Add(spawnerPosition);
             }
 
-            _level.UpdateGridData(levelData.gridData);
+            
             _pathFinder = new PathFinder(_level.Grid,_pathFindMultiplierDatabase);
 
             Spawners spawners = new Spawners(spawnerPositions.ToArray(), _pathFinder);
 
-            _enemyFactory = new EnemyFactory(_enemiesDatabase, _level.Grid, spawners, _pathFindMultiplierDatabase);
+            
+
+            _enemyFactory = new EnemyFactory(_enemiesDatabase, _level.Grid, spawners, _pathFindMultiplierDatabase,placablesContainer);
             List<Wave> waves = new List<Wave>();
 
             foreach (WaveData waveData in levelData.waves)
@@ -119,28 +123,31 @@ namespace GamePlay
                 waves.Add(new Wave(waveData));
             }
 
+            
+
             _enemySpawner = new EnemySpawner(waves.ToArray(), levelData.firstWaveDelay,1f,_enemyFactory);
 
             _placableFactory = new PlacableFactory(_towersDatabase,_enemySpawner, playerStats);
 
-            //TODO this must be loaded from level
-            AvailablePlacables availablePlacables = new AvailablePlacables()
-            {
-                placableIds = Enum.GetValues(typeof(PlacableEnum)).ConvertTo<PlacableEnum[]>()
-            };
+            List<PlacableEnum> availablePlacables = new List<PlacableEnum>();
 
-            _builder = new PlacableBuilder(availablePlacables, _placableFactory, true, _placablePreviewPrefab, _towersIcons);
+            foreach (var id in levelData.allowedPlacables)
+                availablePlacables.Add(id);
 
-            _towersPanel.Init(_towersDatabase, _towersIcons);
+            availablePlacables.Add(PlacableEnum.MainBuilding);
 
-            _builderMediator = new BuilderMediator(_playerInput,_builder, _level.Grid,_towersPanel);
+            _builder = new PlacableBuilder(availablePlacables.ToArray(), _placableFactory, true, _placablePreviewPrefab, _towersIcons, placablesContainer);
+
+            _towersPanel.Init(_towersDatabase, _towersIcons, availablePlacables.ToArray());
+
+            _builderMediator = new BuilderMediator(_playerInput,_builder, _level.Grid,_towersPanel, placablesContainer);
 
             SceneLoader sceneLoader = new SceneLoader();
 
             _gamePlayerStateMachine = new StateMachine();
             
 
-            _inputBlockerMediator = new LevelEditorInputBlockerMediator(_inputBlocker, _playerInput);
+            _inputBlockerMediator = new InputBlockerMediator(_inputBlocker, _playerInput);
 
             MenuParentsManager pauseMenus = new MenuParentsManager();
             pauseMenus.Add(_pauseButton);
@@ -149,7 +156,6 @@ namespace GamePlay
             _pausableManager.Add(_enemySpawner);
             _pausableManager.Add(_playerInput);
             _pausableManager.Add(_builder);
-            _pausableManager.Add(_level.Grid);
 
             _pauseMediator = new PauseMediator(_pausableManager, _pauseView, _pauseButton, pauseMenus, sceneLoader);
 
@@ -158,8 +164,8 @@ namespace GamePlay
 
             PrepareState prepareState = new PrepareState(_gamePlayerStateMachine, _builder, spawners, false, _level.Grid.GridSize);
             EnemySpawnState enemySpawnState = new EnemySpawnState(_gamePlayerStateMachine, _enemySpawner, _builder);
-            LoseState loseState = new LoseState(_gamePlayerStateMachine, _gameOverView, sceneLoader, _builderMediator, pauseMenus);
-            WinState winState = new WinState(_gamePlayerStateMachine, _gameOverView, sceneLoader, _builderMediator, pauseMenus);
+            LoseState loseState = new LoseState(_gamePlayerStateMachine, _gameOverView, sceneLoader, pauseMenus);
+            WinState winState = new WinState(_gamePlayerStateMachine, _gameOverView, sceneLoader, pauseMenus);
 
             _gamePlayerStateMachine.AddState(prepareState);
             _gamePlayerStateMachine.AddState(enemySpawnState);
@@ -172,6 +178,12 @@ namespace GamePlay
             _moneyMediator = new MoneyMediator(playerStats, _moneyView);
 
             _mainBuildingMediator = new MainBuldingMediator(_builder, _healthUI);
+
+            MainBuildingAndSpawnerMediator mainBuildingAndSpawnerMediator = new MainBuildingAndSpawnerMediator(_builder, spawners, levelData.gridData.gridSize);
+
+            _builder.BuildFromPlacableDatas(levelData.placables, _level.Grid);
+
+            
         }
 
         private void OnDestroy() 

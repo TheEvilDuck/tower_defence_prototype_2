@@ -1,5 +1,7 @@
 using System;
-using GamePlay;
+using GamePlay.EnemiesSpawning;
+using GamePlay.Player;
+using Towers.Configs;
 using UnityEngine;
 
 namespace Towers

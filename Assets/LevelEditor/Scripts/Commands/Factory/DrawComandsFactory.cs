@@ -1,9 +1,9 @@
 using System;
-using Levels.Tiles;
 using UnityEngine;
 using Grid = Levels.Logic.Grid;
+using Levels.Logic;
 
-namespace LevelEditor
+namespace LevelEditor.Commands.Factory
 {
     public class DrawCommandsFactory : CommandFactory
     {

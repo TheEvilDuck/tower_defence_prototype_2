@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
+using Common.Interfaces;
 
 namespace Common.States
 {
-    public class StateMachine: IDisposable
+    public class StateMachine: IDisposable, IUpdatable
     {
         private Dictionary<Type, State> _states;
         private State _currentState;

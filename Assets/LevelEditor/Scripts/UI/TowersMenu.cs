@@ -20,6 +20,7 @@ namespace LevelEditor.UI
         public void Init(GameObjectIconProvider<PlacableEnum> _icons)
         {
             _settingsMenu.Init(_icons);
+            _placeMenu.Init(_icons);
 
             _menuParentsManager = new MenuParentsManager();
             _menuParentsManager.Add(_settingsMenu);

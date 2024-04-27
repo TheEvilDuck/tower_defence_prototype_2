@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Towers
+namespace Towers.Configs
 {
     [CreateAssetMenu(fileName = "Placable config", menuName = "Configs/Placable configs/New placable config")]
     public class PlacableConfig : ScriptableObject

@@ -1,9 +1,9 @@
 using System;
 using Common.Interfaces;
+using Common.UI;
 using Levels.Logic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace LevelEditor.UI
 {

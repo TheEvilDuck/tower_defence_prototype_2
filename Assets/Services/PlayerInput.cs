@@ -1,12 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using Common.Interfaces;
 using UnityEngine;
 
 namespace Services.PlayerInput
 {
-    public class PlayerInput: IPausable
+    public class PlayerInput: IPausable, IUpdatable
     {
         public event Action<Vector2> mouseLeftClicked;
         public event Action<Vector2> mouseRightClicked;

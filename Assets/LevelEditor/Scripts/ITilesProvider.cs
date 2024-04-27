@@ -1,5 +1,5 @@
 using System;
-using Levels.Tiles;
+using Levels.Logic;
 
 namespace LevelEditor
 {

@@ -1,11 +1,7 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Drawing.Drawing2D;
 using Levels.Logic;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Pool;
 using Grid = Levels.Logic.Grid;
 
 namespace Enemies.AI
@@ -52,11 +48,11 @@ namespace Enemies.AI
                             costMultiplier = config.WeightMultiplier;
                         }
                     }
-                    
 
-
-                    PathNode pathNode = new PathNode(position, costMultiplier);
-                    pathNode.Valid = validCell;
+                    PathNode pathNode = new PathNode(position, costMultiplier)
+                    {
+                        Valid = validCell
+                    };
                     _gridPathDatas.Add(position,pathNode);
 
                     

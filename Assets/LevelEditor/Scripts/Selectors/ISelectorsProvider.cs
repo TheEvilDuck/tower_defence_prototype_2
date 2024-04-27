@@ -1,7 +1,6 @@
 using System;
-using LevelEditor.Selectors;
 
-namespace LevelEditor
+namespace LevelEditor.Selectors
 {
     public interface ISelectorsProvider
     {

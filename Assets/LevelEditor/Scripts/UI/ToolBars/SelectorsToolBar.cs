@@ -2,10 +2,9 @@ using System;
 using LevelEditor.Selectors;
 using UnityEngine;
 using UnityEngine.UI;
-using LevelEditor;
 using Common.Interfaces;
 
-namespace LevelEditor.UI
+namespace LevelEditor.UI.Toolbars
 {
     public class SelectorsToolBar : MonoBehaviour, ISelectorsProvider, IMenuParent
     {

@@ -1,8 +1,9 @@
 using System.Linq;
 using Common.States;
+using GamePlay.EnemiesSpawning;
 using Towers;
 
-namespace GamePlay
+namespace GamePlay.States
 {
     public class EnemySpawnState : State
     {

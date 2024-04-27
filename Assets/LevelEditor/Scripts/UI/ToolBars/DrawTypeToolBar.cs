@@ -1,11 +1,10 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using Common.Interfaces;
+using LevelEditor.Tools;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace LevelEditor.UI
+namespace LevelEditor.UI.Toolbars
 {
     public class DrawTypeToolBar : MonoBehaviour, IToolsProvider, IMenuParent
     {

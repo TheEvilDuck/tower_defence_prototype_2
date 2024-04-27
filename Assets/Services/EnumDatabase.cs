@@ -1,8 +1,6 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.Services.Analytics;
 using UnityEngine;
 
 namespace Services
@@ -41,6 +39,16 @@ namespace Services
             config = _content.First((item) => EqualityComparer<TEnum>.Default.Equals(id , item.Key)).Value;
 
             return true;
+        }
+
+        public TEnum[] GetAllIds()
+        {
+            List<TEnum> ids = new List<TEnum>();
+
+            foreach (var item in _content)
+                ids.Add(item.Key);
+
+            return ids.ToArray();
         }
     }
 }

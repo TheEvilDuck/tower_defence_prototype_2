@@ -1,7 +1,6 @@
-using Levels.Logic;
 using UnityEngine;
 
-namespace LevelEditor
+namespace LevelEditor.Commands
 {
     public class AddSpawnerCommand : ICommand
     {

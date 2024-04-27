@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace LevelEditor
+namespace LevelEditor.Commands.Factory
 {
     public class AddSpawnerCommandFactory : CommandFactory
     {

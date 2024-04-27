@@ -1,4 +1,5 @@
 using System;
+using Common;
 using TMPro;
 using Towers;
 using UnityEngine;
@@ -8,22 +9,24 @@ namespace GamePlay.UI
     public class TowersPanel : MonoBehaviour
     {
         [SerializeField]private TowerButton _towerButtonPrefab;
-        [SerializeField]private float _spacing = 5f;
         [SerializeField]private Transform _parent;
 
         public event Action<PlacableEnum> placableButtonPressed;
 
-        public void Init(TowersDatabase towersDatabase, GameObjectIconProvider<PlacableEnum> iconsProvider)
+        public void Init(TowersDatabase towersDatabase, GameObjectIconProvider<PlacableEnum> iconsProvider, PlacableEnum[] availableTowers)
         {
-            foreach (var item in towersDatabase.Items)
+            foreach (var tower in availableTowers)
             {
                 TowerButton button = Instantiate(_towerButtonPrefab,_parent);
                 button.onClick.AddListener(()=>{
-                    placableButtonPressed?.Invoke(item.Key);
+                    placableButtonPressed?.Invoke(tower);
                 });
 
-                button.GetComponentInChildren<TextMeshProUGUI>().text = $"{item.Value.Name}({item.Value.Cost})";
-                button.UpdateInfo($"{item.Value.Name}({item.Value.Cost})", iconsProvider.Get(item.Key));
+                if (!towersDatabase.TryGetValue(tower, out var config))
+                    throw new ArgumentException($"Can't init towers panel with tower of type {tower}");
+
+                button.GetComponentInChildren<TextMeshProUGUI>().text = $"{config.Name}({config.Cost})";
+                button.UpdateInfo($"{config.Name}({config.Cost})", iconsProvider.Get(tower));
             }
         }
     }

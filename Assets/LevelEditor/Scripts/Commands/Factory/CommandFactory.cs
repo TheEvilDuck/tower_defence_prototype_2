@@ -1,7 +1,7 @@
 using UnityEngine;
 using Grid = Levels.Logic.Grid;
 
-namespace LevelEditor
+namespace LevelEditor.Commands.Factory
 {
     public abstract class CommandFactory
     {

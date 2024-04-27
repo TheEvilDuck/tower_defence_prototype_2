@@ -1,4 +1,4 @@
-namespace LevelEditor
+namespace LevelEditor.Commands
 {
     public interface ICommand
     {

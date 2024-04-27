@@ -1,10 +1,8 @@
-using System.Collections.Generic;
-using LevelEditor.Selectors;
-using Levels.Tiles;
+using Levels.Logic;
 using UnityEngine;
 using Grid = Levels.Logic.Grid;
 
-namespace LevelEditor
+namespace LevelEditor.Commands
 {
     public class AddGroundAtCommand : ICommand
     {

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Towers
+namespace Towers.Configs
 {
     [CreateAssetMenu(fileName = "Slow tower config", menuName = "Configs/Placable configs/New slow tower config")]
     public class SlowTowerConfig : TowerConfig

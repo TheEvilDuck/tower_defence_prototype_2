@@ -1,8 +1,9 @@
 using Builder;
 using Common.States;
+using GamePlay.EnemiesSpawning;
 using UnityEngine;
 
-namespace GamePlay
+namespace GamePlay.States
 {
     public class PrepareState : State
     {

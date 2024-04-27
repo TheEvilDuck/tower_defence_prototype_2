@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Towers
+namespace Towers.Configs
 {
     [CreateAssetMenu(fileName = "Money giver config", menuName = "Configs/Placable configs/New money giver config")]
     public class MoneyGiverConfig : PlacableConfig

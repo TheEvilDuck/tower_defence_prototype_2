@@ -1,8 +1,10 @@
 using System;
+using LevelEditor.Commands.Factory;
 using LevelEditor.Selectors;
-using Levels.Tiles;
+using LevelEditor.Tools;
+using Levels.Logic;
 
-namespace LevelEditor.UI
+namespace LevelEditor.Mediators
 {
     public class ToolBarMediator : IDisposable
     {

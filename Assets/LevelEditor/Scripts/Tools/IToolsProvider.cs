@@ -1,6 +1,6 @@
 using System;
 
-namespace LevelEditor
+namespace LevelEditor.Tools
 {
     public interface IToolsProvider
     {

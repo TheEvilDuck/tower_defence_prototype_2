@@ -49,7 +49,10 @@ namespace LevelEditor.Selectors
         private void OnMouseMoved(Vector2 mousePosition)
         {
             if (!_inProgress)
+            {
+                _selectedCells.Clear();
                 return;
+            }
 
             if (_playerInput.MouseBlocked)
                 OnMouseLeftUp(mousePosition);

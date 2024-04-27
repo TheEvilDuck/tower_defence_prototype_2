@@ -1,4 +1,5 @@
-using GamePlay;
+using GamePlay.Player;
+using Towers.Configs;
 using UnityEngine;
 
 namespace Towers

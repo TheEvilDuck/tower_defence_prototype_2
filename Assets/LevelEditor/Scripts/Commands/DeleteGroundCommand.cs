@@ -1,10 +1,8 @@
 using Levels.Logic;
-using Levels.Tiles;
 using UnityEngine;
-using UnityEngine.Rendering.Universal;
 using Grid = Levels.Logic.Grid;
 
-namespace LevelEditor
+namespace LevelEditor.Commands
 {
     public class DeleteGroundCommand : ICommand
     {

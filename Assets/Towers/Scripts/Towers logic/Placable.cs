@@ -25,6 +25,13 @@ namespace Towers
 
             return true;
         }
+
+        public void ForceDestroy()
+        {
+            destroyed?.Invoke(this);
+
+            Destroy(gameObject);
+        }
         public virtual void OnBuild() {}
 
         public abstract void Pause();
