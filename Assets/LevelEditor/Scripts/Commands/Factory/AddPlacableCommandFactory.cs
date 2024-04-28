@@ -15,6 +15,7 @@ namespace LevelEditor.Commands.Factory
             _placablesContainer = placablesContainer;
         }
 
+
         public void ChangePlacableId(PlacableEnum id)
         {
             _id = id;

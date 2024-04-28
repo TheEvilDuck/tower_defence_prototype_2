@@ -24,13 +24,14 @@ namespace LevelEditor.Mediators
         private readonly ToolButtons _toolButtons;
         private readonly LevelEditor _levelEditor;
         private readonly BrushSelector _brushSelector;
+        private readonly DeleteSelector _deleteSelector;
         private readonly Tool _drawTool;
         private readonly Grid _grid;
         private readonly LevelSavingUI _levelSavingUI;
         private readonly SpawnerPlacamentSelector _spawnerPlacementSelector;
         private readonly Tool _spawnerPlacer;
         private readonly TowersSettingsMenu _towersSettingsMenu;
-        private readonly Tool _placablePlacer;
+        private readonly Tool _deletingPlacableTool;
         private readonly PlacablesContainer _placablesContainer;
         private readonly TowersPlaceMenu _towersPlaceMenu;
 
@@ -53,9 +54,10 @@ namespace LevelEditor.Mediators
             SpawnerPlacamentSelector spawnerPlacamentSelector,
             Tool spawnerPlacer,
             TowersSettingsMenu towersSettingsMenu,
-            Tool placablePlacer,
+            Tool deletingPlacableTool,
             PlacablesContainer placablesContainer,
-            TowersPlaceMenu towersPlaceMenu
+            TowersPlaceMenu towersPlaceMenu,
+            DeleteSelector deleteSelector
         )
         {
             _buttonsBar = buttonsBar;
@@ -74,9 +76,10 @@ namespace LevelEditor.Mediators
             _spawnerPlacementSelector = spawnerPlacamentSelector;
             _spawnerPlacer = spawnerPlacer;
             _towersSettingsMenu = towersSettingsMenu;
-            _placablePlacer = placablePlacer;
+            _deletingPlacableTool = deletingPlacableTool;
             _placablesContainer = placablesContainer;
             _towersPlaceMenu = towersPlaceMenu;
+            _deleteSelector = deleteSelector;
 
             _buttonsBar.saveButtonPressed+=OnSaveKeyCombinationDown;
             _buttonsBar.exitButtonPressed+=OnExitButtonPressed;
@@ -111,8 +114,8 @@ namespace LevelEditor.Mediators
         private void OnTowersButtonPressed()
         {
             _barMenus.Show(_towersMenu);
-            _levelEditor.ChangeTool(_placablePlacer);
-            _levelEditor.ChangeSelector(_brushSelector);
+            _levelEditor.ChangeTool(_deletingPlacableTool);
+            _levelEditor.ChangeSelector(_deleteSelector);
         }
         private void OnToolButtonPresed()
         {

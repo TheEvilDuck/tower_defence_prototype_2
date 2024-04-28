@@ -1,6 +1,8 @@
 using System;
 using Builder;
 using LevelEditor.Commands.Factory;
+using LevelEditor.Selectors;
+using LevelEditor.Tools;
 using LevelEditor.UI;
 using Services.PlayerInput;
 using Towers;
@@ -17,6 +19,11 @@ namespace LevelEditor.Mediators
         private readonly PlayerInput _playerInput;
         private readonly PlacablesContainer _placablesContainer;
         private readonly AddPlacableCommandFactory _addPlacableCommandFactory;
+        private readonly Tool _placeTowersTool;
+        private readonly Tool _deletingTowersTool;
+        private readonly BrushSelector _brushSelector;
+        private readonly DeleteSelector _deleteSelector;
+        private readonly LevelEditor _levelEditor;
 
         public EditorBuilderMediator(
             TowersPlaceMenu towersPlaceMenu, 
@@ -24,7 +31,12 @@ namespace LevelEditor.Mediators
             Grid grid, 
             PlayerInput playerInput, 
             PlacablesContainer placablesContainer,
-            AddPlacableCommandFactory addPlacableCommandFactory
+            AddPlacableCommandFactory addPlacableCommandFactory,
+            Tool placeTowersTool,
+            Tool deletingTowersTool,
+            BrushSelector brushSelector,
+            DeleteSelector deleteSelector,
+            LevelEditor levelEditor
             )
         {
             _towersPlaceMenu = towersPlaceMenu;
@@ -33,6 +45,11 @@ namespace LevelEditor.Mediators
             _playerInput = playerInput;
             _placablesContainer = placablesContainer;
             _addPlacableCommandFactory = addPlacableCommandFactory;
+            _placeTowersTool = placeTowersTool;
+            _deleteSelector = deleteSelector;
+            _deletingTowersTool = deletingTowersTool;
+            _brushSelector = brushSelector;
+            _levelEditor = levelEditor;
 
             _placableBuilder.placableBuilt += OnPlacableBuild;
 
@@ -64,7 +81,11 @@ namespace LevelEditor.Mediators
         private void OnMouseRightClicked(Vector2 position)
         {
             if (_placableBuilder.PreviewAble)
+            {
                 _placableBuilder.DisablePreview();
+                _levelEditor.ChangeTool(_deletingTowersTool);
+                _levelEditor.ChangeSelector(_deleteSelector); 
+            }
         }
 
         private void OnMouseMove(Vector2 position)
@@ -78,6 +99,9 @@ namespace LevelEditor.Mediators
         {
             _addPlacableCommandFactory.ChangePlacableId(id);
             _placableBuilder.EnablePreview();
+
+            _levelEditor.ChangeTool(_placeTowersTool);
+            _levelEditor.ChangeSelector(_brushSelector);
         }
     }
 }

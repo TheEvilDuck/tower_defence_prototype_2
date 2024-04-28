@@ -97,6 +97,8 @@ namespace LevelEditor
         private PlacableBuilder _placableBuilder;
         private EditorBuilderMediator _builderMediator;
         private UndoRedoMediator _undoRedoMediator;
+        private Tool _deletingTool;
+        private DeleteSelector _deleteSelector;
 
         private IEnumerator Start() 
         {
@@ -151,10 +153,12 @@ namespace LevelEditor
             _fillSelector = new FillSelector(_playerInput, _level.Grid);
             _lineSelector = new LineSelector(_playerInput,_level.Grid);
             _spawnerPlacementSelector = new SpawnerPlacamentSelector(_playerInput, _level.Grid);
+            _deleteSelector = new DeleteSelector(_playerInput, _level.Grid);
             _drawTool = new Tool(_drawCommandsFactory);
             _eraseTool = new Tool(new EraseCommandFactory(_level.Grid));
             _spawnerPlacer = new Tool(new AddSpawnerCommandFactory(_level.Grid, spawnerPositions));
             _spawnersView = new SpawnersView(_spawerPrefab, _level.Grid.CellSize, _level.Grid.GridSize);
+            
 
             _levelEditorMediator = new LevelEditorMediator
             (
@@ -203,13 +207,26 @@ namespace LevelEditor
             var placableFactory = new PlacableFactory(_towersDatabase, enemySpawner,playerStats);
             var placableContainer = new PlacablesContainer(_level.Grid);
             _placableBuilder = new PlacableBuilder(_towersDatabase.GetAllIds(), placableFactory, false, _placablePreviewPrefab, _towersIcons, placableContainer);
+            _deletingTool = new Tool(new RemovePlacableCommandFactory(_level.Grid, _placableBuilder, placableContainer));
 
             _levelIconsAndLevelLoaderMediator = new LevelIconsAndLevelLoaderMediator(_levelLoader,_levelIconsLoader, _levelEditor,_level,_wavesEditor,_settingsMenu, spawnerPositions, _towersSettingsMenu, _placableBuilder);
         
             var placableCommandFactory = new AddPlacableCommandFactory(_level.Grid, _placableBuilder, placableContainer);
             _placablePlacer = new Tool(placableCommandFactory);
 
-            _builderMediator = new EditorBuilderMediator(_towersPlaceMenu, _placableBuilder, _level.Grid, _playerInput, placableContainer, placableCommandFactory);
+            _builderMediator = new EditorBuilderMediator(
+                _towersPlaceMenu, 
+                _placableBuilder, 
+                _level.Grid, 
+                _playerInput, 
+                placableContainer, 
+                placableCommandFactory,
+                _placablePlacer,
+                _deletingTool,
+                _brushSelector,
+                _deleteSelector,
+                _levelEditor
+            );
 
             _buttonsBarMediator = new ButtonsBarMediator(
                 _buttonsBar, 
@@ -228,9 +245,10 @@ namespace LevelEditor
                 _spawnerPlacementSelector,
                 _spawnerPlacer,
                 _towersSettingsMenu,
-                _placablePlacer,
+                _deletingTool,
                 placableContainer,
-                _towersPlaceMenu
+                _towersPlaceMenu,
+                _deleteSelector
             );
 
             _undoRedoMediator = new UndoRedoMediator(_levelEditor, _undoRedoButtons);
