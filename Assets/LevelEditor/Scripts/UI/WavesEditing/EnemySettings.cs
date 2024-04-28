@@ -36,6 +36,7 @@ namespace LevelEditor.UI.WavesEditing
         public void FillFromWaveEnemyData(WaveEnemyData waveEnemyData)
         {
             _slider.SetValue(waveEnemyData.count);
+            Count = waveEnemyData.count;
             EnemyId = waveEnemyData.enemyData;
             _buttonImage.texture = _gameObjectIconProvider.Get(EnemyId);
         }

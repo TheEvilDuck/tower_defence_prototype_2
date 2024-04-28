@@ -25,13 +25,14 @@ namespace Towers
             _range = config.Range;
             _slowMultiplier = config.SlowMultiplier;
             _slowTime = config.SlowTime;
-
-            _inited = true;
         }
 
         private void Update() 
         {
             if (!_inited)
+                return;
+
+            if (_paused)
                 return;
 
             if (_timer <= 0)
@@ -55,5 +56,7 @@ namespace Towers
         public override void Pause() => _paused = true;
 
         public override void UnPause() => _paused = false;
+
+        public override void OnBuild() => _inited = true;
     }
 }

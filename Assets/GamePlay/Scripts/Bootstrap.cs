@@ -66,6 +66,10 @@ namespace GamePlay
         private MainBuldingMediator _mainBuildingMediator;
         private GameObjectIconProvider<PlacableEnum> _towersIcons;
         private GameObjectIconsMaker _iconsMaker;
+
+        private void Awake() {
+            Application.targetFrameRate = 60;
+        }
         private IEnumerator Start() 
         {
             var wait = new WaitForEndOfFrame();
@@ -163,9 +167,9 @@ namespace GamePlay
             pauseMenus.Show(_pauseButton);
 
             PrepareState prepareState = new PrepareState(_gamePlayerStateMachine, _builder, spawners, false, _level.Grid.GridSize);
-            EnemySpawnState enemySpawnState = new EnemySpawnState(_gamePlayerStateMachine, _enemySpawner, _builder);
-            LoseState loseState = new LoseState(_gamePlayerStateMachine, _gameOverView, sceneLoader, pauseMenus);
-            WinState winState = new WinState(_gamePlayerStateMachine, _gameOverView, sceneLoader, pauseMenus);
+            EnemySpawnState enemySpawnState = new EnemySpawnState(_gamePlayerStateMachine, _enemySpawner, _builder, placablesContainer, _towersPanel);
+            LoseState loseState = new LoseState(_gamePlayerStateMachine, _gameOverView, sceneLoader, pauseMenus, _builder, _towersPanel);
+            WinState winState = new WinState(_gamePlayerStateMachine, _gameOverView, sceneLoader, pauseMenus, _builder, _towersPanel);
 
             _gamePlayerStateMachine.AddState(prepareState);
             _gamePlayerStateMachine.AddState(enemySpawnState);
@@ -183,7 +187,7 @@ namespace GamePlay
 
             _builder.BuildFromPlacableDatas(levelData.placables, _level.Grid);
 
-            
+            _towersPanel.HideAllExceptMainBuilding();
         }
 
         private void OnDestroy() 
@@ -198,6 +202,7 @@ namespace GamePlay
             _buildPossibilityChecker?.Dispose();
             _moneyMediator?.Dispose();
             _mainBuildingMediator?.Dispose();
+            _pathFinder.Dispose();
         }
 
         void Update()

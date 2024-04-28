@@ -461,7 +461,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 227642385}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3e1600431b1316d4a8b9a4e869fb4305, type: 3}
+  m_Script: {fileID: 11500000, guid: 30649d3a9faa99c48a7b1166b86bf2a0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Padding:
@@ -470,10 +470,14 @@ MonoBehaviour:
     m_Top: 0
     m_Bottom: 0
   m_ChildAlignment: 4
-  _colums: 0
-  _rows: 1
-  _spacing: {x: 0, y: 0}
-  _gridScalingType: 2
+  m_Spacing: 0
+  m_ChildForceExpandWidth: 1
+  m_ChildForceExpandHeight: 1
+  m_ChildControlWidth: 1
+  m_ChildControlHeight: 1
+  m_ChildScaleWidth: 0
+  m_ChildScaleHeight: 0
+  m_ReverseArrangement: 0
 --- !u!1 &283142335
 GameObject:
   m_ObjectHideFlags: 0
@@ -1917,7 +1921,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _towerButtonPrefab: {fileID: 4718723585463619794, guid: 569e5869003c08d4ea7a820857002a47, type: 3}
-  _spacing: 5
   _parent: {fileID: 227642386}
 --- !u!114 &1331212293
 MonoBehaviour:

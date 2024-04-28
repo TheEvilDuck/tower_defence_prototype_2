@@ -34,6 +34,7 @@ namespace LevelEditor.Mediators
         private readonly Tool _deletingPlacableTool;
         private readonly PlacablesContainer _placablesContainer;
         private readonly TowersPlaceMenu _towersPlaceMenu;
+        private readonly SpawnersMenu _spawnersMenu;
 
 
         public ButtonsBarMediator
@@ -57,7 +58,8 @@ namespace LevelEditor.Mediators
             Tool deletingPlacableTool,
             PlacablesContainer placablesContainer,
             TowersPlaceMenu towersPlaceMenu,
-            DeleteSelector deleteSelector
+            DeleteSelector deleteSelector,
+            SpawnersMenu spawnersMenu
         )
         {
             _buttonsBar = buttonsBar;
@@ -80,6 +82,7 @@ namespace LevelEditor.Mediators
             _placablesContainer = placablesContainer;
             _towersPlaceMenu = towersPlaceMenu;
             _deleteSelector = deleteSelector;
+            _spawnersMenu = spawnersMenu;
 
             _buttonsBar.saveButtonPressed+=OnSaveKeyCombinationDown;
             _buttonsBar.exitButtonPressed+=OnExitButtonPressed;
@@ -143,7 +146,7 @@ namespace LevelEditor.Mediators
         {
             _levelEditor.ChangeTool(_spawnerPlacer);
             _levelEditor.ChangeSelector(_spawnerPlacementSelector);
-            _barMenus.HideAll();
+            _barMenus.Show(_spawnersMenu);
         }
 
         private void OnSaveKeyCombinationDown()

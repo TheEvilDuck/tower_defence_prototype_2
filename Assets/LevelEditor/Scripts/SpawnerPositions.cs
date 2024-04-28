@@ -35,10 +35,15 @@ namespace LevelEditor
 
             return true;
         }
-        public void Remove(Vector2Int position)
+        public bool Remove(Vector2Int position)
         {
             if (_spawners.Remove(position))
+            {
                 removed?.Invoke(position);
+                return true;
+            }
+
+            return false;
         }
     }
 }

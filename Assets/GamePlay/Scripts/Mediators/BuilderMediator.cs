@@ -56,6 +56,7 @@ namespace GamePlay.Mediators
         private void OnTowerChosenInTowersPanel(PlacableEnum id)
         {
             _builder.SwitchCurrentId(id);
+            _builder.EnablePreview();
         }
 
         private void OnMouseMoved(Vector2 position)

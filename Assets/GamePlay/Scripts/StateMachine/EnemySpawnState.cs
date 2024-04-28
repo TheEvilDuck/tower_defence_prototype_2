@@ -1,6 +1,8 @@
 using System.Linq;
+using Builder;
 using Common.States;
 using GamePlay.EnemiesSpawning;
+using GamePlay.UI;
 using Towers;
 
 namespace GamePlay.States
@@ -8,11 +10,20 @@ namespace GamePlay.States
     public class EnemySpawnState : State
     {
         private readonly EnemySpawner _enemySpawner;
+        private readonly PlacablesContainer _placablesContainer;
         private readonly IMainBuilderProvider _mainBuilderProvider;
-        public EnemySpawnState(StateMachine stateMachine, EnemySpawner enemySpawner, IMainBuilderProvider mainBuilderProvider) : base(stateMachine)
+        private readonly TowersPanel _towersPanel;
+        public EnemySpawnState(
+            StateMachine stateMachine, 
+            EnemySpawner enemySpawner, 
+            IMainBuilderProvider mainBuilderProvider, 
+            PlacablesContainer placablesContainer,
+            TowersPanel towersPanel) : base(stateMachine)
         {
             _enemySpawner = enemySpawner;
             _mainBuilderProvider = mainBuilderProvider;
+            _placablesContainer = placablesContainer;
+            _towersPanel = towersPanel;
         }
 
         public override void Enter()
@@ -21,6 +32,11 @@ namespace GamePlay.States
                 throw new System.Exception("Somehow there is not main building at the start of enemy spawn state!");
 
             _mainBuilderProvider.MainBuilding.destroyed += OnMainBuildingDestroyed;
+
+            _towersPanel.ShowAllExceptMainBuilding();
+
+            foreach (var placable in _placablesContainer.Placables)
+                placable?.OnBuild();
 
             _enemySpawner.Start();
         }

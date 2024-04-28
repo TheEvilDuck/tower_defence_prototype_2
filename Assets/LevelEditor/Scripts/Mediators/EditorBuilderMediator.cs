@@ -98,6 +98,7 @@ namespace LevelEditor.Mediators
         private void OnTowerSelected(PlacableEnum id)
         {
             _addPlacableCommandFactory.ChangePlacableId(id);
+            _placableBuilder.SwitchCurrentId(id);
             _placableBuilder.EnablePreview();
 
             _levelEditor.ChangeTool(_placeTowersTool);

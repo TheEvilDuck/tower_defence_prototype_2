@@ -86,7 +86,6 @@ namespace Builder
 
             _currentId = id;
             _preview.UpdatePreview(_icons.Get(id));
-            EnablePreview();
         }
 
         public void EnablePreview() => _preview?.gameObject.SetActive(true);
@@ -137,7 +136,7 @@ namespace Builder
         {
             foreach (var placableData in placableDatas)
             {
-                CreatePlacable(grid.ConvertIntToVector2Int(placableData.index), placableData.placable, grid);
+                CreatePlacable(grid.ConvertIntToVector2Int(placableData.index), placableData.placable, grid, true);
 
             }
         }
@@ -241,7 +240,7 @@ namespace Builder
             CreatePlacable(_inConstructions[inConstruction].CellPosition, _inConstructions[inConstruction].PlacableId, _inConstructions[inConstruction].Grid);
         }
 
-        private void CreatePlacable(Vector2Int cellPosition, PlacableEnum placableId, Grid grid)
+        private void CreatePlacable(Vector2Int cellPosition, PlacableEnum placableId, Grid grid, bool delayedBuild = false)
         {
             Placable tower = _placableFactory.Get(placableId);
             Vector2 worldPosition = grid.GridPositionToWorldPosition(cellPosition);
@@ -253,8 +252,9 @@ namespace Builder
                 throw new Exception("Didn't you forget to delete inConstrucion placable?");
             }
 
-            tower?.OnBuild();
-
+            if (!delayedBuild)
+                tower?.OnBuild();
+            
             Action<Placable> placableDestroyedTemp = null;
 
             placableDestroyedTemp = (Placable placable) =>

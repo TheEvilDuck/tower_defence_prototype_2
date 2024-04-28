@@ -6,7 +6,7 @@ using Grid = Levels.Logic.Grid;
 
 namespace Enemies.AI
 {
-    public class PathFinder
+    public class PathFinder: IDisposable
     {
         private const int STRAIGHT_PATH_WEIGHT = 10;
         private const int DIAGONAL_PATH_WEIGHT = 14;
@@ -21,28 +21,41 @@ namespace Enemies.AI
         };
         private Dictionary<Vector2Int,PathNode> _gridPathDatas;
         private List<Vector2Int> _openList;
+        private readonly Grid _grid;
+        private readonly PathFindMultipliersDatabase _pathFindMultipliersDatabase;
         public PathFinder(Grid grid, PathFindMultipliersDatabase pathFindMultipliersDatabase)
+        {
+            _grid = grid;
+            _pathFindMultipliersDatabase = pathFindMultipliersDatabase;
+
+            _grid.cellAdded += OnCellAdded;
+            _grid.cellRemoved += OnCellRemoved;
+
+            Init();
+        }
+
+        private void Init()
         {
             _gridPathDatas = new Dictionary<Vector2Int, PathNode>();
             _openList = new List<Vector2Int>();
 
-            for (int y = 0; y<grid.GridSize;y++)
+            for (int y = 0; y<_grid.GridSize;y++)
             {
-                for (int x = 0;x<grid.GridSize;x++)
+                for (int x = 0;x<_grid.GridSize;x++)
                 {
                     Vector2Int position = new Vector2Int(x,y);
 
                     float costMultiplier = 1f;
                     bool validCell = false;
                     
-                    if (grid.TryGetCellDataAt(position, out CellData cellData))
+                    if (_grid.TryGetCellDataAt(position, out CellData cellData))
                     {
                         if (cellData.HasRoad)
                         {
-                            validCell = pathFindMultipliersDatabase.RoadTileConfig.Walkable;
-                            costMultiplier = pathFindMultipliersDatabase.RoadTileConfig.WeightMultiplier;
+                            validCell = _pathFindMultipliersDatabase.RoadTileConfig.Walkable;
+                            costMultiplier = _pathFindMultipliersDatabase.RoadTileConfig.WeightMultiplier;
                         }
-                        else if (pathFindMultipliersDatabase.TryGetValue(cellData.Type, out PathFindTileConfig config))
+                        else if (_pathFindMultipliersDatabase.TryGetValue(cellData.Type, out PathFindTileConfig config))
                         {
                             validCell = config.Walkable;
                             costMultiplier = config.WeightMultiplier;
@@ -58,6 +71,12 @@ namespace Enemies.AI
                     
                 }
             }
+        }
+
+        public void Dispose()
+        {
+            _grid.cellAdded -= OnCellAdded;
+            _grid.cellRemoved -= OnCellRemoved;
         }
 
         public bool TryFindPath(Vector2Int fromPosition, Vector2Int toPosition, out List<Vector2Int> result, bool useDiagonal = false)
@@ -123,6 +142,39 @@ namespace Enemies.AI
 
             return false;
         }
+
+        private void OnCellAdded(Vector2Int position, TileType tileType)
+        {
+            float costMultiplier = 1f;
+            bool validCell = false;
+                    
+            if (_pathFindMultipliersDatabase.TryGetValue(tileType, out PathFindTileConfig config))
+            {
+                validCell = config.Walkable;
+                costMultiplier = config.WeightMultiplier;
+            }
+
+            PathNode pathNode = new PathNode(position, costMultiplier)
+            {
+                Valid = validCell
+            };
+
+            _gridPathDatas[position] = pathNode;
+        }
+
+        private void OnCellRemoved(Vector2Int position)
+        {
+            float costMultiplier = 1f;
+            bool validCell = false;
+
+            PathNode pathNode = new PathNode(position, costMultiplier)
+            {
+                Valid = validCell
+            };
+
+            _gridPathDatas[position] = pathNode;
+        }
+        
 
         private void CheckPositionsAround(Vector2Int position, bool useDiagonal, Vector2Int targetPosition)
         {
@@ -209,6 +261,7 @@ namespace Enemies.AI
 
             return DIAGONAL_PATH_WEIGHT * Mathf.Min(xDistance,yDistance) + STRAIGHT_PATH_WEIGHT * remaining;
         }
+
         
 
         private class PathNode

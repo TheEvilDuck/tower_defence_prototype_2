@@ -5,6 +5,7 @@ using Common;
 using Common.UI;
 using Common.UI.InputBlocking;
 using Enemies;
+using Enemies.AI;
 using GamePlay;
 using GamePlay.EnemiesSpawning;
 using GamePlay.Mediators;
@@ -62,6 +63,8 @@ namespace LevelEditor
         [SerializeField] private PlacablePreview _placablePreviewPrefab;
         [SerializeField] private TowersPlaceMenu _towersPlaceMenu;
         [SerializeField] private UndoRedoButtons _undoRedoButtons;
+        [SerializeField] private SpawnersMenu _spawnersMenu;
+        [SerializeField] private PathFindMultipliersDatabase _pathFindMultipliersDatabase;
 
         private Level _level;
         private LevelEditor _levelEditor;
@@ -98,7 +101,16 @@ namespace LevelEditor
         private EditorBuilderMediator _builderMediator;
         private UndoRedoMediator _undoRedoMediator;
         private Tool _deletingTool;
+        private Tool _spawnerDeletingTool;
         private DeleteSelector _deleteSelector;
+        private SpawnerButtonsMediator _spawnerButtonsMediator;
+        private PathFinder _pathFinder;
+        private PathFinderAndBuilderMediator _pathFinderAndBuilderMediator;
+
+        private void Awake() 
+        {
+            Application.targetFrameRate = 60;
+        }
 
         private IEnumerator Start() 
         {
@@ -146,6 +158,7 @@ namespace LevelEditor
             _menuParentsManager.Add(_loadMenu);
             _menuParentsManager.Add(_toolButtons);
             _menuParentsManager.Add(_towersMenu);
+            _menuParentsManager.Add(_spawnersMenu);
 
             _drawCommandsFactory = new DrawCommandsFactory(_level.Grid);
 
@@ -158,6 +171,7 @@ namespace LevelEditor
             _eraseTool = new Tool(new EraseCommandFactory(_level.Grid));
             _spawnerPlacer = new Tool(new AddSpawnerCommandFactory(_level.Grid, spawnerPositions));
             _spawnersView = new SpawnersView(_spawerPrefab, _level.Grid.CellSize, _level.Grid.GridSize);
+            _spawnerDeletingTool = new Tool(new RemoveSpawnerCommandFactory(_level.Grid, spawnerPositions));
             
 
             _levelEditorMediator = new LevelEditorMediator
@@ -248,10 +262,17 @@ namespace LevelEditor
                 _deletingTool,
                 placableContainer,
                 _towersPlaceMenu,
-                _deleteSelector
+                _deleteSelector,
+                _spawnersMenu
             );
 
             _undoRedoMediator = new UndoRedoMediator(_levelEditor, _undoRedoButtons);
+
+            _spawnerButtonsMediator = new SpawnerButtonsMediator(_spawnersMenu, _levelEditor, _spawnerDeletingTool, _spawnerPlacer);
+
+            _pathFinder = new PathFinder(_level.Grid, _pathFindMultipliersDatabase);
+
+            _pathFinderAndBuilderMediator = new PathFinderAndBuilderMediator(_pathFinder, _placableBuilder, spawnerPositions);
         }
 
         private void OnDestroy() 
@@ -272,6 +293,8 @@ namespace LevelEditor
             _buttonsBarMediator.Dispose();
             _builderMediator.Dispose();
             _undoRedoMediator.Dispose();
+            _pathFinderAndBuilderMediator.Dispose();
+            _pathFinder.Dispose();
         }
 
         private void Update() 

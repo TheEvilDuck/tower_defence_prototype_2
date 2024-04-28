@@ -19,7 +19,6 @@ namespace Towers
             _playerStats = playerStats;
             _moneyRate = config.MoneyRate;
             _money = config.Money;
-            _inited = true;
         }
 
         private void Update() 
@@ -43,6 +42,8 @@ namespace Towers
         public override void Pause() => _paused = true;
 
         public override void UnPause() => _paused = false;
+
+        public override void OnBuild() => _inited = true;
     }
 
 }

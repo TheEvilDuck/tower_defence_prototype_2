@@ -16,6 +16,9 @@ namespace LevelEditor.Mediators
             _settings.StartMoney.changed+=OnStartMoneyChanged;
             _settings.TimeToTheFirstWave.changed+=OnFirstWaveDelayChanged;
             _settings.mapNameChanged+=OnLevelNameChanged;
+
+            OnStartMoneyChanged(_settings.StartMoney.Value);
+            OnFirstWaveDelayChanged(_settings.StartMoney.Value);
         }
         public void Dispose()
         {

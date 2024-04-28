@@ -26,7 +26,6 @@ namespace LevelEditor.UI.WavesEditing
         [SerializeField]private TextMeshProUGUI _counter;
         [SerializeField]private EnemySettings _enemySettingsPrefab;
         [SerializeField]private Transform _enemySettingsParent;
-        [SerializeField]private EnemiesDatabase _enemiesDatabase;
         [SerializeField]private EnemiesSelector _enemiesSelector;
         private List<WaveData> _waveDatas;
         private Dictionary<WaveData, List<EnemySettings>>_enemySettingsView;

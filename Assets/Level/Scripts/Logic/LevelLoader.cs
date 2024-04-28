@@ -9,7 +9,7 @@ namespace Levels.Logic
 {
     public class LevelLoader
     {
-        public static readonly string LEVELS_FOLDER = "/Resources/Levels/";
+        public static readonly string LEVELS_FOLDER = "/Levels/";
         public static readonly string LEVEL_FORMAT = ".json";
         public static readonly string LEVEL_ICON_FORMAT = ".png";
         public static readonly string LEVEL_ICON_PREFIX = "_ICON";
@@ -93,7 +93,7 @@ namespace Levels.Logic
 
         public string[] GetAllMapsNames()
         {
-            StringBuilder stringBuilder = new StringBuilder(Application.dataPath);
+            StringBuilder stringBuilder = new StringBuilder(Application.streamingAssetsPath);
             stringBuilder.Append(LEVELS_FOLDER);
 
             DirectoryInfo directoryInfo = new DirectoryInfo(stringBuilder.ToString());
@@ -118,7 +118,7 @@ namespace Levels.Logic
 
         private string GetFullLevelPath(string levelName)
         {
-            StringBuilder stringBuilder = new StringBuilder(Application.dataPath);
+            StringBuilder stringBuilder = new StringBuilder(Application.streamingAssetsPath);
             stringBuilder.Append(LEVELS_FOLDER);
             stringBuilder.Append(levelName);
             stringBuilder.Append(LEVEL_FORMAT);
@@ -128,7 +128,7 @@ namespace Levels.Logic
 
         private string GetFullLevelIconPath(string levelName)
         {
-            StringBuilder stringBuilder = new StringBuilder(Application.dataPath);
+            StringBuilder stringBuilder = new StringBuilder(Application.streamingAssetsPath);
             stringBuilder.Append(LEVELS_FOLDER);
             stringBuilder.Append(levelName);
             stringBuilder.Append(LEVEL_ICON_PREFIX);
