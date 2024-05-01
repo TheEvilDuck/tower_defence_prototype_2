@@ -16,14 +16,11 @@ namespace Levels.Logic
             Grid.FillFromGridData(newGridData);
         }
 
-        public LevelData ConvertToLevelData(int startMoney, float timeToTheFirstWave, WaveData[] waveDatas)
+        public LevelData ConvertToLevelData()
         {
             LevelData levelData = new LevelData
             {
-                startMoney = startMoney,
-                firstWaveDelay = timeToTheFirstWave,
                 gridData = Grid.ConvertToGridData(),
-                waves = waveDatas
             };
 
             return levelData;

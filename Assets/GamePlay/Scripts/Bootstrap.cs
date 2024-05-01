@@ -184,10 +184,11 @@ namespace GamePlay
             _mainBuildingMediator = new MainBuldingMediator(_builder, _healthUI);
 
             MainBuildingAndSpawnerMediator mainBuildingAndSpawnerMediator = new MainBuildingAndSpawnerMediator(_builder, spawners, levelData.gridData.gridSize);
+            _towersPanel.HideAllExceptMainBuilding();
 
             _builder.BuildFromPlacableDatas(levelData.placables, _level.Grid);
 
-            _towersPanel.HideAllExceptMainBuilding();
+            
         }
 
         private void OnDestroy() 

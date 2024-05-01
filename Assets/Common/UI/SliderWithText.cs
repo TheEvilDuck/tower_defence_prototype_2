@@ -15,12 +15,6 @@ namespace Common.UI
 
         public int Value => (int)_slider.value;
 
-        public void RestoreDefaultValue()
-        {
-            _slider.value = _defaultValue;
-            OnSliderValueChanged(_defaultValue);
-        }
-
         public void ChangeBorders(int minValue, int maxValue)
         {
             _slider.minValue = minValue;
@@ -36,7 +30,9 @@ namespace Common.UI
             if (newValue<_slider.minValue||newValue>_slider.maxValue)
                 throw new ArgumentOutOfRangeException("Value is our of slider's range");
 
+            _inputField.text = newValue.ToString();
             _slider.value = newValue;
+            changed?.Invoke(Value);
         }
 
         private void Awake() 

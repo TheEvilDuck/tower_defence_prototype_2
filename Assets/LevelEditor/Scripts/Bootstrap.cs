@@ -223,7 +223,18 @@ namespace LevelEditor
             _placableBuilder = new PlacableBuilder(_towersDatabase.GetAllIds(), placableFactory, false, _placablePreviewPrefab, _towersIcons, placableContainer);
             _deletingTool = new Tool(new RemovePlacableCommandFactory(_level.Grid, _placableBuilder, placableContainer));
 
-            _levelIconsAndLevelLoaderMediator = new LevelIconsAndLevelLoaderMediator(_levelLoader,_levelIconsLoader, _levelEditor,_level,_wavesEditor,_settingsMenu, spawnerPositions, _towersSettingsMenu, _placableBuilder);
+            _levelIconsAndLevelLoaderMediator = new LevelIconsAndLevelLoaderMediator(
+                _levelLoader,
+                _levelIconsLoader, 
+                _levelEditor,
+                _level,
+                _wavesEditor,
+                _settingsMenu, 
+                spawnerPositions, 
+                _towersSettingsMenu, 
+                _placableBuilder,
+                placableContainer
+            );
         
             var placableCommandFactory = new AddPlacableCommandFactory(_level.Grid, _placableBuilder, placableContainer);
             _placablePlacer = new Tool(placableCommandFactory);
@@ -263,7 +274,8 @@ namespace LevelEditor
                 placableContainer,
                 _towersPlaceMenu,
                 _deleteSelector,
-                _spawnersMenu
+                _spawnersMenu,
+                spawnerPositions
             );
 
             _undoRedoMediator = new UndoRedoMediator(_levelEditor, _undoRedoButtons);

@@ -12,6 +12,8 @@ namespace LevelEditor.UI
         [SerializeField] private SliderWithText _startMoney;
         [SerializeField] private SliderWithText _timeToTheFirstWave;
         [SerializeField] private TMP_InputField _mapName;
+        [SerializeField] private int _defaultMoney = 100;
+        [SerializeField] private int _defaultDelay = 10;
 
         public event Action<string> mapNameChanged;
         public bool Active => gameObject.activeInHierarchy;
@@ -35,8 +37,8 @@ namespace LevelEditor.UI
             _mapName.text = string.Empty;
             mapNameChanged?.Invoke(string.Empty);
 
-            _timeToTheFirstWave.RestoreDefaultValue();
-            _startMoney.RestoreDefaultValue();
+            _timeToTheFirstWave.SetValue(_defaultDelay);
+            _startMoney.SetValue(_defaultMoney);
         }
 
         public void LoadLevelName(string mapName)

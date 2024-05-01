@@ -116,8 +116,6 @@ namespace LevelEditor
 
         private async Task SaveLevel(WaveData[] waveDatas, PlacableEnum[] availableTowers)
         {
-            _currentLevelData.waves = waveDatas;
-
             if (string.IsNullOrWhiteSpace(_currentLevelName))
             {
                 levelSaveTried.Invoke(_levelSavingResultFactory.Get(ResultType.EmptyName));
@@ -130,8 +128,13 @@ namespace LevelEditor
                 return;
             }
 
-            LevelData savingLevelData = _level.ConvertToLevelData(_currentLevelData.startMoney, _currentLevelData.firstWaveDelay, _currentLevelData.waves);
+            _currentLevelData.waves = waveDatas;
+
+            LevelData savingLevelData = _level.ConvertToLevelData();
+            savingLevelData.firstWaveDelay = _currentLevelData.firstWaveDelay;
+            savingLevelData.startMoney = _currentLevelData.startMoney;
             savingLevelData.allowedPlacables = availableTowers;
+            savingLevelData.waves = waveDatas;
             List<int> spawnerIndexes = new List<int>();
 
             foreach (Vector2Int cellPosition in _spawnerPositions.Spawners)

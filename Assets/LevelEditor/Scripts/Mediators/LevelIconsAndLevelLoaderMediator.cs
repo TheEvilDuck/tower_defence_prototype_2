@@ -18,6 +18,7 @@ namespace LevelEditor.Mediators
         private SpawnerPositions _spawnerPositions;
         private TowersSettingsMenu _towersSettingsMenu;
         private PlacableBuilder _placableBuilder;
+        private PlacablesContainer _placableContainer;
 
         public LevelIconsAndLevelLoaderMediator(
             LevelLoader levelLoader, 
@@ -28,7 +29,9 @@ namespace LevelEditor.Mediators
             SettingsMenu settingsMenu,
             SpawnerPositions spawnerPositions,
             TowersSettingsMenu towersSettingsMenu,
-            PlacableBuilder placableBuilder)
+            PlacableBuilder placableBuilder,
+            PlacablesContainer placablesContainer
+            )
         {
             _levelLoader = levelLoader;
             _levelIconsLoader = levelIconsLoader;
@@ -39,6 +42,7 @@ namespace LevelEditor.Mediators
             _spawnerPositions = spawnerPositions;
             _towersSettingsMenu = towersSettingsMenu;
             _placableBuilder = placableBuilder;
+            _placableContainer = placablesContainer;
 
             _levelIconsLoader.mapIconPressed+=OnIconPressed;
         }
@@ -57,8 +61,10 @@ namespace LevelEditor.Mediators
                 _wavesEditor.LoadFromLevelData(levelData);
                 _settingsMenu.LoadLevelName(mapName);
                 _settingsMenu.LoadFromLevelData(levelData);
+                _spawnerPositions.Clear();
                 _spawnerPositions.LoadFromLevelData(levelData.spawnerPlaces, _level.Grid);
                 _towersSettingsMenu.PreloadWith(levelData.allowedPlacables);
+                _placableContainer.DestroyAll();
                 _placableBuilder.BuildFromPlacableDatas(levelData.placables, _level.Grid);
             }
         }

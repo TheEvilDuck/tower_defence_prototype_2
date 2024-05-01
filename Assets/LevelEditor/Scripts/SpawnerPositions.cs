@@ -45,5 +45,11 @@ namespace LevelEditor
 
             return false;
         }
+
+        public void Clear()
+        {
+            for (int i = _spawners.Count - 1; i >= 0; i--)
+                Remove(_spawners[i]);
+        }
     }
 }

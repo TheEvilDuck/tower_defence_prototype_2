@@ -8,22 +8,15 @@ namespace LevelEditor.UI.Towers
     public class TowerSelectionButton : MonoBehaviour, IPointerClickHandler
     {
         [SerializeField] private Color _notSelectedColor;
+        [SerializeField] private Color _selectedColor;
         [SerializeField] private Button _button;
         [SerializeField] private RawImage _rawImage;
 
         public event Action clicked;
         public event Action selected;
-
-        private Color _selectedColor;
-
         public bool Selected {get; private set;} = true;
 
         public void UpdateTexture(Texture2D texture) => _rawImage.texture = texture;
-
-        private void Awake() {
-            _selectedColor = _rawImage.color;
-            Selected = true;
-        }
 
         private void OnEnable() 
         {
