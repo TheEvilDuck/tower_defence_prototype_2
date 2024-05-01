@@ -19,6 +19,7 @@ namespace Towers
             if (!CanBeDestroyed)
                 return false;
 
+            OnDestroyed();
             destroyed?.Invoke(this);
 
             Destroy(gameObject);
@@ -33,6 +34,7 @@ namespace Towers
             Destroy(gameObject);
         }
         public virtual void OnBuild() {}
+        public virtual void OnDestroyed() {}
 
         public abstract void Pause();
 

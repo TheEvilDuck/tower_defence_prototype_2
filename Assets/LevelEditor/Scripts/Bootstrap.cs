@@ -217,7 +217,7 @@ namespace LevelEditor
             
 
             var enemySpawner = new EnemySpawner(null, 0, 0, null);
-            var playerStats = new PlayerStats(0);
+            var playerStats = new PlayerStats(0,0);
             var placableFactory = new PlacableFactory(_towersDatabase, enemySpawner,playerStats);
             var placableContainer = new PlacablesContainer(_level.Grid);
             _placableBuilder = new PlacableBuilder(_towersDatabase.GetAllIds(), placableFactory, false, _placablePreviewPrefab, _towersIcons, placableContainer);

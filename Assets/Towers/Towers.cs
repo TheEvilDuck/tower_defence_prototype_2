@@ -11,6 +11,7 @@ namespace Towers
         BigFactory = 6,
         MiniGun = 7,
         SlowTower = 8,
-        SlowBomb = 9
+        SlowBomb = 9,
+        Storage = 10
     }
 }

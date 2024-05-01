@@ -98,6 +98,14 @@ namespace Towers
 
                 slowBomb.Init(slowBombConfig, _enemySpawner);
             }
+
+            public void Visit(Storage storage)
+            {
+                if (_config is not StorageConfig storageConfig)
+                    throw new ArgumentException($"Passed wrong config to init placable, {_config.GetType()}");
+
+                storage.Init(storageConfig, _playerStats);
+            }
         }
     }
 }

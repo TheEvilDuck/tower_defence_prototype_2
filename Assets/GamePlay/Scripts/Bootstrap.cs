@@ -97,7 +97,7 @@ namespace GamePlay
 
             _level = new Level(levelData);
             PlacablesContainer placablesContainer = new PlacablesContainer(_level.Grid);
-            PlayerStats playerStats = new PlayerStats(levelData.startMoney);
+            PlayerStats playerStats = new PlayerStats(levelData.startMoney, levelData.startMoney);
 
             _tileController = new TileController(_tileDatabase,_groundTileMap,_roadTileMap);
             _levelAndTilesMediator = new LevelAndTilesMediator(_tileController,_level);

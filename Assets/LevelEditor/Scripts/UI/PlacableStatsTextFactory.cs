@@ -80,6 +80,14 @@ namespace LevelEditor.UI
 
                 ResultText = ResultText + $"Walk speed multiplier: {config.SlowMultiplier}\nSlow time: {config.SlowTime}\nDelay: {config.Delay}\nRange: {config.Range}";
             }
+
+            public void Visit(Storage storage)
+            {
+                if (_currentConfig is not StorageConfig config)
+                    throw new ArgumentException($"Passed wrong config to get placable stats text, {_currentConfig.GetType()}");
+
+                ResultText = ResultText + $"Max money increase: {config.Money}";
+            }
         }
     }
 

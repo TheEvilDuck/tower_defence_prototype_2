@@ -1,18 +1,23 @@
 using System;
+using UnityEngine;
 
 namespace GamePlay.Player
 {
     public class PlayerStats
     {
         private int _money;
+        private int _maxMoney;
 
         public Action<int> moneyChanged;
+        public Action<int> maxMoneyChanged;
 
         public int Money => _money;
+        public int MaxMoney => _maxMoney;
 
-        public PlayerStats(int money)
+        public PlayerStats(int money, int maxMoney)
         {
             _money = money;
+            _maxMoney = maxMoney;
         }
 
         public void Add(int money)
@@ -20,8 +25,43 @@ namespace GamePlay.Player
             if (!ValidateMoney(money))
                 return;
 
+            if (_money == _maxMoney)
+                return;
+
             _money += money;
+
+            _money = Mathf.Min(_money, _maxMoney);
+
             moneyChanged?.Invoke(_money);
+        }
+
+        public void IncreaseMaxMoney(int money)
+        {
+            if (!ValidateMoney(money))
+                return;
+
+            _maxMoney += money;
+            maxMoneyChanged?.Invoke(_maxMoney);
+        }
+
+        public void DecreaseMaxMoney(int money)
+        {
+            if (!ValidateMoney(money))
+                return;
+
+            if (_maxMoney == 0)
+                return;
+
+            _maxMoney -= money;
+
+            _maxMoney = Mathf.Max(0, _maxMoney);
+            maxMoneyChanged?.Invoke(_maxMoney);
+
+            if (_money > _maxMoney)
+            {
+                _money = _maxMoney;
+                moneyChanged?.Invoke(_money);
+            }
         }
 
         public bool Spend(int money)

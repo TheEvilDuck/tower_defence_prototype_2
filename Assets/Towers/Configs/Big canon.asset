@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Big canon
   m_EditorClassIdentifier: 
   <Name>k__BackingField: Big canon
+  <Desc>k__BackingField: It's like sniper riffle
   <Cost>k__BackingField: 170
   <BuildTime>k__BackingField: 10
   CanBeDestroyed: 1
