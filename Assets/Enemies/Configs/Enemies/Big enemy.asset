@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: Big enemy
   m_EditorClassIdentifier: 
   <Name>k__BackingField: Big enemy
-  <MaxHealth>k__BackingField: 200
-  <Damage>k__BackingField: 5
+  <MaxHealth>k__BackingField: 500
+  <Damage>k__BackingField: 15
   <WalkSpeed>k__BackingField: 0.5
   <Range>k__BackingField: 1
-  <AttackRate>k__BackingField: 1
+  <AttackRate>k__BackingField: 3
   <Prefab>k__BackingField: {fileID: 4835739807219631629, guid: 046a4ea1f5eece546ab542b0322d4d39, type: 3}

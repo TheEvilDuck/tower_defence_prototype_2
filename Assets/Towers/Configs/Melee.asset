@@ -10,14 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 32ee9f88096708044b1edab840676ba8, type: 3}
-  m_Name: Big canon
+  m_Name: Melee
   m_EditorClassIdentifier: 
-  <Name>k__BackingField: Big canon
-  <Desc>k__BackingField: It's like sniper riffle
-  <Cost>k__BackingField: 300
-  <BuildTime>k__BackingField: 10
+  <Name>k__BackingField: Test melee
+  <Desc>k__BackingField: 
+  <Cost>k__BackingField: 150
+  <BuildTime>k__BackingField: 5
   CanBeDestroyed: 1
-  <Prefab>k__BackingField: {fileID: 7975762466027600639, guid: d64667ece7301cd42abd21a74e30ae57, type: 3}
-  <AttackRate>k__BackingField: 5
-  <Damage>k__BackingField: 60
-  <Range>k__BackingField: 15
+  <Prefab>k__BackingField: {fileID: 1229262784815097390, guid: 97cb884e67595df4d8cdc60a78231ff8, type: 3}
+  <AttackRate>k__BackingField: 0.2
+  <Damage>k__BackingField: 3
+  <Range>k__BackingField: 1

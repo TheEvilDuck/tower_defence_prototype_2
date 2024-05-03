@@ -17,6 +17,7 @@ namespace GamePlay.EnemiesSpawning
         private bool _started = false;
         private bool _paused = false;
         private List<Enemy>_enemies;
+        private List<Enemy>_diedEnemies;
 
         public event Action<float> ticked;
 
@@ -29,6 +30,7 @@ namespace GamePlay.EnemiesSpawning
             _enemyFactory = enemyFactory;
             _spawnRate = spawnRate;
             _enemies = new List<Enemy>();
+            _diedEnemies = new List<Enemy>();
         }
 
         public void Pause()
@@ -59,6 +61,14 @@ namespace GamePlay.EnemiesSpawning
 
             if (!_started)
                 return;
+
+            foreach (Enemy enemy in _diedEnemies)
+            {
+                _enemies.Remove(enemy);
+                UnityEngine.Object.Destroy(enemy.gameObject);
+            }
+
+            _diedEnemies.Clear();
 
             if (_timer>0)
             {
@@ -91,7 +101,6 @@ namespace GamePlay.EnemiesSpawning
                 }
             }
         }
-
         public void Start()
         {
             _started = true;
@@ -101,8 +110,7 @@ namespace GamePlay.EnemiesSpawning
         {
             enemy.died -= OnEnemyDied;
 
-            _enemies.Remove(enemy);
-            UnityEngine.GameObject.Destroy(enemy);
+            _diedEnemies.Add(enemy);
         }
     }
 }

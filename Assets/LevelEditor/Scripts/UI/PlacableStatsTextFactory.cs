@@ -88,6 +88,14 @@ namespace LevelEditor.UI
 
                 ResultText = ResultText + $"Max money increase: {config.Money}";
             }
+
+            public void Visit(Bomb bomb)
+            {
+                if (_currentConfig is not BombConfig config)
+                    throw new ArgumentException($"Passed wrong config to get placable stats text, {_currentConfig.GetType()}");
+
+                ResultText = ResultText + $"Damage: {config.Damage}\nDelay: {config.Delay}\nRange: {config.Range}";
+            }
         }
     }
 

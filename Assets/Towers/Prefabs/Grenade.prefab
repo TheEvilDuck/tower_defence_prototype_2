@@ -10,9 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 3004441590416729998}
   - component: {fileID: 3004441590416729985}
-  - component: {fileID: 2902099328699299991}
+  - component: {fileID: 2773355465437356027}
   m_Layer: 0
-  m_Name: Storage
+  m_Name: Grenade
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -75,7 +75,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 6
   m_Sprite: {fileID: 21300000, guid: 5340d816966be9c4aad8c50166af67b7, type: 3}
-  m_Color: {r: 0.6226415, g: 0.44076458, b: 0.16153437, a: 1}
+  m_Color: {r: 1, g: 0.06575355, b: 0, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -85,7 +85,7 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &2902099328699299991
+--- !u!114 &2773355465437356027
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -94,6 +94,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 3004441590416729987}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2a2d9a9f95ab0864d907c595615053d8, type: 3}
+  m_Script: {fileID: 11500000, guid: 3fd9b757a3d1d9245ad52eb5ccc2bc14, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 

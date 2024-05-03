@@ -106,6 +106,14 @@ namespace Towers
 
                 storage.Init(storageConfig, _playerStats);
             }
+
+            public void Visit(Bomb bomb)
+            {
+                if (_config is not BombConfig bombConfig)
+                    throw new ArgumentException($"Passed wrong config to init placable, {_config.GetType()}");
+
+                bomb.Init(bombConfig, _enemySpawner);
+            }
         }
     }
 }

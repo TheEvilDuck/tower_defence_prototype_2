@@ -13,11 +13,13 @@ MonoBehaviour:
   m_Name: Slow bomb config
   m_EditorClassIdentifier: 
   <Name>k__BackingField: Slow bomb
+  <Desc>k__BackingField: 
   <Cost>k__BackingField: 30
   <BuildTime>k__BackingField: 3
   CanBeDestroyed: 1
   <Prefab>k__BackingField: {fileID: 38094822064684833, guid: 808129bd251ce2749bf55e499f5b72bf, type: 3}
-  <SlowMultiplier>k__BackingField: 0.2
-  <SlowTime>k__BackingField: 5
   <Range>k__BackingField: 3
   <Delay>k__BackingField: 2
+  <Damage>k__BackingField: 1
+  <SlowMultiplier>k__BackingField: 0.2
+  <SlowTime>k__BackingField: 8

@@ -8,5 +8,6 @@ namespace Towers
         public void Visit(MoneyGiver moneyGiver);
         public void Visit(SlowBomb slowBomb);
         public void Visit(Storage storage);
+        public void Visit(Bomb bomb);
     }
 }

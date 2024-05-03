@@ -13,9 +13,10 @@ MonoBehaviour:
   m_Name: Big factory
   m_EditorClassIdentifier: 
   <Name>k__BackingField: Big factory
+  <Desc>k__BackingField: 
   <Cost>k__BackingField: 150
   <BuildTime>k__BackingField: 8
   CanBeDestroyed: 1
   <Prefab>k__BackingField: {fileID: 7569363413208067930, guid: 75dffc4f6eb16ac41a2bfb6d77d96e97, type: 3}
-  <MoneyRate>k__BackingField: 0.5
+  <MoneyRate>k__BackingField: 1
   <Money>k__BackingField: 10

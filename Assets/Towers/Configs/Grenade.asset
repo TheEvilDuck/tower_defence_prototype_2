@@ -9,15 +9,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 32ee9f88096708044b1edab840676ba8, type: 3}
-  m_Name: Mini gun
+  m_Script: {fileID: 11500000, guid: c64a01ca373658f449938c185b5a2b0a, type: 3}
+  m_Name: Grenade
   m_EditorClassIdentifier: 
-  <Name>k__BackingField: Minigun
+  <Name>k__BackingField: Grenade
   <Desc>k__BackingField: 
-  <Cost>k__BackingField: 200
-  <BuildTime>k__BackingField: 10
+  <Cost>k__BackingField: 50
+  <BuildTime>k__BackingField: 2
   CanBeDestroyed: 1
-  <Prefab>k__BackingField: {fileID: 7975762466027600639, guid: f6258a402af7a354ba621ae244bfd7f9, type: 3}
-  <AttackRate>k__BackingField: 0.1
-  <Damage>k__BackingField: 2
+  <Prefab>k__BackingField: {fileID: 2773355465437356027, guid: a5526af595d65144486a1050b2e59791, type: 3}
   <Range>k__BackingField: 4
+  <Delay>k__BackingField: 2
+  <Damage>k__BackingField: 12

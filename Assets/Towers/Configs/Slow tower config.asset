@@ -13,12 +13,13 @@ MonoBehaviour:
   m_Name: Slow tower config
   m_EditorClassIdentifier: 
   <Name>k__BackingField: Slow tower
+  <Desc>k__BackingField: 
   <Cost>k__BackingField: 80
   <BuildTime>k__BackingField: 5
   CanBeDestroyed: 1
   <Prefab>k__BackingField: {fileID: 1296995247484078620, guid: db357d9f1f9379543bf9dba5fbe560d8, type: 3}
-  <AttackRate>k__BackingField: 1
-  <Damage>k__BackingField: 2
-  <Range>k__BackingField: 4
-  <SlowMulriplier>k__BackingField: 0.9
+  <AttackRate>k__BackingField: 0.7
+  <Damage>k__BackingField: 1
+  <Range>k__BackingField: 3
+  <SlowMulriplier>k__BackingField: 0.85
   <SlowTime>k__BackingField: 2

@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: Pink enemy
   m_EditorClassIdentifier: 
   <Name>k__BackingField: Pink enemy
-  <MaxHealth>k__BackingField: 400
-  <Damage>k__BackingField: 5
-  <WalkSpeed>k__BackingField: 17.52
+  <MaxHealth>k__BackingField: 350
+  <Damage>k__BackingField: 8
+  <WalkSpeed>k__BackingField: 12
   <Range>k__BackingField: 1
   <AttackRate>k__BackingField: 1
   <Prefab>k__BackingField: {fileID: 4835739807219631629, guid: 48a964efb0dd3504fa47edb9a59fcc91, type: 3}

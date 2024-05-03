@@ -7,56 +7,25 @@ using UnityEngine;
 
 namespace Towers
 {
-    public class SlowBomb : Placable
+    public class SlowBomb : Bomb
     {
-        private float _range;
         private float _slowMultiplier;
         private float _slowTime;
-        private float _timer;
-        private bool _paused;
-        private EnemySpawner _spawner;
-
-        private bool _inited = false;
 
         public void Init(SlowBombConfig config, EnemySpawner enemySpawner)
         {
+            _slowMultiplier = config.SlowMultiplier;
+            _slowTime = config.SlowTime;
             _spawner = enemySpawner;
             _timer = config.Delay;
             _range = config.Range;
-            _slowMultiplier = config.SlowMultiplier;
-            _slowTime = config.SlowTime;
+            _damage = config.Damage;
         }
 
-        private void Update() 
+        protected override void OnEnemyDamaged(Enemy enemy)
         {
-            if (!_inited)
-                return;
-
-            if (_paused)
-                return;
-
-            if (_timer <= 0)
-            {
-                foreach (Enemy enemy in _spawner.Enemies)
-                {
-                    if (Vector2.Distance(enemy.Position, Position) <= _range)
-                    {
-                        TempBuff<EnemyStats> tempBuff = new TempBuff<EnemyStats>(_slowTime, _spawner, enemy, new WalkSpeedBuff(_slowMultiplier));
-                        enemy.AddBuff(tempBuff);
-                    }
-                }
-
-                DestroyPlacable();
-            }
-            else
-            {
-                _timer -= Time.deltaTime;
-            }
+            TempBuff<EnemyStats> tempBuff = new TempBuff<EnemyStats>(_slowTime, _spawner, enemy, new WalkSpeedBuff(_slowMultiplier));
+            enemy.AddBuff(tempBuff);
         }
-        public override void Pause() => _paused = true;
-
-        public override void UnPause() => _paused = false;
-
-        public override void OnBuild() => _inited = true;
     }
 }

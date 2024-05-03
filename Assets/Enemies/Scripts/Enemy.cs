@@ -13,6 +13,7 @@ namespace Enemies
     {
         private const float POSITION_ACCURACY = 0.2f;
         public event Action tookDamage;
+        public event Action effectApplied;
         public event Action<Enemy> died;
         private EnemyStats _baseStats;
         private EnemyStats _currentStats;

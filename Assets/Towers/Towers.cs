@@ -12,6 +12,8 @@ namespace Towers
         MiniGun = 7,
         SlowTower = 8,
         SlowBomb = 9,
-        Storage = 10
+        Storage = 10,
+        Bomb = 11,
+        Melee = 12
     }
 }
