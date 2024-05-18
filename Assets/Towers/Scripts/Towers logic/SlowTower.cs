@@ -30,7 +30,7 @@ namespace Towers
                 return;
 
             var slowBuff = new WalkSpeedBuff(_slowMultiplier);
-            var tempBuff = new TempBuff<EnemyStats>(_slowTime, _spawner, _target, slowBuff);
+            var tempBuff = new TempBuff<EnemyStats, BuffId>(_slowTime, _spawner, _target, slowBuff);
             _target.AddBuff(tempBuff);
         }
 

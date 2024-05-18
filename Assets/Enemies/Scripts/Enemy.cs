@@ -4,16 +4,18 @@ using BuffSystem;
 using Builder;
 using Common.Interfaces;
 using Enemies.AI;
+using Enemies.Buffs;
 using Towers;
 using UnityEngine;
 
 namespace Enemies
 {
-    public class Enemy : MonoBehaviour, IDamagable, IPausable, IBuffable<EnemyStats>
+    public class Enemy : MonoBehaviour, IDamagable, IPausable, IBuffable<EnemyStats, BuffId>
     {
         private const float POSITION_ACCURACY = 0.2f;
         public event Action tookDamage;
-        public event Action effectApplied;
+        public event Action<IBuff<EnemyStats, BuffId>> buffApplied;
+        public event Action<IBuff<EnemyStats, BuffId>> buffDispeled;
         public event Action<Enemy> died;
         private EnemyStats _baseStats;
         private EnemyStats _currentStats;
@@ -26,7 +28,7 @@ namespace Enemies
 
         public bool IsDead => _currentStats.health > 0;
 
-        private List<IBuff<EnemyStats>> _buffs;
+        private List<IBuff<EnemyStats, BuffId>> _buffs;
 
         public Vector2 Position => transform.position;
 
@@ -34,20 +36,24 @@ namespace Enemies
         {
             _baseStats = new EnemyStats(enemyConfig);
             _currentStats = _baseStats;
-            _buffs = new List<IBuff<EnemyStats>>();
+            _buffs = new List<IBuff<EnemyStats, BuffId>>();
             _placableListHandler = placableListHandler;
         }
 
-        public void AddBuff(IBuff<EnemyStats> buff)
+        public void AddBuff(IBuff<EnemyStats, BuffId> buff)
         {
             _buffs.Add(buff);
+            buffApplied?.Invoke(buff);
             RecalculateCurrentStats();
         }
 
-        public void RemoveBuff(IBuff<EnemyStats> buff)
+        public void RemoveBuff(IBuff<EnemyStats, BuffId> buff)
         {
             if (_buffs.Remove(buff))
+            {
+                buffDispeled?.Invoke(buff);
                 RecalculateCurrentStats();
+            }
         }
 
         public void Pause()

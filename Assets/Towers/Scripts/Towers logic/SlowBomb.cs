@@ -24,7 +24,7 @@ namespace Towers
 
         protected override void OnEnemyDamaged(Enemy enemy)
         {
-            TempBuff<EnemyStats> tempBuff = new TempBuff<EnemyStats>(_slowTime, _spawner, enemy, new WalkSpeedBuff(_slowMultiplier));
+            TempBuff<EnemyStats, BuffId> tempBuff = new TempBuff<EnemyStats, BuffId>(_slowTime, _spawner, enemy, new WalkSpeedBuff(_slowMultiplier));
             enemy.AddBuff(tempBuff);
         }
     }

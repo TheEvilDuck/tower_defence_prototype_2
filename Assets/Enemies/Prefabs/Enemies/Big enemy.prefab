@@ -144,6 +144,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ffa20220ed5873b45b2b45012a203e23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _hideOnStop: 1
 --- !u!114 &5357255870428074322
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -170,3 +171,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _enemy: {fileID: 4835739807219631629}
   _idleAnimation: {fileID: 11400000, guid: 34d2a19c015e76b448524b342980f579, type: 2}
+  _prefabParticles: {fileID: 889223498471299282, guid: 5d4f7a68b59599c47913162bda335ec1, type: 3}

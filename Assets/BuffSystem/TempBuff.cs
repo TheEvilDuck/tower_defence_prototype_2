@@ -3,14 +3,18 @@ using Common.Interfaces;
 
 namespace BuffSystem
 {
-    public class TempBuff<TStats> : IBuff<TStats> where TStats : IStats
+    public class TempBuff<TStats, BuffID> : IBuff<TStats, BuffID> 
+        where TStats : IStats
+        where BuffID: Enum
     {
         private readonly ITimer _timer;
-        private readonly IBuffable<TStats> _buffable;
-        private readonly IBuff<TStats> _buff;
+        private readonly IBuffable<TStats, BuffID> _buffable;
+        private readonly IBuff<TStats, BuffID> _buff;
         private float _time;
 
-        public TempBuff(float time, ITimer timer, IBuffable<TStats> buffable, IBuff<TStats> buff)
+        public BuffID Id {get; private set;}
+
+        public TempBuff(float time, ITimer timer, IBuffable<TStats, BuffID> buffable, IBuff<TStats, BuffID> buff)
         {
             _timer = timer;
             _buffable = buffable;
@@ -32,6 +36,8 @@ namespace BuffSystem
 
             _timer.ticked += onTick;
         }
+
+        
 
         public TStats Apply(TStats baseStats)
         {

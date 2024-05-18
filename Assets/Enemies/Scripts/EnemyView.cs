@@ -1,5 +1,7 @@
+using BuffSystem;
 using Components.ComponentsAnimations;
 using Components.SimpleSpriteAnimator;
+using Enemies.Buffs;
 using UnityEngine;
 
 namespace Enemies
@@ -9,14 +11,17 @@ namespace Enemies
     {
         [SerializeField] private Enemy _enemy;
         [SerializeField] private SpriteAnimationData _idleAnimation;
+        [SerializeField] private ParticleSystem _prefabParticles;
 
         private SpriteRenderer _spriteRenderer;
         private ComponentsAnimator _animator;
         private SimpleSpriteAnimationComponent _spriteAnimator;
 
         private ColorAnimation _colorAnimation;
+        private ColorAnimation _freezeAnimation;
         private RandomizedPositionAnimation _positionAnimation;
 
+        private ParticleSystem _particles;
         private void Awake() 
         {
             _spriteRenderer = GetComponent<SpriteRenderer>();
@@ -29,8 +34,12 @@ namespace Enemies
             WiggleAnimationValueUpdater _positionUpdater = new WiggleAnimationValueUpdater(0,1f,100);
             _positionAnimation = new RandomizedPositionAnimation(_positionUpdater,transform,new Vector2(0.1f,0.1f), Vector2.zero);
 
+            _freezeAnimation = new ColorAnimation(colorUpdater, Color.cyan, _spriteRenderer);
+
             _enemy.tookDamage+=OnEnemyTookDamage;
             _enemy.died += OnEnemyDied;
+            _enemy.buffApplied += OnEnemyBuffApplied;
+            _enemy.buffDispeled += OnEnemyBuffDispeled;
 
             _spriteAnimator.StartAnimation(_idleAnimation);
         }
@@ -39,6 +48,8 @@ namespace Enemies
         {
             _enemy.tookDamage-=OnEnemyTookDamage;
             _enemy.died -= OnEnemyDied;
+            _enemy.buffApplied -= OnEnemyBuffApplied;
+            _enemy.buffDispeled -= OnEnemyBuffDispeled;
         }
 
         private void OnEnemyTookDamage()
@@ -50,7 +61,43 @@ namespace Enemies
         private void OnEnemyDied(Enemy enemy)
         {
             enemy.died -= OnEnemyDied;
+            _enemy.buffApplied -= OnEnemyBuffApplied;
+            _enemy.buffDispeled -= OnEnemyBuffDispeled;
             //to do die animation
+        }
+
+        private void OnEnemyBuffApplied(IBuff<EnemyStats, BuffId> buff)
+        {
+            switch (buff.Id)
+            {
+                case BuffId.Frost:
+                {
+                    _animator.AddAnimation(_freezeAnimation);
+                    
+                    if (_particles == null)
+                        _particles = Instantiate(_prefabParticles, transform);
+
+                    break;
+                }
+                default: break;
+            }
+        }
+
+        private void OnEnemyBuffDispeled(IBuff<EnemyStats, BuffId> buff)
+        {
+            switch (buff.Id)
+            {
+                case BuffId.Frost:
+                {
+                    _animator.StopAnimation(_freezeAnimation);
+
+                    if (_particles != null)
+                        Destroy(_particles.gameObject);
+
+                    break;
+                }
+                default: break;
+            }
         }
     }
 }

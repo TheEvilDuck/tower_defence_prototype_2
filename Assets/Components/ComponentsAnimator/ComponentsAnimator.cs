@@ -26,6 +26,15 @@ namespace Components.ComponentsAnimations
             animation.Start();
         }
 
+        public void StopAnimation(Animation animation)
+        {
+            if (!_animations.Contains(animation))
+                return;
+
+            animation.Stop();
+            
+        }
+
         private void Update() 
         {
             foreach (Animation animation in _animations)
